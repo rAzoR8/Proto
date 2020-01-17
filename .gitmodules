@@ -1,0 +1,3 @@
+[submodule "SpvGenTwo"]
+	path = SpvGenTwo
+	url = git@github.com:rAzoR8/SpvGenTwo.git
