@@ -174,13 +174,13 @@ static void SetupVulkan(const char** extensions, uint32_t extensions_count)
 
 // All the ImGui_ImplVulkanH_XXX structures/functions are optional helpers used by the demo.
 // Your real engine/app may not use them.
-void proto::Window::SetupVulkanWindow(ImGui_ImplVulkanH_Window* wd, VkSurfaceKHR surface, int width, int height)
+void proto::Window::setupVulkanWindow(VkSurfaceKHR surface, int width, int height)
 {
-    wd->Surface = surface;
+    m_VulkanWindow.Surface = surface;
 
     // Check for WSI support
     VkBool32 res;
-    vkGetPhysicalDeviceSurfaceSupportKHR(g_PhysicalDevice, g_QueueFamily, wd->Surface, &res);
+    vkGetPhysicalDeviceSurfaceSupportKHR(g_PhysicalDevice, g_QueueFamily, m_VulkanWindow.Surface, &res);
     if (res != VK_TRUE)
     {
         fprintf(stderr, "Error no WSI support on physical device 0\n");
@@ -190,7 +190,7 @@ void proto::Window::SetupVulkanWindow(ImGui_ImplVulkanH_Window* wd, VkSurfaceKHR
     // Select Surface Format
     const VkFormat requestSurfaceImageFormat[] = { VK_FORMAT_B8G8R8A8_UNORM, VK_FORMAT_R8G8B8A8_UNORM, VK_FORMAT_B8G8R8_UNORM, VK_FORMAT_R8G8B8_UNORM };
     const VkColorSpaceKHR requestSurfaceColorSpace = VK_COLORSPACE_SRGB_NONLINEAR_KHR;
-    wd->SurfaceFormat = ImGui_ImplVulkanH_SelectSurfaceFormat(g_PhysicalDevice, wd->Surface, requestSurfaceImageFormat, (size_t)IM_ARRAYSIZE(requestSurfaceImageFormat), requestSurfaceColorSpace);
+    m_VulkanWindow.SurfaceFormat = ImGui_ImplVulkanH_SelectSurfaceFormat(g_PhysicalDevice, m_VulkanWindow.Surface, requestSurfaceImageFormat, (size_t)IM_ARRAYSIZE(requestSurfaceImageFormat), requestSurfaceColorSpace);
 
     // Select Present Mode
 #ifdef IMGUI_UNLIMITED_FRAME_RATE
@@ -198,15 +198,15 @@ void proto::Window::SetupVulkanWindow(ImGui_ImplVulkanH_Window* wd, VkSurfaceKHR
 #else
     VkPresentModeKHR present_modes[] = { VK_PRESENT_MODE_FIFO_KHR };
 #endif
-    wd->PresentMode = ImGui_ImplVulkanH_SelectPresentMode(g_PhysicalDevice, wd->Surface, &present_modes[0], IM_ARRAYSIZE(present_modes));
+    m_VulkanWindow.PresentMode = ImGui_ImplVulkanH_SelectPresentMode(g_PhysicalDevice, m_VulkanWindow.Surface, &present_modes[0], IM_ARRAYSIZE(present_modes));
     //printf("[vulkan] Selected PresentMode = %d\n", m_pVulkanWindow->PresentMode);
 
     // Create SwapChain, RenderPass, Framebuffer, etc.
-    IM_ASSERT(m_MinImageCount >= 2);
-    ImGui_ImplVulkanH_CreateWindow(g_Instance, g_PhysicalDevice, g_Device, wd, g_QueueFamily, g_Allocator, width, height, m_MinImageCount);
+    IM_ASSERT(m_minImageCount >= 2);
+    ImGui_ImplVulkanH_CreateWindow(g_Instance, g_PhysicalDevice, g_Device, &m_VulkanWindow, g_QueueFamily, g_Allocator, width, height, m_minImageCount);
 }
 
-static void CleanupVulkan()
+void proto::Window::cleanupVulkan()
 {
     vkDestroyDescriptorPool(g_Device, g_DescriptorPool, g_Allocator);
 
@@ -220,16 +220,16 @@ static void CleanupVulkan()
     vkDestroyInstance(g_Instance, g_Allocator);
 }
 
-static void FrameRender(ImGui_ImplVulkanH_Window* wd)
+void proto::Window::frameRender()
 {
     VkResult err;
 
-    VkSemaphore image_acquired_semaphore = wd->FrameSemaphores[wd->SemaphoreIndex].ImageAcquiredSemaphore;
-    VkSemaphore render_complete_semaphore = wd->FrameSemaphores[wd->SemaphoreIndex].RenderCompleteSemaphore;
-    err = vkAcquireNextImageKHR(g_Device, wd->Swapchain, UINT64_MAX, image_acquired_semaphore, VK_NULL_HANDLE, &wd->FrameIndex);
+    VkSemaphore image_acquired_semaphore = m_VulkanWindow.FrameSemaphores[m_VulkanWindow.SemaphoreIndex].ImageAcquiredSemaphore;
+    VkSemaphore render_complete_semaphore = m_VulkanWindow.FrameSemaphores[m_VulkanWindow.SemaphoreIndex].RenderCompleteSemaphore;
+    err = vkAcquireNextImageKHR(g_Device, m_VulkanWindow.Swapchain, UINT64_MAX, image_acquired_semaphore, VK_NULL_HANDLE, &m_VulkanWindow.FrameIndex);
     check_vk_result(err);
 
-    ImGui_ImplVulkanH_Frame* fd = &wd->Frames[wd->FrameIndex];
+    ImGui_ImplVulkanH_Frame* fd = &m_VulkanWindow.Frames[m_VulkanWindow.FrameIndex];
     {
         err = vkWaitForFences(g_Device, 1, &fd->Fence, VK_TRUE, UINT64_MAX);    // wait indefinitely instead of periodically checking
         check_vk_result(err);
@@ -249,12 +249,12 @@ static void FrameRender(ImGui_ImplVulkanH_Window* wd)
     {
         VkRenderPassBeginInfo info = {};
         info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-        info.renderPass = wd->RenderPass;
+        info.renderPass = m_VulkanWindow.RenderPass;
         info.framebuffer = fd->Framebuffer;
-        info.renderArea.extent.width = wd->Width;
-        info.renderArea.extent.height = wd->Height;
+        info.renderArea.extent.width = m_VulkanWindow.Width;
+        info.renderArea.extent.height = m_VulkanWindow.Height;
         info.clearValueCount = 1;
-        info.pClearValues = &wd->ClearValue;
+        info.pClearValues = &m_VulkanWindow.ClearValue;
         vkCmdBeginRenderPass(fd->CommandBuffer, &info, VK_SUBPASS_CONTENTS_INLINE);
     }
 
@@ -282,19 +282,19 @@ static void FrameRender(ImGui_ImplVulkanH_Window* wd)
     }
 }
 
-static void FramePresent(ImGui_ImplVulkanH_Window* wd)
+void proto::Window::framePresent()
 {
-    VkSemaphore render_complete_semaphore = wd->FrameSemaphores[wd->SemaphoreIndex].RenderCompleteSemaphore;
+    VkSemaphore render_complete_semaphore = m_VulkanWindow.FrameSemaphores[m_VulkanWindow.SemaphoreIndex].RenderCompleteSemaphore;
     VkPresentInfoKHR info = {};
     info.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
     info.waitSemaphoreCount = 1;
     info.pWaitSemaphores = &render_complete_semaphore;
     info.swapchainCount = 1;
-    info.pSwapchains = &wd->Swapchain;
-    info.pImageIndices = &wd->FrameIndex;
+    info.pSwapchains = &m_VulkanWindow.Swapchain;
+    info.pImageIndices = &m_VulkanWindow.FrameIndex;
     VkResult err = vkQueuePresentKHR(g_Queue, &info);
     check_vk_result(err);
-    wd->SemaphoreIndex = (wd->SemaphoreIndex + 1) % wd->ImageCount; // Now we can use the next set of semaphores
+    m_VulkanWindow.SemaphoreIndex = (m_VulkanWindow.SemaphoreIndex + 1) % m_VulkanWindow.ImageCount; // Now we can use the next set of semaphores
 }
 
 void proto::Window::glfwErrorCallback(int error, const char* description)
@@ -358,13 +358,14 @@ bool proto::Window::init(int _width, int _height)
     // Create Window Surface
     VkSurfaceKHR surface;
     VkResult err = glfwCreateWindowSurface(g_Instance, m_pGLFWWindow, g_Allocator, &surface);
-    check_vk_result(err);
+    if (err < 0)
+        return false;
 
     // Create Framebuffers
     int w, h;
     glfwGetFramebufferSize(m_pGLFWWindow, &w, &h);
     glfwSetFramebufferSizeCallback(m_pGLFWWindow, glfwResizeCallback);
-    SetupVulkanWindow(&m_VulkanWindow, surface, w, h);
+    setupVulkanWindow(surface, w, h);
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -390,7 +391,7 @@ bool proto::Window::init(int _width, int _height)
     init_info.PipelineCache = g_PipelineCache;
     init_info.DescriptorPool = g_DescriptorPool;
     init_info.Allocator = g_Allocator;
-    init_info.MinImageCount = m_MinImageCount;
+    init_info.MinImageCount = m_minImageCount;
     init_info.ImageCount = m_VulkanWindow.ImageCount;
     init_info.CheckVkResultFn = check_vk_result;
     ImGui_ImplVulkan_Init(&init_info, m_VulkanWindow.RenderPass);
@@ -468,8 +469,8 @@ int proto::Window::exec()
         if (m_SwapChainRebuild)
         {
             m_SwapChainRebuild = false;
-            ImGui_ImplVulkan_SetMinImageCount(m_MinImageCount);
-            ImGui_ImplVulkanH_CreateWindow(g_Instance, g_PhysicalDevice, g_Device, &m_VulkanWindow, g_QueueFamily, g_Allocator, m_SwapChainResizeWidth, m_SwapChainResizeHeight, m_MinImageCount);
+            ImGui_ImplVulkan_SetMinImageCount(m_minImageCount);
+            ImGui_ImplVulkanH_CreateWindow(g_Instance, g_PhysicalDevice, g_Device, &m_VulkanWindow, g_QueueFamily, g_Allocator, m_SwapChainResizeWidth, m_SwapChainResizeHeight, m_minImageCount);
             m_VulkanWindow.FrameIndex = 0;
         }
 
@@ -486,9 +487,9 @@ int proto::Window::exec()
         // Rendering
         ImGui::Render();
         memcpy(&m_VulkanWindow.ClearValue.color.float32[0], &clear_color, 4 * sizeof(float));
-        FrameRender(&m_VulkanWindow);
+        frameRender();
 
-        FramePresent(&m_VulkanWindow);
+        framePresent();
     }
 
     // Cleanup
@@ -499,7 +500,7 @@ int proto::Window::exec()
     ImGui::DestroyContext();
 
     ImGui_ImplVulkanH_DestroyWindow(g_Instance, g_Device, &m_VulkanWindow, g_Allocator);
-    CleanupVulkan();
+    cleanupVulkan();
 
     glfwDestroyWindow(m_pGLFWWindow);
     glfwTerminate();
