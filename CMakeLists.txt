@@ -38,6 +38,13 @@ project(Proto)
 #dependencies
 find_package(Vulkan REQUIRED)
 
+option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" OFF)
+option(GLFW_BUILD_TESTS "Build the GLFW test programs" OFF)
+option(GLFW_BUILD_DOCS "Build the GLFW documentation" OFF)
+option(GLFW_INSTALL "Generate installation target" OFF)
+option(GLFW_DOCUMENT_INTERNALS "Include internals in documentation" OFF)
+add_subdirectory(thirdparty/glfw)
+
 add_subdirectory(SpvGenTwo)
 
 #proto sources
@@ -47,19 +54,16 @@ add_include_folder("gui/include" "proto_includes")
 
 #imgui sources
 add_sources("thirdparty/imgui/imgui.cpp" "imgui_sources")
-#add_sources("thirdparty/imgui/imgui.h" "imgui_sources")
 add_sources("thirdparty/imgui/imgui_draw.cpp" "imgui_sources")
 add_sources("thirdparty/imgui/imgui_widgets.cpp" "imgui_sources")
 add_sources("thirdparty/imgui/examples/imgui_impl_vulkan.cpp" "imgui_sources")
-#add_sources("thirdparty/imgui/examples/imgui_impl_sdl.cpp" "imgui_sources")
-add_sources("thirdparty/imgui/examples/imgui_impl_win32.cpp" "imgui_sources")
+add_sources("thirdparty/imgui/examples/imgui_impl_glfw.cpp" "imgui_sources")
 add_include_folder("thirdparty/imgui" "imgui_includes")
 add_include_folder("thirdparty/imgui/examples" "imgui_includes")
 
 #lib project
 add_executable(proto "${proto_sources};${imgui_sources}")
 target_include_directories(proto PUBLIC "${proto_includes};${imgui_includes}")
-#target_include_directories(proto PUBLIC "${SPIRV_INCLUDE_DIR}")
 
 #link SpvGenTwo
 target_link_libraries(proto PUBLIC lib)
@@ -67,5 +71,9 @@ target_link_libraries(proto PUBLIC lib)
 #link vulkan
 target_include_directories(proto PRIVATE "${Vulkan_INCLUDE_DIR}")
 target_link_libraries(proto PRIVATE "${Vulkan_LIBRARIES}")
+
+#link glfw
+target_include_directories(proto PRIVATE "${glfw_INCLUDE_DIRS}")
+target_link_libraries(proto PRIVATE glfw)
 
 message(STATUS "")
