@@ -1,8 +1,11 @@
 #pragma once
 
+#include "imgui.h"
+#include "imgui_impl_vulkan.h"
+
 // foward decls:
 struct GLFWwindow;
-struct ImGui_ImplVulkanH_Window;
+//struct ImGui_ImplVulkanH_Window;
 
 namespace proto
 {
@@ -21,6 +24,6 @@ namespace proto
 
 	private:
 		GLFWwindow* m_pGLFWWindow = nullptr;
-		ImGui_ImplVulkanH_Window* m_pVulkanWindow = nullptr;
+		ImGui_ImplVulkanH_Window m_VulkanWindow{};
 	};
 } // !proto

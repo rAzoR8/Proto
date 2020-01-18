@@ -1,7 +1,5 @@
 #include "proto/Window.h"
 
-#include "imgui.h"
-#include "imgui_impl_vulkan.h"
 #include "imgui_impl_glfw.h"
 
 #include <stdio.h>          // printf, fprintf
@@ -26,7 +24,7 @@ static VkDebugReportCallbackEXT g_DebugReport = VK_NULL_HANDLE;
 static VkPipelineCache          g_PipelineCache = VK_NULL_HANDLE;
 static VkDescriptorPool         g_DescriptorPool = VK_NULL_HANDLE;
 
-static ImGui_ImplVulkanH_Window g_MainWindowData;
+//static ImGui_ImplVulkanH_Window g_MainWindowData;
 static int                      g_MinImageCount = 2;
 static bool                     g_SwapChainRebuild = false;
 static int                      g_SwapChainResizeWidth = 0;
@@ -228,11 +226,6 @@ static void CleanupVulkan()
     vkDestroyInstance(g_Instance, g_Allocator);
 }
 
-static void CleanupVulkanWindow()
-{
-    ImGui_ImplVulkanH_DestroyWindow(g_Instance, g_Device, &g_MainWindowData, g_Allocator);
-}
-
 static void FrameRender(ImGui_ImplVulkanH_Window* wd)
 {
     VkResult err;
@@ -350,7 +343,7 @@ bool proto::Window::init(int _width, int _height)
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     //glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
 
-    m_pGLFWWindow = glfwCreateWindow(_width, _height, "Dear ImGui GLFW+Vulkan example", NULL, NULL);
+    m_pGLFWWindow = glfwCreateWindow(_width, _height, "Proto", NULL, NULL);
 
     // Setup Vulkan
     if (!glfwVulkanSupported())
@@ -372,14 +365,13 @@ bool proto::Window::init(int _width, int _height)
     int w, h;
     glfwGetFramebufferSize(m_pGLFWWindow, &w, &h);
     glfwSetFramebufferSizeCallback(m_pGLFWWindow, glfw_resize_callback);
-    m_pVulkanWindow = &g_MainWindowData;
-    SetupVulkanWindow(m_pVulkanWindow, surface, w, h);
+    SetupVulkanWindow(&m_VulkanWindow, surface, w, h);
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
-    io.DisplayFramebufferScale = { float(w) / float(_width), float(h) / float(_height) };
+    //io.DisplayFramebufferScale = { float(w) / float(_width), float(h) / float(_height) };
     io.FontGlobalScale = 2.f;
 
     //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
@@ -387,7 +379,6 @@ bool proto::Window::init(int _width, int _height)
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
-    //ImGui::StyleColorsClassic();
 
     // Setup Platform/Renderer bindings
     ImGui_ImplGlfw_InitForVulkan(m_pGLFWWindow, true);
@@ -401,9 +392,9 @@ bool proto::Window::init(int _width, int _height)
     init_info.DescriptorPool = g_DescriptorPool;
     init_info.Allocator = g_Allocator;
     init_info.MinImageCount = g_MinImageCount;
-    init_info.ImageCount = m_pVulkanWindow->ImageCount;
+    init_info.ImageCount = m_VulkanWindow.ImageCount;
     init_info.CheckVkResultFn = check_vk_result;
-    ImGui_ImplVulkan_Init(&init_info, m_pVulkanWindow->RenderPass);
+    ImGui_ImplVulkan_Init(&init_info, m_VulkanWindow.RenderPass);
 
     // Load Fonts
     // - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
@@ -423,8 +414,8 @@ bool proto::Window::init(int _width, int _height)
     // Upload Fonts
     {
         // Use any command queue
-        VkCommandPool command_pool = m_pVulkanWindow->Frames[m_pVulkanWindow->FrameIndex].CommandPool;
-        VkCommandBuffer command_buffer = m_pVulkanWindow->Frames[m_pVulkanWindow->FrameIndex].CommandBuffer;
+        VkCommandPool command_pool = m_VulkanWindow.Frames[m_VulkanWindow.FrameIndex].CommandPool;
+        VkCommandBuffer command_buffer = m_VulkanWindow.Frames[m_VulkanWindow.FrameIndex].CommandBuffer;
 
         err = vkResetCommandPool(g_Device, command_pool, 0);
         check_vk_result(err);
@@ -479,8 +470,8 @@ int proto::Window::exec()
         {
             g_SwapChainRebuild = false;
             ImGui_ImplVulkan_SetMinImageCount(g_MinImageCount);
-            ImGui_ImplVulkanH_CreateWindow(g_Instance, g_PhysicalDevice, g_Device, &g_MainWindowData, g_QueueFamily, g_Allocator, g_SwapChainResizeWidth, g_SwapChainResizeHeight, g_MinImageCount);
-            g_MainWindowData.FrameIndex = 0;
+            ImGui_ImplVulkanH_CreateWindow(g_Instance, g_PhysicalDevice, g_Device, &m_VulkanWindow, g_QueueFamily, g_Allocator, g_SwapChainResizeWidth, g_SwapChainResizeHeight, g_MinImageCount);
+            m_VulkanWindow.FrameIndex = 0;
         }
 
         // Start the Dear ImGui frame
@@ -495,10 +486,10 @@ int proto::Window::exec()
 
         // Rendering
         ImGui::Render();
-        memcpy(&m_pVulkanWindow->ClearValue.color.float32[0], &clear_color, 4 * sizeof(float));
-        FrameRender(m_pVulkanWindow);
+        memcpy(&m_VulkanWindow.ClearValue.color.float32[0], &clear_color, 4 * sizeof(float));
+        FrameRender(&m_VulkanWindow);
 
-        FramePresent(m_pVulkanWindow);
+        FramePresent(&m_VulkanWindow);
     }
 
     // Cleanup
@@ -508,7 +499,7 @@ int proto::Window::exec()
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 
-    CleanupVulkanWindow();
+    ImGui_ImplVulkanH_DestroyWindow(g_Instance, g_Device, &m_VulkanWindow, g_Allocator);
     CleanupVulkan();
 
     glfwDestroyWindow(m_pGLFWWindow);
