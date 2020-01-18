@@ -40,16 +40,32 @@ find_package(Vulkan REQUIRED)
 
 add_subdirectory(SpvGenTwo)
 
-#gui sources
-add_sources("gui/source/*.cpp" "gui_sources")
-add_sources("gui/include/proto/*.h" "gui_sources")
-add_include_folder("gui/include" "gui_includes")
+#proto sources
+add_sources("gui/source/*.cpp" "proto_sources")
+add_sources("gui/include/proto/*.h" "proto_sources")
+add_include_folder("gui/include" "proto_includes")
+
+#imgui sources
+add_sources("thirdparty/imgui/imgui.cpp" "imgui_sources")
+#add_sources("thirdparty/imgui/imgui.h" "imgui_sources")
+add_sources("thirdparty/imgui/imgui_draw.cpp" "imgui_sources")
+add_sources("thirdparty/imgui/imgui_widgets.cpp" "imgui_sources")
+add_sources("thirdparty/imgui/examples/imgui_impl_vulkan.cpp" "imgui_sources")
+#add_sources("thirdparty/imgui/examples/imgui_impl_sdl.cpp" "imgui_sources")
+add_sources("thirdparty/imgui/examples/imgui_impl_win32.cpp" "imgui_sources")
+add_include_folder("thirdparty/imgui" "imgui_includes")
+add_include_folder("thirdparty/imgui/examples" "imgui_includes")
 
 #lib project
-add_executable(proto "${gui_sources}")
-target_include_directories(proto PUBLIC "${gui_includes}")
+add_executable(proto "${proto_sources};${imgui_sources}")
+target_include_directories(proto PUBLIC "${proto_includes};${imgui_includes}")
 #target_include_directories(proto PUBLIC "${SPIRV_INCLUDE_DIR}")
 
+#link SpvGenTwo
 target_link_libraries(proto PUBLIC lib)
+
+#link vulkan
+target_include_directories(proto PRIVATE "${Vulkan_INCLUDE_DIR}")
+target_link_libraries(proto PRIVATE "${Vulkan_LIBRARIES}")
 
 message(STATUS "")
