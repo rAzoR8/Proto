@@ -30,6 +30,8 @@ namespace proto
 		void cleanupVulkan();
 		void framePresent();
 
+		VkResult setupVulkan(const char** extensions, uint32_t extensions_count);
+
 	private:
 		GLFWwindow* m_pGLFWWindow = nullptr;
 		ImGui_ImplVulkanH_Window m_VulkanWindow{};

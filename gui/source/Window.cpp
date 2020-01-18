@@ -41,7 +41,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debug_report(VkDebugReportFlagsEXT flags, 
 }
 #endif // IMGUI_VULKAN_DEBUG_REPORT
 
-static void SetupVulkan(const char** extensions, uint32_t extensions_count)
+VkResult proto::Window::setupVulkan(const char** extensions, uint32_t extensions_count)
 {
     VkResult err;
 
@@ -67,7 +67,7 @@ static void SetupVulkan(const char** extensions, uint32_t extensions_count)
 
         // Create Vulkan Instance
         err = vkCreateInstance(&create_info, g_Allocator, &g_Instance);
-        check_vk_result(err);
+        check_vk_result(err); // leaks memory!
         free(extensions_ext);
 
         // Get the function pointer (required for any extensions)
@@ -170,6 +170,8 @@ static void SetupVulkan(const char** extensions, uint32_t extensions_count)
         err = vkCreateDescriptorPool(g_Device, &pool_info, g_Allocator, &g_DescriptorPool);
         check_vk_result(err);
     }
+
+    return err;
 }
 
 // All the ImGui_ImplVulkanH_XXX structures/functions are optional helpers used by the demo.
@@ -353,13 +355,17 @@ bool proto::Window::init(int _width, int _height)
 
     uint32_t extensions_count = 0;
     const char** extensions = glfwGetRequiredInstanceExtensions(&extensions_count);
-    SetupVulkan(extensions, extensions_count);
+    if (setupVulkan(extensions, extensions_count) != VK_SUCCESS)
+    {
+        return false;
+    }
 
     // Create Window Surface
     VkSurfaceKHR surface;
-    VkResult err = glfwCreateWindowSurface(g_Instance, m_pGLFWWindow, g_Allocator, &surface);
-    if (err < 0)
+    if (glfwCreateWindowSurface(g_Instance, m_pGLFWWindow, g_Allocator, &surface) != VK_SUCCESS)
+    {
         return false;
+    }
 
     // Create Framebuffers
     int w, h;
@@ -417,7 +423,7 @@ bool proto::Window::init(int _width, int _height)
         VkCommandPool command_pool = m_VulkanWindow.Frames[m_VulkanWindow.FrameIndex].CommandPool;
         VkCommandBuffer command_buffer = m_VulkanWindow.Frames[m_VulkanWindow.FrameIndex].CommandBuffer;
 
-        err = vkResetCommandPool(g_Device, command_pool, 0);
+        VkResult err = vkResetCommandPool(g_Device, command_pool, 0);
         check_vk_result(err);
         VkCommandBufferBeginInfo begin_info = {};
         begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
