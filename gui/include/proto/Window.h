@@ -36,6 +36,8 @@ namespace proto
 		GLFWwindow* m_pGLFWWindow = nullptr;
 		ImGui_ImplVulkanH_Window m_VulkanWindow{};
 
+		ImVec4 m_clearColor = { 0.45f, 0.55f, 0.60f, 1.00f };
+
 		bool m_SwapChainRebuild = false;
 		int  m_SwapChainResizeWidth = 0;
 		int  m_SwapChainResizeHeight = 0;

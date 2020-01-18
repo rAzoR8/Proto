@@ -447,18 +447,11 @@ bool proto::Window::init(int _width, int _height)
         ImGui_ImplVulkan_DestroyFontUploadObjects();
     }
 
-    // Our state
-    bool show_demo_window = true;
-    bool show_another_window = false;
-    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
     return true;
 }
 
 int proto::Window::exec()
 {
-    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
     if (m_pGLFWWindow == nullptr)
         return 1;
 
@@ -483,6 +476,7 @@ int proto::Window::exec()
         // Start the Dear ImGui frame
         ImGui_ImplVulkan_NewFrame();
         ImGui_ImplGlfw_NewFrame();
+
         ImGui::NewFrame();
 
         if (updateUI() == false)
@@ -492,15 +486,17 @@ int proto::Window::exec()
 
         // Rendering
         ImGui::Render();
-        memcpy(&m_VulkanWindow.ClearValue.color.float32[0], &clear_color, 4 * sizeof(float));
-        frameRender();
 
+        memcpy(&m_VulkanWindow.ClearValue.color.float32[0], &m_clearColor, 4 * sizeof(float));
+
+        frameRender();
         framePresent();
     }
 
     // Cleanup
     VkResult err = vkDeviceWaitIdle(g_Device);
     check_vk_result(err);
+
     ImGui_ImplVulkan_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
