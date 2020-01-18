@@ -61,6 +61,11 @@ add_sources("thirdparty/imgui/examples/imgui_impl_glfw.cpp" "imgui_sources")
 add_include_folder("thirdparty/imgui" "imgui_includes")
 add_include_folder("thirdparty/imgui/examples" "imgui_includes")
 
+#imnodes sources
+add_sources("thirdparty/ImNodes/ImNodes.cpp" "imgui_sources")
+add_sources("thirdparty/ImNodes/ImNodesEz.cpp" "imgui_sources")
+add_include_folder("thirdparty/ImNodes" "imgui_includes")
+
 #lib project
 add_executable(proto "${proto_sources};${imgui_sources}")
 target_include_directories(proto PUBLIC "${proto_includes};${imgui_includes}")
