@@ -25,6 +25,8 @@ namespace proto
 		static void glfwResizeCallback(GLFWwindow* _pWindow, int w, int h);
 		static void glfwErrorCallback(int error, const char* description);
 
+		void SetupVulkanWindow(ImGui_ImplVulkanH_Window* wd, VkSurfaceKHR surface, int width, int height);
+
 	private:
 		GLFWwindow* m_pGLFWWindow = nullptr;
 		ImGui_ImplVulkanH_Window m_VulkanWindow{};
@@ -32,5 +34,7 @@ namespace proto
 		bool m_SwapChainRebuild = false;
 		int  m_SwapChainResizeWidth = 0;
 		int  m_SwapChainResizeHeight = 0;
+
+		const int m_MinImageCount = 2;
 	};
 } // !proto

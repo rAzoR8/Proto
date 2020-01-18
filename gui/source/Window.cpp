@@ -24,8 +24,6 @@ static VkDebugReportCallbackEXT g_DebugReport = VK_NULL_HANDLE;
 static VkPipelineCache          g_PipelineCache = VK_NULL_HANDLE;
 static VkDescriptorPool         g_DescriptorPool = VK_NULL_HANDLE;
 
-static int                      g_MinImageCount = 2;
-
 static void check_vk_result(VkResult err)
 {
     if (err == 0) return;
@@ -176,7 +174,7 @@ static void SetupVulkan(const char** extensions, uint32_t extensions_count)
 
 // All the ImGui_ImplVulkanH_XXX structures/functions are optional helpers used by the demo.
 // Your real engine/app may not use them.
-static void SetupVulkanWindow(ImGui_ImplVulkanH_Window* wd, VkSurfaceKHR surface, int width, int height)
+void proto::Window::SetupVulkanWindow(ImGui_ImplVulkanH_Window* wd, VkSurfaceKHR surface, int width, int height)
 {
     wd->Surface = surface;
 
@@ -204,8 +202,8 @@ static void SetupVulkanWindow(ImGui_ImplVulkanH_Window* wd, VkSurfaceKHR surface
     //printf("[vulkan] Selected PresentMode = %d\n", m_pVulkanWindow->PresentMode);
 
     // Create SwapChain, RenderPass, Framebuffer, etc.
-    IM_ASSERT(g_MinImageCount >= 2);
-    ImGui_ImplVulkanH_CreateWindow(g_Instance, g_PhysicalDevice, g_Device, wd, g_QueueFamily, g_Allocator, width, height, g_MinImageCount);
+    IM_ASSERT(m_MinImageCount >= 2);
+    ImGui_ImplVulkanH_CreateWindow(g_Instance, g_PhysicalDevice, g_Device, wd, g_QueueFamily, g_Allocator, width, height, m_MinImageCount);
 }
 
 static void CleanupVulkan()
@@ -392,7 +390,7 @@ bool proto::Window::init(int _width, int _height)
     init_info.PipelineCache = g_PipelineCache;
     init_info.DescriptorPool = g_DescriptorPool;
     init_info.Allocator = g_Allocator;
-    init_info.MinImageCount = g_MinImageCount;
+    init_info.MinImageCount = m_MinImageCount;
     init_info.ImageCount = m_VulkanWindow.ImageCount;
     init_info.CheckVkResultFn = check_vk_result;
     ImGui_ImplVulkan_Init(&init_info, m_VulkanWindow.RenderPass);
@@ -470,8 +468,8 @@ int proto::Window::exec()
         if (m_SwapChainRebuild)
         {
             m_SwapChainRebuild = false;
-            ImGui_ImplVulkan_SetMinImageCount(g_MinImageCount);
-            ImGui_ImplVulkanH_CreateWindow(g_Instance, g_PhysicalDevice, g_Device, &m_VulkanWindow, g_QueueFamily, g_Allocator, m_SwapChainResizeWidth, m_SwapChainResizeHeight, g_MinImageCount);
+            ImGui_ImplVulkan_SetMinImageCount(m_MinImageCount);
+            ImGui_ImplVulkanH_CreateWindow(g_Instance, g_PhysicalDevice, g_Device, &m_VulkanWindow, g_QueueFamily, g_Allocator, m_SwapChainResizeWidth, m_SwapChainResizeHeight, m_MinImageCount);
             m_VulkanWindow.FrameIndex = 0;
         }
 
