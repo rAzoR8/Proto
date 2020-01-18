@@ -1,3 +1,6 @@
 [submodule "SpvGenTwo"]
 	path = SpvGenTwo
 	url = git@github.com:rAzoR8/SpvGenTwo.git
+[submodule "thirdparty/imgui"]
+	path = thirdparty/imgui
+	url = https://github.com/ocornut/imgui.git
