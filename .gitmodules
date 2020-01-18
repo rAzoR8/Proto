@@ -7,3 +7,6 @@
 [submodule "thirdparty/glfw"]
 	path = thirdparty/glfw
 	url = https://github.com/glfw/glfw.git
+[submodule "thirdparty/ImNodes"]
+	path = thirdparty/ImNodes
+	url = git@github.com:rAzoR8/ImNodes.git
