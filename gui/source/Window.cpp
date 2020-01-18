@@ -24,11 +24,7 @@ static VkDebugReportCallbackEXT g_DebugReport = VK_NULL_HANDLE;
 static VkPipelineCache          g_PipelineCache = VK_NULL_HANDLE;
 static VkDescriptorPool         g_DescriptorPool = VK_NULL_HANDLE;
 
-//static ImGui_ImplVulkanH_Window g_MainWindowData;
 static int                      g_MinImageCount = 2;
-static bool                     g_SwapChainRebuild = false;
-static int                      g_SwapChainResizeWidth = 0;
-static int                      g_SwapChainResizeHeight = 0;
 
 static void check_vk_result(VkResult err)
 {
@@ -308,11 +304,15 @@ static void glfw_error_callback(int error, const char* description)
     fprintf(stderr, "Glfw Error %d: %s\n", error, description);
 }
 
-static void glfw_resize_callback(GLFWwindow*, int w, int h)
+void proto::Window::glfwResizeCallback(GLFWwindow* _pWindow, int w, int h)
 {
-    g_SwapChainRebuild = true;
-    g_SwapChainResizeWidth = w;
-    g_SwapChainResizeHeight = h;
+    proto::Window* pProtoWnd = reinterpret_cast<proto::Window*>(glfwGetWindowUserPointer(_pWindow));
+    if (pProtoWnd != nullptr)
+    {
+        pProtoWnd->m_SwapChainRebuild = true;
+        pProtoWnd->m_SwapChainResizeWidth = w;
+        pProtoWnd->m_SwapChainResizeHeight = h;
+    }
 }
 
 proto::Window::Window()
@@ -344,6 +344,7 @@ bool proto::Window::init(int _width, int _height)
     //glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
 
     m_pGLFWWindow = glfwCreateWindow(_width, _height, "Proto", NULL, NULL);
+    glfwSetWindowUserPointer(m_pGLFWWindow, this);
 
     // Setup Vulkan
     if (!glfwVulkanSupported())
@@ -364,7 +365,7 @@ bool proto::Window::init(int _width, int _height)
     // Create Framebuffers
     int w, h;
     glfwGetFramebufferSize(m_pGLFWWindow, &w, &h);
-    glfwSetFramebufferSizeCallback(m_pGLFWWindow, glfw_resize_callback);
+    glfwSetFramebufferSizeCallback(m_pGLFWWindow, glfwResizeCallback);
     SetupVulkanWindow(&m_VulkanWindow, surface, w, h);
 
     // Setup Dear ImGui context
@@ -466,11 +467,11 @@ int proto::Window::exec()
         // Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
         glfwPollEvents();
 
-        if (g_SwapChainRebuild)
+        if (m_SwapChainRebuild)
         {
-            g_SwapChainRebuild = false;
+            m_SwapChainRebuild = false;
             ImGui_ImplVulkan_SetMinImageCount(g_MinImageCount);
-            ImGui_ImplVulkanH_CreateWindow(g_Instance, g_PhysicalDevice, g_Device, &m_VulkanWindow, g_QueueFamily, g_Allocator, g_SwapChainResizeWidth, g_SwapChainResizeHeight, g_MinImageCount);
+            ImGui_ImplVulkanH_CreateWindow(g_Instance, g_PhysicalDevice, g_Device, &m_VulkanWindow, g_QueueFamily, g_Allocator, m_SwapChainResizeWidth, m_SwapChainResizeHeight, g_MinImageCount);
             m_VulkanWindow.FrameIndex = 0;
         }
 

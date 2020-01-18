@@ -23,7 +23,14 @@ namespace proto
 		int exec();
 
 	private:
+		static void glfwResizeCallback(GLFWwindow* _pWindow, int w, int h);
+
+	private:
 		GLFWwindow* m_pGLFWWindow = nullptr;
 		ImGui_ImplVulkanH_Window m_VulkanWindow{};
+
+		bool m_SwapChainRebuild = false;
+		int  m_SwapChainResizeWidth = 0;
+		int  m_SwapChainResizeHeight = 0;
 	};
 } // !proto
