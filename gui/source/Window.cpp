@@ -299,7 +299,7 @@ static void FramePresent(ImGui_ImplVulkanH_Window* wd)
     wd->SemaphoreIndex = (wd->SemaphoreIndex + 1) % wd->ImageCount; // Now we can use the next set of semaphores
 }
 
-static void glfw_error_callback(int error, const char* description)
+void proto::Window::glfwErrorCallback(int error, const char* description)
 {
     fprintf(stderr, "Glfw Error %d: %s\n", error, description);
 }
@@ -336,7 +336,7 @@ bool proto::Window::init(int _width, int _height)
     }
 
     // Setup GLFW m_pGLFWWindow
-    glfwSetErrorCallback(glfw_error_callback);
+    glfwSetErrorCallback(glfwErrorCallback);
     if (!glfwInit())
         return false;
 

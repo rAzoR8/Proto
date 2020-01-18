@@ -5,7 +5,6 @@
 
 // foward decls:
 struct GLFWwindow;
-//struct ImGui_ImplVulkanH_Window;
 
 namespace proto
 {
@@ -24,6 +23,7 @@ namespace proto
 
 	private:
 		static void glfwResizeCallback(GLFWwindow* _pWindow, int w, int h);
+		static void glfwErrorCallback(int error, const char* description);
 
 	private:
 		GLFWwindow* m_pGLFWWindow = nullptr;
