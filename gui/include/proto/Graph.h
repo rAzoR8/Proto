@@ -3,6 +3,7 @@
 #include "SpvGenTwo/Module.h"
 #include "Node.h"
 #include "AssemblyTextView.h"
+#include <unordered_map>
 
 // forward decls
 namespace ImNodes
@@ -32,10 +33,12 @@ namespace proto
 		void updateContextMenu();
 
 		template<class ModuleObjContainer, class CreateFunc, class RemoveFunc>
-		void updateNodeFromContainer(ModuleObjContainer& _container, Node::Type _type, const CreateFunc& _create, const RemoveFunc& _remove);
+		void updateNodeFromContainer(ModuleObjContainer& _container, Type _type, const CreateFunc& _create, const RemoveFunc& _remove);
 
 		void addFunction();
 		void addEntryPoint();
+
+		Node* getNode(SpvObj _obj);
 
 	private:
 		spvgentwo::IAllocator* m_pAlloc = nullptr;
@@ -44,42 +47,21 @@ namespace proto
 		AssemblyTextView m_textView;
 
 		const char* m_pName = nullptr;
-		spvgentwo::List<Node> m_nodes;
+		//ptr to spv obj -> Node
+		std::unordered_map<SpvObj, Node, spvgentwo::Hasher<SpvObj>> m_nodes;
 
 		bool m_addFunctionModal = false;
 	};
 
 	// ModuleObjContainer = List<Function> etc, CreateFunc(const Function&) = nodes.emplace_back(...), RemoveFunc(Node& n) = n.clearConnections etc
 	template<class ModuleObjContainer, class CreateFunc, class RemoveFunc>
-	inline void Graph::updateNodeFromContainer(ModuleObjContainer& _container, Node::Type _type, const CreateFunc& _create, const RemoveFunc& _remove)
+	inline void Graph::updateNodeFromContainer(ModuleObjContainer& _container, Type _type, const CreateFunc& _create, const RemoveFunc& _remove)
 	{
-		// remove
-		for (auto it = m_nodes.begin(); it != m_nodes.end();)
-		{
-			Node& n = *it;
-			Node::SpvObj obj = n.getSpvObj();
-			if (obj.type != _type)
-			{
-				++it; continue;
-			}
-
-			auto spvIt = _container.find_if([&obj](const auto& spv){return obj == &spv; });
-			if (spvIt == nullptr) // visible node n is not in the module _container anymore
-			{
-				_remove(n);
-				it = m_nodes.erase(it);
-			}
-			else
-			{
-				++it;
-			}
-		}
-
 		// add:
 		for (auto& spv : _container)
 		{
-			auto it = m_nodes.find_if([&spv](const Node& n) {return n.getSpvObj() == &spv; });
-			if (it == nullptr) // spv _container object is not in the visible nodes yet
+			auto it = m_nodes.find(SpvObj(&spv));
+			if (it == m_nodes.end())
 			{
 				_create(spv);
 			}

@@ -8,8 +8,7 @@ using namespace spvgentwo;
 proto::Graph::Graph(spvgentwo::IAllocator* _pAlloc, spvgentwo::ILogger* _pLogger, const char* _pName) :
     m_pAlloc(_pAlloc),
     m_module(_pAlloc, spv::Version, _pLogger),
-    m_pName(_pName),
-    m_nodes(_pAlloc)
+    m_pName(_pName)
 {
     // configure capabilities and extensions
     m_module.addCapability(spv::Capability::Shader);
@@ -66,9 +65,9 @@ void proto::Graph::update()
         // nodes from module
         updateNodes();
 
-        for (Node& n : m_nodes)
+        for (auto& [spv, node] : m_nodes)
         {
-            n.update();
+            node.update();
         }
 
         ImNodes::EndCanvas();
@@ -97,29 +96,47 @@ void proto::Graph::createCanvas()
 
 void proto::Graph::updateNodes()
 {
-    updateNodeFromContainer(m_module.getFunctions(), Node::Type::Function, 
-        [&](Function& f) // add node func
+    updateNodeFromContainer(m_module.getFunctions(), Type::Function, 
+        [&](Function& func) // add node func
     {
-        // add function
-        //pos.x += 25;
-        Node& newNode = m_nodes.emplace_back(m_pAlloc, "Func", ImVec2{}, &f);
-        newNode.update();
-        ImNodes::AutoPositionNode(&newNode);
-    },  [&](Node& n) // Remove node func
+        Node& funcNode = m_nodes.emplace(&func, Node(m_pAlloc, "Func", ImVec2{}, &func)).first->second;
+        ImNodes::AutoPositionNode(&funcNode);
+    },  [&](Node& fNode) // Remove node func
     {
-    
+        for (BasicBlock& bb : *fNode.getSpvObj().obj.func)
+        {
+            //auto it = m_nodes.find_if([&bb](const Node& n) {return n.getSpvObj() == &bb; });
+            //if (it != nullptr)
+            //{
+            //    m_nodes.erase(it);
+            //}
+        }
     });
 
-    updateNodeFromContainer(m_module.getEntryPoints(), Node::Type::EntryPoint,
-        [&](EntryPoint& f) // add node func
+    for (Function& f : m_module.getFunctions())
     {
-        Node& newNode = m_nodes.emplace_back(m_pAlloc, "EntryPoint", ImVec2{}, &f);
-        newNode.update();
-        ImNodes::AutoPositionNode(&newNode);
-    }, [&](Node& n) // Remove node func
-    {
+        updateNodeFromContainer(f, Type::BasicBlock,
+            [&](BasicBlock& bb) // add node func
+        {
+            Node& bbNode = m_nodes.emplace(&bb, Node(m_pAlloc, "BasicBlock", ImVec2{ 100, 100 }, &bb)).first->second;
+            //bbNode.update();
+            //ImNodes::AutoPositionNode(&bbNode);
+        }, [&](Node& fNode) // Remove node func
+        {
 
-    });
+        });
+    }
+
+    //updateNodeFromContainer(m_module.getEntryPoints(), Node::Type::EntryPoint,
+    //    [&](EntryPoint& f) // add node func
+    //{
+    //    Node& newNode = m_nodes.emplace_back(m_pAlloc, "EntryPoint", ImVec2{}, &f);
+    //    newNode.update();
+    //    ImNodes::AutoPositionNode(&newNode);
+    //}, [&](Node& n) // Remove node func
+    //{
+
+    //});
 }
 
 void proto::Graph::updateContextMenu()
@@ -157,9 +174,6 @@ void proto::Graph::updateContextMenu()
 
 void proto::Graph::addFunction()
 {
-    const char* items[] = { "void", "int", "float", "vec" };
-    static const char* current_item = items[0];
-
    ImGui::OpenPopup("Create function signature");
 
     if (ImGui::BeginPopup("Create function signature"))
@@ -174,16 +188,21 @@ void proto::Graph::addFunction()
 
         static List<FundamentalTypeComboBox> params(m_pAlloc);
 
+        if (ImGui::Button("Add Parameter"))
+        {
+            params.emplace_back(m_pAlloc, "Parameter Type");
+        }
+
+        if (ImGui::Button("Remove Parameter"))
+        {
+            (void)params.pop_back();
+        }
+
         for (FundamentalTypeComboBox& t : params)
         {
             ImGui::PushID(&t);
             t.update();
             ImGui::PopID();
-        }
-
-        if (ImGui::Button("Add Parameter"))
-        {
-            params.emplace_back(m_pAlloc, "Parameter Type");
         }
 
         if (ImGui::Button("Create"))
@@ -211,5 +230,16 @@ void proto::Graph::addFunction()
 
 void proto::Graph::addEntryPoint()
 {
-    m_module.addEntryPoint();
+    //m_module.addEntryPoint();
+}
+
+proto::Node* proto::Graph::getNode(SpvObj _obj)
+{
+    auto it = m_nodes.find(_obj);
+    if (it != m_nodes.end())
+    {
+        return &it->second;
+    }
+
+    return nullptr;
 }

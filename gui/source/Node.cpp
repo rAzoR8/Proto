@@ -1,5 +1,9 @@
 #include "proto/Node.h"
 
+#include "SpvGenTwo/EntryPoint.h"
+
+using namespace spvgentwo;
+
 proto::Node::Node(spvgentwo::IAllocator* _pAlloc, const char* _pTitle, ImVec2 _pos, SpvObj _obj) :
 	m_pAlloc(_pAlloc),
 	m_pTitle(_pTitle),
@@ -20,6 +24,25 @@ void proto::Node::update()
 	{
 		ImNodes::Ez::InputSlots(m_inputSlots.data(), (int)m_inputSlots.size());
 		ImNodes::Ez::OutputSlots(m_outputSlots.data(), (int)m_outputSlots.size());
+
+		switch (m_spv.type)
+		{
+		case Type::Instruction:
+			updateInstruction();
+			break;
+		case Type::BasicBlock:
+			updateBasicBlock();
+			break;
+		case Type::Function:
+			updateFunction();
+			break;
+		case Type::EntryPoint:
+			updateEntryPoint();
+			break;
+		default:
+			break;
+		}
+
 		ImNodes::Ez::EndNode();
 	}
 
@@ -61,4 +84,53 @@ void proto::Node::clear()
 
 	m_outputs.clear();
 	m_outputSlots.clear();
+}
+
+void proto::Node::updateEntryPoint()
+{
+	EntryPoint& ep = *m_spv.obj.ep;
+	ImGui::Text("EntryPoint %s", ep.getEntryPointName());
+}
+
+void proto::Node::updateFunction()
+{
+	Function& func = *m_spv.obj.func;
+
+	if (m_selected && ImGui::IsMouseReleased(1) && ImGui::IsWindowHovered() && !ImGui::IsMouseDragging(1))
+	{
+		ImGui::FocusWindow(ImGui::GetCurrentWindow());
+		ImGui::OpenPopup("FunctionContextMenu");
+	}
+
+	if (ImGui::BeginPopup("FunctionContextMenu"))
+	{
+		if (ImGui::MenuItem("Add BasicBlock"))
+		{
+			func.addBasicBlock("Block");
+		}
+
+		if (ImGui::IsAnyMouseDown() && !ImGui::IsWindowHovered())
+		{
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
+	
+}
+
+void proto::Node::updateBasicBlock()
+{
+	BasicBlock& bb = *m_spv.obj.bb;
+	ImGui::Text("Label:");
+
+	for (Instruction& i : bb) 
+	{
+		ImGui::Text("%%u = %u", i.getResultId(), (unsigned int)i.getOperation());
+	}
+}
+
+void proto::Node::updateInstruction()
+{
+	Instruction& i = *m_spv.obj.instr;
+	ImGui::Text("%%u = %u", i.getResultId(), (unsigned int)i.getOperation());
 }
