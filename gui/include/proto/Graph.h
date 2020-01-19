@@ -32,7 +32,7 @@ namespace proto
 		void updateContextMenu();
 
 		template<class ModuleObjContainer, class CreateFunc, class RemoveFunc>
-		void updateNodeFromContainer(ModuleObjContainer& _container, const CreateFunc& _create, const RemoveFunc& _remove);
+		void updateNodeFromContainer(ModuleObjContainer& _container, Node::Type _type, const CreateFunc& _create, const RemoveFunc& _remove);
 
 		void addFunction();
 		void addEntryPoint();
@@ -51,13 +51,19 @@ namespace proto
 
 	// ModuleObjContainer = List<Function> etc, CreateFunc(const Function&) = nodes.emplace_back(...), RemoveFunc(Node& n) = n.clearConnections etc
 	template<class ModuleObjContainer, class CreateFunc, class RemoveFunc>
-	inline void Graph::updateNodeFromContainer(ModuleObjContainer& _container, const CreateFunc& _create, const RemoveFunc& _remove)
+	inline void Graph::updateNodeFromContainer(ModuleObjContainer& _container, Node::Type _type, const CreateFunc& _create, const RemoveFunc& _remove)
 	{
 		// remove
 		for (auto it = m_nodes.begin(); it != m_nodes.end();)
 		{
 			Node& n = *it;
-			auto spvIt = _container.find_if([&n](const auto& spv) {return n.getSpvObj() == &spv; });
+			Node::SpvObj obj = n.getSpvObj();
+			if (obj.type != _type)
+			{
+				++it; continue;
+			}
+
+			auto spvIt = _container.find_if([&obj](const auto& spv){return obj == &spv; });
 			if (spvIt == nullptr) // visible node n is not in the module _container anymore
 			{
 				_remove(n);

@@ -97,9 +97,7 @@ void proto::Graph::createCanvas()
 
 void proto::Graph::updateNodes()
 {
-    //ImVec2 pos = { 50, 50 };
-
-    updateNodeFromContainer(m_module.getFunctions(), 
+    updateNodeFromContainer(m_module.getFunctions(), Node::Type::Function, 
         [&](Function& f) // add node func
     {
         // add function
@@ -110,6 +108,17 @@ void proto::Graph::updateNodes()
     },  [&](Node& n) // Remove node func
     {
     
+    });
+
+    updateNodeFromContainer(m_module.getEntryPoints(), Node::Type::EntryPoint,
+        [&](EntryPoint& f) // add node func
+    {
+        Node& newNode = m_nodes.emplace_back(m_pAlloc, "EntryPoint", ImVec2{}, &f);
+        newNode.update();
+        ImNodes::AutoPositionNode(&newNode);
+    }, [&](Node& n) // Remove node func
+    {
+
     });
 }
 
@@ -155,20 +164,43 @@ void proto::Graph::addFunction()
 
     if (ImGui::BeginPopup("Create function signature"))
     {
-        static char name[256]{};
+        //static char name[256]{};
         //sprintf_s(name, "DefaultFuncName");
 
-        ImGui::InputText("Name", name, sizeof(name));
+        //ImGui::InputText("Name", name, sizeof(name));
 
-        Type ret = createFundamentalTypeComboBox(m_pAlloc, "Return Type");
+        static FundamentalTypeComboBox retCombo(m_pAlloc, "Return Type");
+        retCombo.update();
+
+        static List<FundamentalTypeComboBox> params(m_pAlloc);
+
+        for (FundamentalTypeComboBox& t : params)
+        {
+            ImGui::PushID(&t);
+            t.update();
+            ImGui::PopID();
+        }
+
+        if (ImGui::Button("Add Parameter"))
+        {
+            params.emplace_back(m_pAlloc, "Parameter Type");
+        }
 
         if (ImGui::Button("Create"))
         {
             Function& fun = m_module.addFunction();
-            Instruction* type = m_module.addType(ret);
+            Instruction* type = m_module.addType(retCombo.getType());
 
             fun.setReturnType(type);
-            fun.finalize(spv::FunctionControlMask::Const, name);
+
+            for (FundamentalTypeComboBox& t : params)
+            {
+                type = m_module.addType(t.getType());
+                fun.addParameters(type);
+            }
+            params.clear();
+
+            fun.finalize(spv::FunctionControlMask::Const/*, name*/);
 
             m_addFunctionModal = false;
         }

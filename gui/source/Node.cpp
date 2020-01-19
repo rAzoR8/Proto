@@ -1,38 +1,13 @@
 #include "proto/Node.h"
 
-proto::Node::Node(spvgentwo::IAllocator* _pAlloc, const char* _pTitle, ImVec2 _pos, Type _type) :
+proto::Node::Node(spvgentwo::IAllocator* _pAlloc, const char* _pTitle, ImVec2 _pos, SpvObj _obj) :
 	m_pAlloc(_pAlloc),
 	m_pTitle(_pTitle),
-	m_spv{nullptr},
-	m_Type(_type),
+	m_spv( _obj ),
 	m_inputs(_pAlloc),
 	m_outputs(_pAlloc),
 	m_pos(_pos)
 {
-}
-
-proto::Node::Node(spvgentwo::IAllocator* _pAlloc, const char* _pTitle, ImVec2 _pos, spvgentwo::Instruction* _instr) :
-	Node(_pAlloc, _pTitle, _pos, Type::Instruction)
-{
-	m_spv.instr = _instr;
-}
-
-proto::Node::Node(spvgentwo::IAllocator* _pAlloc, const char* _pTitle, ImVec2 _pos, spvgentwo::BasicBlock* _bb) :
-	Node(_pAlloc, _pTitle, _pos, Type::Instruction)
-{
-	m_spv.bb = _bb;
-}
-
-proto::Node::Node(spvgentwo::IAllocator* _pAlloc, const char* _pTitle, ImVec2 _pos, spvgentwo::Function* _func) :
-	Node(_pAlloc, _pTitle, _pos, Type::Instruction)
-{
-	m_spv.func = _func;
-}
-
-proto::Node::Node(spvgentwo::IAllocator* _pAlloc, const char* _pTitle, ImVec2 _pos, spvgentwo::EntryPoint* _ep) :
-	Node(_pAlloc, _pTitle, _pos, Type::Instruction)
-{
-	m_spv.ep = _ep;
 }
 
 proto::Node::~Node()

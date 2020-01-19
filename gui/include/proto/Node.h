@@ -25,34 +25,44 @@ namespace proto
 			Out
 		};
 
-		union SpvObj
-		{
-			spvgentwo::Instruction* instr;
-			spvgentwo::BasicBlock* bb;
-			spvgentwo::Function* func;
-			spvgentwo::EntryPoint* ep;
-
-			bool operator==(const void* _ptr) const { return reinterpret_cast<const void*>(instr) == _ptr; }
-		};
-
-		enum class Type : int 
+		enum class Type : int
 		{
 			Instruction,
 			BasicBlock,
-			Function, 
+			Function,
 			EntryPoint
 		};
 
-		Node(spvgentwo::IAllocator* _pAlloc, const char* _pTitle, ImVec2 _pos, spvgentwo::Instruction* _instr);
-		Node(spvgentwo::IAllocator* _pAlloc, const char* _pTitle, ImVec2 _pos, spvgentwo::BasicBlock* _bb);
-		Node(spvgentwo::IAllocator* _pAlloc, const char* _pTitle, ImVec2 _pos, spvgentwo::Function* _func);
-		Node(spvgentwo::IAllocator* _pAlloc, const char* _pTitle, ImVec2 _pos, spvgentwo::EntryPoint* _ep);
+		struct SpvObj
+		{
+			union {
+				spvgentwo::Instruction* instr;
+				spvgentwo::BasicBlock* bb;
+				spvgentwo::Function* func;
+				spvgentwo::EntryPoint* ep;
+			} obj{};
+
+			Type type{};
+
+			
+			SpvObj(const SpvObj& _other) : obj(_other.obj), type(_other.type) {}
+			SpvObj(spvgentwo::Instruction* _instr) : type(Type::Instruction) { obj.instr = _instr; }
+			SpvObj(spvgentwo::BasicBlock* _bb) : type(Type::BasicBlock) { obj.bb = _bb; }
+			SpvObj(spvgentwo::Function* _func) : type(Type::Function) { obj.func = _func; }
+			SpvObj(spvgentwo::EntryPoint* _ep) : type(Type::EntryPoint) { obj.ep = _ep; }
+
+			bool operator==(const spvgentwo::Instruction* _ptr) const { return type == Type::Instruction && obj.instr == _ptr; }
+			bool operator==(const spvgentwo::BasicBlock* _ptr) const { return type == Type::BasicBlock && obj.bb == _ptr; }
+			bool operator==(const spvgentwo::Function* _ptr) const { return type == Type::Function && obj.func == _ptr; }
+			bool operator==(const spvgentwo::EntryPoint* _ptr) const { return type == Type::EntryPoint && obj.ep == _ptr; }
+		};
+
+		Node(spvgentwo::IAllocator* _pAlloc, const char* _pTitle, ImVec2 _pos, SpvObj _obj);
 
 		~Node();
 
 		const char* getTitle() const { return m_pTitle; }
 		SpvObj getSpvObj() const { return m_spv; }
-		Type getType() const { return m_Type; }
 
 		void update();
 
@@ -68,9 +78,7 @@ namespace proto
 		spvgentwo::IAllocator* m_pAlloc = nullptr;
 		const char* m_pTitle = "Node";
 
-		SpvObj m_spv{};
-
-		Type m_Type;
+		SpvObj m_spv;
 
 		ImVec2 m_pos{};
 		bool m_selected = false;
