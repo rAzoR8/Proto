@@ -1,6 +1,7 @@
 #include "proto/Graph.h"
 
 #include "ImNodesEz.h"
+#include "proto/TypeWidgets.h"
 
 using namespace spvgentwo;
 
@@ -12,6 +13,8 @@ proto::Graph::Graph(spvgentwo::IAllocator* _pAlloc, spvgentwo::ILogger* _pLogger
 {
     // configure capabilities and extensions
     m_module.addCapability(spv::Capability::Shader);
+
+    return;
 
     // global variables
     Instruction* uniformVar = m_module.uniform<vector_t<float, 3>>("u_Position");
@@ -58,6 +61,8 @@ void proto::Graph::update()
     {
         ImNodes::BeginCanvas(m_pCanvas);
 
+        updateContextMenu();
+
         // nodes from module
         updateNodes();
 
@@ -97,9 +102,80 @@ void proto::Graph::updateNodes()
     {
         // add function
         pos.x += 25;
-        m_nodes.emplace_back(m_pAlloc, "Func", pos, &f);
+        Node& newNode = m_nodes.emplace_back(m_pAlloc, "Func", pos, &f);
+        newNode.update();
+        ImNodes::AutoPositionNode(&newNode);
     },  [&](Node& n) // Remove node func
     {
     
     });
+}
+
+void proto::Graph::updateContextMenu()
+{
+    if (ImGui::IsMouseReleased(1) && ImGui::IsWindowHovered() && !ImGui::IsMouseDragging(1))
+    {
+        ImGui::FocusWindow(ImGui::GetCurrentWindow());
+        ImGui::OpenPopup("NodesContextMenu");
+    }
+
+    if (ImGui::BeginPopup("NodesContextMenu"))
+    {
+        if (ImGui::MenuItem("Add Function"))
+        {
+            m_addFunctionModal = true;
+        }
+
+        if (ImGui::MenuItem("Add EntryPoint"))
+        {
+            //addEntryPoint();
+        }
+
+        if (ImGui::IsAnyMouseDown() && !ImGui::IsWindowHovered())
+        {
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
+    }
+
+    if (m_addFunctionModal)
+    {
+        addFunction();
+    }
+}
+
+void proto::Graph::addFunction()
+{
+    const char* items[] = { "void", "int", "float", "vec" };
+    static const char* current_item = items[0];
+
+   ImGui::OpenPopup("Create function signature");
+
+    if (ImGui::BeginPopup("Create function signature"))
+    {
+        static char name[256]{};
+        //sprintf_s(name, "DefaultFuncName");
+
+        ImGui::InputText("Name", name, sizeof(name));
+
+        Type ret = createFundamentalTypeComboBox(m_pAlloc, "Return Type");
+
+        if (ImGui::Button("Create"))
+        {
+            Function& fun = m_module.addFunction();
+            Instruction* type = m_module.addType(ret);
+
+            fun.setReturnType(type);
+            fun.finalize(spv::FunctionControlMask::Const, name);
+
+            m_addFunctionModal = false;
+        }
+
+        ImGui::EndPopup();
+    }
+}
+
+void proto::Graph::addEntryPoint()
+{
+    m_module.addEntryPoint();
 }

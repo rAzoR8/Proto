@@ -28,16 +28,22 @@ namespace proto
 
 		void updateNodes();
 
+		void updateContextMenu();
+
 		template<class ModuleObjContainer, class CreateFunc, class RemoveFunc>
 		void updateNodeFromContainer(ModuleObjContainer& _container, const CreateFunc& _create, const RemoveFunc& _remove);
+
+		void addFunction();
+		void addEntryPoint();
 
 	private:
 		spvgentwo::IAllocator* m_pAlloc = nullptr;
 		ImNodes::CanvasState* m_pCanvas = nullptr;
 		spvgentwo::Module m_module;
 		const char* m_pName = nullptr;
-
 		spvgentwo::List<Node> m_nodes;
+
+		bool m_addFunctionModal = false;
 	};
 
 	// ModuleObjContainer = List<Function> etc, CreateFunc(const Function&) = nodes.emplace_back(...), RemoveFunc(Node& n) = n.clearConnections etc
