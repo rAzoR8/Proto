@@ -5,7 +5,8 @@
 proto::Graph::Graph(spvgentwo::IAllocator* _pAlloc, spvgentwo::ILogger* _pLogger, const char* _pName) :
     m_pAlloc(_pAlloc),
     m_module(_pAlloc, spv::Version, _pLogger),
-    m_pName(_pName)
+    m_pName(_pName),
+    m_nodes(_pAlloc)
 {
 }
 
@@ -26,7 +27,15 @@ void proto::Graph::update()
     {
         ImNodes::BeginCanvas(m_pCanvas);
 
-        struct Node
+        // re-create nodes from module
+        createNodes();
+
+        for (Node& n : m_nodes)
+        {
+            n.update();
+        }
+
+        /*struct Node
         {
             ImVec2 pos{};
             bool selected{};
@@ -51,7 +60,7 @@ void proto::Graph::update()
         }
 
         ImNodes::Connection(&nodes[1], "In", &nodes[0], "Out");
-        ImNodes::Connection(&nodes[2], "In", &nodes[0], "Out");
+        ImNodes::Connection(&nodes[2], "In", &nodes[0], "Out");*/
 
         ImNodes::EndCanvas();
     }
@@ -72,5 +81,16 @@ void proto::Graph::createCanvas()
     if (m_pCanvas == nullptr)
     {
         m_pCanvas = m_pAlloc->construct<ImNodes::CanvasState>();
+    }
+}
+
+void proto::Graph::createNodes()
+{
+    //m_nodes.clear();
+
+    using namespace spvgentwo;
+    for (Function& f : m_module.getFunctions())
+    {
+    
     }
 }
