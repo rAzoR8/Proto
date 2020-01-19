@@ -4,12 +4,20 @@
 #include "ImNodes.h"
 #include "ImNodesEz.h"
 
+proto::ProtoWindow::ProtoWindow() : Window(),
+    m_module(&m_alloc, spv::Version, &m_logger)
+{
+}
+
 proto::ProtoWindow::~ProtoWindow()
 {
 }
 
 bool proto::ProtoWindow::updateUI()
 {
+    if (updateMenu() == false)
+        return false;
+
     static ImNodes::CanvasState canvas;
 
     if (ImGui::Begin("ImNodes", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
@@ -69,4 +77,25 @@ bool proto::ProtoWindow::updateUI()
     //ImGui::End();
 
 	return true;
+}
+
+bool proto::ProtoWindow::updateMenu()
+{
+    if (ImGui::BeginMainMenuBar())
+    {
+        if (ImGui::BeginMenu("File"))
+        {
+            updateMenuFile();
+            ImGui::EndMenu();
+        }
+
+        ImGui::EndMainMenuBar();
+    }
+
+    return true;
+}
+
+void proto::ProtoWindow::updateMenuFile()
+{
+    
 }

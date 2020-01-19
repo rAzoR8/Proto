@@ -71,7 +71,7 @@ add_executable(proto "${proto_sources};${imgui_sources}")
 target_include_directories(proto PUBLIC "${proto_includes};${imgui_includes}")
 
 #link SpvGenTwo
-target_link_libraries(proto PUBLIC lib)
+target_link_libraries(proto PUBLIC SpvGenTwoLib SpvGenTwoCommon)
 
 #link vulkan
 target_include_directories(proto PRIVATE "${Vulkan_INCLUDE_DIR}")

@@ -2,7 +2,12 @@
 
 int main(int, char**)
 {
-    proto::ProtoWindow wnd(1920, 1080);
+    proto::ProtoWindow wnd;
 
-    return wnd.exec();
+    if (wnd.init(1920, 1080))
+    {
+        return wnd.exec();
+    }
+
+    return -1;
 }
