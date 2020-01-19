@@ -48,6 +48,7 @@ namespace proto
 
 		const char* m_pName = nullptr;
 		//ptr to spv obj -> Node
+		// TODO: replace with spvgentwo hashmap to avoid reallocation by rehashing
 		std::unordered_map<SpvObj, Node, spvgentwo::Hasher<SpvObj>> m_nodes;
 
 		bool m_addFunctionModal = false;

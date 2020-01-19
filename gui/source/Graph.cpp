@@ -119,8 +119,15 @@ void proto::Graph::updateNodes()
             [&](BasicBlock& bb) // add node func
         {
             Node& bbNode = m_nodes.emplace(&bb, Node(m_pAlloc, "BasicBlock", ImVec2{ 100, 100 }, &bb)).first->second;
-            //bbNode.update();
             //ImNodes::AutoPositionNode(&bbNode);
+            Node* func = getNode(&f);
+
+            func->addOutputSlot("Entry", Slot::FunctionEntry);
+            bbNode.addInputSlot("Function", Slot::FunctionEntry);
+            func->connect("Function", &bbNode);
+
+            bbNode.update();
+
         }, [&](Node& fNode) // Remove node func
         {
 

@@ -46,35 +46,33 @@ void proto::Node::update()
 		ImNodes::Ez::EndNode();
 	}
 
-	for (Node* in : m_inputs)
-	{
-		ImNodes::Connection(in, "In", this, "This");
-	}
+	//for (Node* in : m_inputs)
+	//{
+	//	ImNodes::Connection(in, "In", this, "This");
+	//}
 
-	for (Node* out : m_outputs)
-	{
-		ImNodes::Connection(this, "This", out, "Out");
-	}
+	//for (Node* out : m_outputs)
+	//{
+	//	ImNodes::Connection(this, "This", out, "Out");
+	//}
 }
 
-void proto::Node::addInputSlot(const char* _pSlotTitle, SlotKind _kind, Node* _pInput)
+void proto::Node::addInputSlot(const char* _pSlotTitle, Slot _kind)
 {
 	m_inputSlots.emplace_back(ImNodes::Ez::SlotInfo{ _pSlotTitle, (int)_kind });
-
-	if (_pInput != nullptr)
-	{
-		m_inputs.emplace_back(_pInput);	
-	}
 }
 
-void proto::Node::addOutputSlot(const char* _pSlotTitle, SlotKind _kind, Node* _pOutput)
+void proto::Node::addOutputSlot(const char* _pSlotTitle, Slot _kind)
 {
 	m_outputSlots.emplace_back(ImNodes::Ez::SlotInfo{ _pSlotTitle, (int)_kind });
+}
 
-	if (_pOutput != nullptr)
-	{
-		m_outputs.emplace_back(_pOutput);
-	}
+void proto::Node::connect(const char* _pSlotTitle, Node* _pTarget)
+{
+	ImNodes::Connection(_pTarget, _pSlotTitle, this, _pSlotTitle);
+
+	//m_outputs.emplace_back(_pTarget);
+	//_pTarget->m_outputs.emplace_back(this);
 }
 
 void proto::Node::clear()

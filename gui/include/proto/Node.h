@@ -48,14 +48,17 @@ namespace proto
 		bool operator==(const spvgentwo::EntryPoint* _ptr) const { return type == Type::EntryPoint && obj.ep == _ptr; }
 	};
 
+	enum class Slot : int
+	{
+		FunctionEntry,
+		Instruction,
+		BasicBlock
+	};
+
 	class Node
 	{
 	public:
-		enum SlotKind : int
-		{
-			In,
-			Out
-		};
+
 
 		Node(spvgentwo::IAllocator* _pAlloc, const char* _pTitle, ImVec2 _pos, SpvObj _obj);
 
@@ -66,8 +69,11 @@ namespace proto
 
 		void update();
 
-		void addInputSlot(const char* _pSlotTitle, SlotKind _kind, Node* _pInput = nullptr);
-		void addOutputSlot(const char* _pSlotTitle, SlotKind _kind, Node* _pOutput = nullptr);
+		void addInputSlot(const char* _pSlotTitle, Slot _kind);
+		void addOutputSlot(const char* _pSlotTitle, Slot _kind);
+
+		// connect this node to _pTarget
+		void connect(const char* _pSlotTitle, Node* _pTarget);
 
 		void clear();
 
