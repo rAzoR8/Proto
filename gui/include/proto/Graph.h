@@ -2,6 +2,7 @@
 
 #include "SpvGenTwo/Module.h"
 #include "Node.h"
+#include "AssemblyTextView.h"
 
 // forward decls
 namespace ImNodes
@@ -40,6 +41,8 @@ namespace proto
 		spvgentwo::IAllocator* m_pAlloc = nullptr;
 		ImNodes::CanvasState* m_pCanvas = nullptr;
 		spvgentwo::Module m_module;
+		AssemblyTextView m_textView;
+
 		const char* m_pName = nullptr;
 		spvgentwo::List<Node> m_nodes;
 

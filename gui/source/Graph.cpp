@@ -2,7 +2,6 @@
 
 #include "ImNodesEz.h"
 #include "proto/TypeWidgets.h"
-#include <sstream>
 
 using namespace spvgentwo;
 
@@ -76,47 +75,7 @@ void proto::Graph::update()
     }
     ImGui::End();
 
-    if (ImGui::Begin("Text View")) 
-    {
-        m_module.assignIDs();
-
-        std::ostringstream s;
-
-        auto instrPrint = [&s](const Instruction& instr)
-        {
-            s << instr.getResultId() << " = " << (unsigned int)instr.getOperation();
-
-            //_pWriter->put(getOpCode());
-
-            for (const Operand& operand : instr)
-            {
-                switch (operand.type)
-                {
-                case Operand::Type::Instruction:
-                    s << "i" << operand.instruction->getResultId();
-                    break;
-                case Operand::Type::ResultId:
-                    s << "r" << operand.resultId;
-                    break;
-                case Operand::Type::BranchTarget:
-                    s << "b" << operand.branchTarget->front().getResultId();
-                    break;
-                case Operand::Type::Literal:
-                    s << "l" << operand.value.value;
-                    break;
-                default:
-                    break;
-                }
-            }
-
-            s << std::endl;
-        };
-
-        m_module.iterateInstructions(instrPrint);
-
-        ImGui::Text(s.str().c_str());
-    }
-    ImGui::End();
+    m_textView.update(m_module);
 }
 
 void proto::Graph::clear()
