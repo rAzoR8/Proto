@@ -26,7 +26,10 @@ namespace proto
 	private:
 		void createCanvas();
 
-		void createNodes();
+		void updateNodes();
+
+		template<class ModuleObjContainer, class CreateFunc, class RemoveFunc>
+		void updateNodeFromContainer(ModuleObjContainer& _container, const CreateFunc& _create, const RemoveFunc& _remove);
 
 	private:
 		spvgentwo::IAllocator* m_pAlloc = nullptr;
@@ -36,4 +39,35 @@ namespace proto
 
 		spvgentwo::List<Node> m_nodes;
 	};
+
+	// ModuleObjContainer = List<Function> etc, CreateFunc(const Function&) = nodes.emplace_back(...), RemoveFunc(Node& n) = n.clearConnections etc
+	template<class ModuleObjContainer, class CreateFunc, class RemoveFunc>
+	inline void Graph::updateNodeFromContainer(ModuleObjContainer& _container, const CreateFunc& _create, const RemoveFunc& _remove)
+	{
+		// remove
+		for (auto it = m_nodes.begin(); it != m_nodes.end();)
+		{
+			Node& n = *it;
+			auto spvIt = _container.find_if([&n](const auto& spv) {return n.getSpvObj() == &spv; });
+			if (spvIt == nullptr) // visible node n is not in the module _container anymore
+			{
+				_remove(n);
+				it = m_nodes.erase(it);
+			}
+			else
+			{
+				++it;
+			}
+		}
+
+		// add:
+		for (auto& spv : _container)
+		{
+			auto it = m_nodes.find_if([&spv](const Node& n) {return n.getSpvObj() == &spv; });
+			if (it == nullptr) // spv _container object is not in the visible nodes yet
+			{
+				_create(spv);
+			}
+		}
+	}
 } //!proto

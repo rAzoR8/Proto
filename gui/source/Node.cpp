@@ -1,12 +1,38 @@
 #include "proto/Node.h"
 
-proto::Node::Node(spvgentwo::IAllocator* _pAlloc, const char* _pTitle, ImVec2 _pos) :
+proto::Node::Node(spvgentwo::IAllocator* _pAlloc, const char* _pTitle, ImVec2 _pos, Type _type) :
 	m_pAlloc(_pAlloc),
 	m_pTitle(_pTitle),
+	m_spv{nullptr},
+	m_Type(_type),
 	m_inputs(_pAlloc),
 	m_outputs(_pAlloc),
 	m_pos(_pos)
 {
+}
+
+proto::Node::Node(spvgentwo::IAllocator* _pAlloc, const char* _pTitle, ImVec2 _pos, spvgentwo::Instruction* _instr) :
+	Node(_pAlloc, _pTitle, _pos, Type::Instruction)
+{
+	m_spv.instr = _instr;
+}
+
+proto::Node::Node(spvgentwo::IAllocator* _pAlloc, const char* _pTitle, ImVec2 _pos, spvgentwo::BasicBlock* _bb) :
+	Node(_pAlloc, _pTitle, _pos, Type::Instruction)
+{
+	m_spv.bb = _bb;
+}
+
+proto::Node::Node(spvgentwo::IAllocator* _pAlloc, const char* _pTitle, ImVec2 _pos, spvgentwo::Function* _func) :
+	Node(_pAlloc, _pTitle, _pos, Type::Instruction)
+{
+	m_spv.func = _func;
+}
+
+proto::Node::Node(spvgentwo::IAllocator* _pAlloc, const char* _pTitle, ImVec2 _pos, spvgentwo::EntryPoint* _ep) :
+	Node(_pAlloc, _pTitle, _pos, Type::Instruction)
+{
+	m_spv.ep = _ep;
 }
 
 proto::Node::~Node()
@@ -33,7 +59,7 @@ void proto::Node::update()
 	}
 }
 
-void proto::Node::addInputSlot(const char* _pSlotTitle, Kind _kind, Node* _pInput)
+void proto::Node::addInputSlot(const char* _pSlotTitle, SlotKind _kind, Node* _pInput)
 {
 	m_inputSlots.emplace_back(ImNodes::Ez::SlotInfo{ _pSlotTitle, (int)_kind });
 
@@ -43,7 +69,7 @@ void proto::Node::addInputSlot(const char* _pSlotTitle, Kind _kind, Node* _pInpu
 	}
 }
 
-void proto::Node::addOutputSlot(const char* _pSlotTitle, Kind _kind, Node* _pOutput)
+void proto::Node::addOutputSlot(const char* _pSlotTitle, SlotKind _kind, Node* _pOutput)
 {
 	m_outputSlots.emplace_back(ImNodes::Ez::SlotInfo{ _pSlotTitle, (int)_kind });
 
