@@ -99,7 +99,7 @@ void proto::Graph::updateNodes()
     updateNodeFromContainer(m_module.getFunctions(), Type::Function, 
         [&](Function& func) // add node func
     {
-        Node& funcNode = m_nodes.emplace(&func, Node(m_pAlloc, "Func", ImVec2{}, &func)).first->second;
+        Node& funcNode = m_nodes.emplace(&func, Node(m_pAlloc, "FuncNode", ImVec2{}, &func)).first->second;
         ImNodes::AutoPositionNode(&funcNode);
     },  [&](Node& fNode) // Remove node func
     {
@@ -118,7 +118,7 @@ void proto::Graph::updateNodes()
         updateNodeFromContainer(f, Type::BasicBlock,
             [&](BasicBlock& bb) // add node func
         {
-            Node& bbNode = m_nodes.emplace(&bb, Node(m_pAlloc, "BasicBlock", ImVec2{ 100, 100 }, &bb)).first->second;
+            Node& bbNode = m_nodes.emplace(&bb, Node(m_pAlloc, "BBNode", ImVec2{ 100, 100 }, &bb)).first->second;
             //ImNodes::AutoPositionNode(&bbNode);
             Node* func = getNode(&f);
 
@@ -185,10 +185,10 @@ void proto::Graph::addFunction()
 
     if (ImGui::BeginPopup("Create function signature"))
     {
-        //static char name[256]{};
+        static char name[256]{};
         //sprintf_s(name, "DefaultFuncName");
 
-        //ImGui::InputText("Name", name, sizeof(name));
+        ImGui::InputText("Name", name, sizeof(name));
 
         static FundamentalTypeComboBox retCombo(m_pAlloc, "Return Type");
         retCombo.update();
@@ -226,7 +226,7 @@ void proto::Graph::addFunction()
             }
             params.clear();
 
-            fun.finalize(spv::FunctionControlMask::Const/*, name*/);
+            fun.finalize(spv::FunctionControlMask::Const, name);
 
             m_addFunctionModal = false;
         }

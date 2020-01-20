@@ -87,12 +87,13 @@ void proto::Node::clear()
 void proto::Node::updateEntryPoint()
 {
 	EntryPoint& ep = *m_spv.obj.ep;
-	ImGui::Text("EntryPoint %s", ep.getEntryPointName());
+	ImGui::Text("EntryPoint %s", ep.getName());
 }
 
 void proto::Node::updateFunction()
 {
 	Function& func = *m_spv.obj.func;
+	ImGui::Text("%s", func.getName());
 
 	if (m_selected && ImGui::IsMouseReleased(1) && ImGui::IsWindowHovered() && !ImGui::IsMouseDragging(1))
 	{
@@ -119,16 +120,18 @@ void proto::Node::updateFunction()
 void proto::Node::updateBasicBlock()
 {
 	BasicBlock& bb = *m_spv.obj.bb;
-	ImGui::Text("Label:");
+	//const char* label = bb.getName();
+	//ImGui::Text("Label: %s", label);
 
 	for (Instruction& i : bb) 
 	{
-		ImGui::Text("%%u = %u", i.getResultId(), (unsigned int)i.getOperation());
+		const char* name = i.getName();
+		ImGui::Text("%u = %u %s", i.getResultId(), (unsigned int)i.getOperation(), name);
 	}
 }
 
 void proto::Node::updateInstruction()
 {
 	Instruction& i = *m_spv.obj.instr;
-	ImGui::Text("%%u = %u", i.getResultId(), (unsigned int)i.getOperation());
+	ImGui::Text("%u = %u %s", i.getResultId(), (unsigned int)i.getOperation(), i.getName());
 }
