@@ -1,6 +1,8 @@
 #include "proto/Node.h"
 
 #include "SpvGenTwo/EntryPoint.h"
+#include "SpvGenTwo/Type.h"
+#include "SpvGenTwo/String.h"
 
 using namespace spvgentwo;
 
@@ -116,7 +118,21 @@ void proto::Node::updateEntryPoint()
 void proto::Node::updateFunction()
 {
 	Function& func = *m_spv.obj.func;
-	ImGui::Text("%s", func.getName());
+
+	String args(m_pAlloc);
+	const char* ret =  func.getReturnType()->getType()->getString();
+	const char* name =  func.getName();
+	
+	for (auto it = func.getParameters().begin(), end = func.getParameters().end(); it != end; ++it)
+	{
+		args += it->getType()->getString();
+		if (it + 1 != end)
+		{
+			args += ", ";		
+		}
+	}
+
+	ImGui::Text("%s %s(%s)", ret, name, args.c_str());
 
 	if (m_selected && ImGui::IsMouseReleased(1) && ImGui::IsWindowHovered() && !ImGui::IsMouseDragging(1))
 	{
@@ -136,8 +152,7 @@ void proto::Node::updateFunction()
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::EndPopup();
-	}
-	
+	}	
 }
 
 void proto::Node::updateBasicBlock()
