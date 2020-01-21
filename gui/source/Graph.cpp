@@ -122,9 +122,9 @@ void proto::Graph::updateNodes()
             //ImNodes::AutoPositionNode(&bbNode);
             Node* func = getNode(&f);
 
-            func->addOutputSlot("Entry", Slot::FunctionEntry);
-            bbNode.addInputSlot("Function", Slot::FunctionEntry);
-            func->connect("Function", &bbNode);
+            //func->addOutputSlot("Entry", Slot::FunctionEntry);
+            //bbNode.addInputSlot("Function", Slot::FunctionEntry);
+            func->connect("EntryBlock", &bbNode);
 
             bbNode.update();
 

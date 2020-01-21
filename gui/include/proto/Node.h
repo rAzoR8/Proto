@@ -1,8 +1,8 @@
 #pragma once
 
 #include "ImNodesEz.h"
-#include "SpvGenTwo/List.h"
-#include <vector>
+//#include "SpvGenTwo/List.h"
+#include "SpvGenTwo/Vector.h"
 #include "SpvGenTwo/Hasher.h"
 // forward decls
 
@@ -50,7 +50,7 @@ namespace proto
 
 	enum class Slot : int
 	{
-		FunctionEntry,
+		EntryBlock, // functionEntryBlock
 		Instruction,
 		BasicBlock
 	};
@@ -58,8 +58,6 @@ namespace proto
 	class Node
 	{
 	public:
-
-
 		Node(spvgentwo::IAllocator* _pAlloc, const char* _pTitle, ImVec2 _pos, SpvObj _obj);
 
 		~Node();
@@ -95,11 +93,11 @@ namespace proto
 		ImVec2 m_pos{};
 		bool m_selected = false;
 
-		std::vector<ImNodes::Ez::SlotInfo> m_inputSlots;
-		spvgentwo::List<Node*> m_inputs;
+		spvgentwo::Vector<ImNodes::Ez::SlotInfo> m_inputSlots;
+		spvgentwo::Vector<Node*> m_inputs;
 
-		std::vector<ImNodes::Ez::SlotInfo> m_outputSlots;
-		spvgentwo::List<Node*> m_outputs;
+		spvgentwo::Vector<ImNodes::Ez::SlotInfo> m_outputSlots;
+		spvgentwo::Vector<Node*> m_outputs;
 	};
 } // !proto
 

@@ -9,9 +9,26 @@ proto::Node::Node(spvgentwo::IAllocator* _pAlloc, const char* _pTitle, ImVec2 _p
 	m_pTitle(_pTitle),
 	m_spv( _obj ),
 	m_inputs(_pAlloc),
+	m_inputSlots(_pAlloc),
 	m_outputs(_pAlloc),
+	m_outputSlots(_pAlloc),
 	m_pos(_pos)
 {
+	switch (m_spv.type)
+	{
+	case Type::Instruction:
+		break;
+	case Type::BasicBlock:
+		addInputSlot("EntryBlock",Slot::EntryBlock);
+		break;
+	case Type::Function:
+		addOutputSlot("EntryBlock", Slot::EntryBlock);
+		break;
+	case Type::EntryPoint:
+		break;
+	default:
+		break;
+	}
 }
 
 proto::Node::~Node()
@@ -46,15 +63,15 @@ void proto::Node::update()
 		ImNodes::Ez::EndNode();
 	}
 
-	//for (Node* in : m_inputs)
-	//{
-	//	ImNodes::Connection(in, "In", this, "This");
-	//}
+	for (Node* in : m_inputs)
+	{
+		ImNodes::Connection(in, "EntryBlock", this, "EntryBlock"); // todo replace slot
+	}
 
-	//for (Node* out : m_outputs)
-	//{
-	//	ImNodes::Connection(this, "This", out, "Out");
-	//}
+	for (Node* out : m_outputs)
+	{
+		ImNodes::Connection(this, "EntryBlock", out, "EntryBlock");
+	}
 }
 
 void proto::Node::addInputSlot(const char* _pSlotTitle, Slot _kind)
@@ -69,10 +86,8 @@ void proto::Node::addOutputSlot(const char* _pSlotTitle, Slot _kind)
 
 void proto::Node::connect(const char* _pSlotTitle, Node* _pTarget)
 {
-	ImNodes::Connection(_pTarget, _pSlotTitle, this, _pSlotTitle);
-
-	//m_outputs.emplace_back(_pTarget);
-	//_pTarget->m_outputs.emplace_back(this);
+	m_outputs.emplace_back(_pTarget);
+	_pTarget->m_outputs.emplace_back(this);
 }
 
 void proto::Node::clear()
