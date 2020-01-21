@@ -50,9 +50,19 @@ namespace proto
 
 	enum class Slot : int
 	{
-		EntryBlock, // functionEntryBlock
+		EntryBlock = 1, // functionEntryBlock
 		Instruction,
 		BasicBlock
+	};
+
+	// forward decl
+	class Node;
+
+	struct Connection
+	{
+		Node* node = nullptr;
+		const char* srcSlot = nullptr;
+		const char* dstSlot = nullptr;
 	};
 
 	class Node
@@ -71,7 +81,7 @@ namespace proto
 		void addOutputSlot(const char* _pSlotTitle, Slot _kind);
 
 		// connect this node to _pTarget
-		void connect(const char* _pSlotTitle, Node* _pTarget);
+		void connect(const char* _pSrcSlot, Node* _pTarget, const char* _pDstSlot);
 
 		void clear();
 
@@ -94,10 +104,10 @@ namespace proto
 		bool m_selected = false;
 
 		spvgentwo::Vector<ImNodes::Ez::SlotInfo> m_inputSlots;
-		spvgentwo::Vector<Node*> m_inputs;
+		spvgentwo::Vector<Connection> m_inputs;
 
 		spvgentwo::Vector<ImNodes::Ez::SlotInfo> m_outputSlots;
-		spvgentwo::Vector<Node*> m_outputs;
+		spvgentwo::Vector<Connection> m_outputs;
 	};
 } // !proto
 

@@ -7,6 +7,10 @@ proto::FundamentalTypeComboBox::FundamentalTypeComboBox(spvgentwo::IAllocator* _
 {
 }
 
+proto::FundamentalTypeComboBox::~FundamentalTypeComboBox()
+{
+}
+
 void proto::FundamentalTypeComboBox::update()
 {
     struct Item
@@ -27,6 +31,7 @@ void proto::FundamentalTypeComboBox::update()
         {"uint16", spv::Op::OpTypeInt, 16},
     };
 
+    m_selected = m_selected >= IM_ARRAYSIZE(items) ? 0 : m_selected;
     const char* current_item = items[m_selected].name;
 
     if (ImGui::BeginCombo(m_pTitle, current_item))

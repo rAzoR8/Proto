@@ -96,10 +96,12 @@ void proto::Graph::createCanvas()
 
 void proto::Graph::updateNodes()
 {
+    ImVec2 pos = ImGui::GetCursorPos();
+
     updateNodeFromContainer(m_module.getFunctions(), Type::Function, 
         [&](Function& func) // add node func
     {
-        Node& funcNode = m_nodes.emplace(&func, Node(m_pAlloc, "FuncNode", ImVec2{}, &func)).first->second;
+        Node& funcNode = m_nodes.emplace(&func, Node(m_pAlloc, "FuncNode", pos, &func)).first->second;
         ImNodes::AutoPositionNode(&funcNode);
     },  [&](Node& fNode) // Remove node func
     {
@@ -118,13 +120,11 @@ void proto::Graph::updateNodes()
         updateNodeFromContainer(f, Type::BasicBlock,
             [&](BasicBlock& bb) // add node func
         {
-            Node& bbNode = m_nodes.emplace(&bb, Node(m_pAlloc, "BBNode", ImVec2{ 100, 100 }, &bb)).first->second;
-            //ImNodes::AutoPositionNode(&bbNode);
+            Node& bbNode = m_nodes.emplace(&bb, Node(m_pAlloc, "BBNode", pos, &bb)).first->second;
+            ImNodes::AutoPositionNode(&bbNode);
             Node* func = getNode(&f);
 
-            //func->addOutputSlot("Entry", Slot::FunctionEntry);
-            //bbNode.addInputSlot("Function", Slot::FunctionEntry);
-            func->connect("EntryBlock", &bbNode);
+            func->connect("EntryBlock", &bbNode, "EntryBlock");
 
             bbNode.update();
 
@@ -200,16 +200,23 @@ void proto::Graph::addFunction()
             params.emplace_back(m_pAlloc, "Parameter Type");
         }
 
-        if (ImGui::Button("Remove Parameter"))
+        for (auto it = params.begin(); it != params.end();)
         {
-            (void)params.pop_back();
-        }
-
-        for (FundamentalTypeComboBox& t : params)
-        {
-            ImGui::PushID(&t);
-            t.update();
+            auto& ComboBox = *it;
+            ImGui::PushID(&ComboBox);
+            ComboBox.update();
             ImGui::PopID();
+
+            ImGui::SameLine();
+
+            if (ImGui::Button("Remove"))
+            {
+                it = params.erase(it);
+            }
+            else
+            {
+                ++it;
+            }
         }
 
         if (ImGui::Button("Create"))
@@ -228,6 +235,12 @@ void proto::Graph::addFunction()
 
             fun.finalize(spv::FunctionControlMask::Const, name);
 
+            m_addFunctionModal = false;
+        }
+        ImGui::SameLine();
+
+        if (ImGui::Button("Cancel"))
+        {
             m_addFunctionModal = false;
         }
 

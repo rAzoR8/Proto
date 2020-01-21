@@ -9,6 +9,7 @@ namespace proto
 	{
 	public:
 		FundamentalTypeComboBox(spvgentwo::IAllocator* _pAlloc, const char* _pTitle);
+		~FundamentalTypeComboBox();
 
 		void update();
 

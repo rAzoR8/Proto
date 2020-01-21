@@ -40,8 +40,7 @@ void proto::Node::update()
 	if (ImNodes::Ez::BeginNode(this, m_pTitle, &m_pos, &m_selected))
 	{
 		ImNodes::Ez::InputSlots(m_inputSlots.data(), (int)m_inputSlots.size());
-		ImNodes::Ez::OutputSlots(m_outputSlots.data(), (int)m_outputSlots.size());
-
+		
 		switch (m_spv.type)
 		{
 		case Type::Instruction:
@@ -59,35 +58,44 @@ void proto::Node::update()
 		default:
 			break;
 		}
+		
+		ImNodes::Ez::OutputSlots(m_outputSlots.data(), (int)m_outputSlots.size());
 
-		ImNodes::Ez::EndNode();
-	}
+		// only render outputs
+		for (const Connection& out : m_outputs)
+		{
+			ImNodes::Connection(this, "EntryBlock", out.node, "EntryBlock");
+		}
 
-	for (Node* in : m_inputs)
-	{
-		ImNodes::Connection(in, "EntryBlock", this, "EntryBlock"); // todo replace slot
-	}
+		for (const Connection& in : m_inputs)
+		{
+			ImNodes::Connection(in.node, "EntryBlock", this, "EntryBlock"); // todo replace slot
+		}
 
-	for (Node* out : m_outputs)
-	{
-		ImNodes::Connection(this, "EntryBlock", out, "EntryBlock");
+		//for (const Connection& in : m_inputs)
+		//{
+		//	ImNodes::Connection(in.node, "EntryBlock", this, "EntryBlock");
+		//}
+
 	}
+	ImNodes::Ez::EndNode();
 }
 
 void proto::Node::addInputSlot(const char* _pSlotTitle, Slot _kind)
 {
-	m_inputSlots.emplace_back(ImNodes::Ez::SlotInfo{ _pSlotTitle, (int)_kind });
+	m_inputSlots.emplace_back( _pSlotTitle, (int)_kind);
 }
 
 void proto::Node::addOutputSlot(const char* _pSlotTitle, Slot _kind)
 {
-	m_outputSlots.emplace_back(ImNodes::Ez::SlotInfo{ _pSlotTitle, (int)_kind });
+	m_outputSlots.emplace_back(_pSlotTitle, (int)_kind);
 }
 
-void proto::Node::connect(const char* _pSlotTitle, Node* _pTarget)
+// connect this (source _ output) to input
+void proto::Node::connect(const char* _pSrcSlot, Node* _pTarget, const char* _pDstSlot)
 {
-	m_outputs.emplace_back(_pTarget);
-	_pTarget->m_outputs.emplace_back(this);
+	m_outputs.emplace_back(_pTarget, _pSrcSlot, _pDstSlot);
+	_pTarget->m_inputs.emplace_back(this, _pSrcSlot, _pDstSlot);
 }
 
 void proto::Node::clear()
@@ -138,11 +146,11 @@ void proto::Node::updateBasicBlock()
 	//const char* label = bb.getName();
 	//ImGui::Text("Label: %s", label);
 
-	for (Instruction& i : bb) 
-	{
-		const char* name = i.getName();
-		ImGui::Text("%u = %u %s", i.getResultId(), (unsigned int)i.getOperation(), name);
-	}
+	//for (Instruction& i : bb) 
+	//{
+	//	const char* name = i.getName();
+	//	ImGui::Text("%u = %u %s", i.getResultId(), (unsigned int)i.getOperation(), name);
+	//}
 }
 
 void proto::Node::updateInstruction()
