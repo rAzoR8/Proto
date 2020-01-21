@@ -3,6 +3,7 @@
 #include "SpvGenTwo/Module.h"
 #include "Node.h"
 #include "AssemblyTextView.h"
+#include "NewFunctionPopup.h"
 #include <unordered_map>
 
 // forward decls
@@ -35,9 +36,6 @@ namespace proto
 		template<class ModuleObjContainer, class CreateFunc, class RemoveFunc>
 		void updateNodeFromContainer(ModuleObjContainer& _container, Type _type, const CreateFunc& _create, const RemoveFunc& _remove);
 
-		void addFunction();
-		void addEntryPoint();
-
 		Node* getNode(SpvObj _obj);
 
 	private:
@@ -51,7 +49,7 @@ namespace proto
 		// TODO: replace with spvgentwo hashmap to avoid reallocation by rehashing
 		std::unordered_map<SpvObj, Node, spvgentwo::Hasher<SpvObj>> m_nodes;
 
-		bool m_addFunctionModal = false;
+		NewFunctionPopup m_newFunctionPopup;
 	};
 
 	// ModuleObjContainer = List<Function> etc, CreateFunc(const Function&) = nodes.emplace_back(...), RemoveFunc(Node& n) = n.clearConnections etc

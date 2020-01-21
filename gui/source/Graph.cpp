@@ -8,7 +8,8 @@ using namespace spvgentwo;
 proto::Graph::Graph(spvgentwo::IAllocator* _pAlloc, spvgentwo::ILogger* _pLogger, const char* _pName) :
     m_pAlloc(_pAlloc),
     m_module(_pAlloc, spv::Version, _pLogger),
-    m_pName(_pName)
+    m_pName(_pName),
+    m_newFunctionPopup(_pAlloc)
 {
     // configure capabilities and extensions
     m_module.addCapability(spv::Capability::Shader);
@@ -158,7 +159,7 @@ void proto::Graph::updateContextMenu()
     {
         if (ImGui::MenuItem("Add Function"))
         {
-            m_addFunctionModal = true;
+            m_newFunctionPopup.show(true);
         }
 
         if (ImGui::MenuItem("Add EntryPoint"))
@@ -173,84 +174,7 @@ void proto::Graph::updateContextMenu()
         ImGui::EndPopup();
     }
 
-    if (m_addFunctionModal)
-    {
-        addFunction();
-    }
-}
-
-void proto::Graph::addFunction()
-{
-   ImGui::OpenPopup("Create function signature");
-
-    if (ImGui::BeginPopup("Create function signature"))
-    {
-        static char name[256]{};
-        //sprintf_s(name, "DefaultFuncName");
-
-        ImGui::InputText("Name", name, sizeof(name));
-
-        static FundamentalTypeComboBox retCombo(m_pAlloc, "Return Type");
-        retCombo.update();
-
-        static List<FundamentalTypeComboBox> params(m_pAlloc);
-
-        if (ImGui::Button("Add Parameter"))
-        {
-            params.emplace_back(m_pAlloc, "Parameter Type");
-        }
-
-        for (auto it = params.begin(); it != params.end();)
-        {
-            auto& ComboBox = *it;
-            ImGui::PushID(&ComboBox);
-            ComboBox.update();
-            ImGui::PopID();
-
-            ImGui::SameLine();
-
-            if (ImGui::Button("Remove"))
-            {
-                it = params.erase(it);
-            }
-            else
-            {
-                ++it;
-            }
-        }
-
-        if (ImGui::Button("Create"))
-        {
-            Function& fun = m_module.addFunction();
-            Instruction* type = m_module.addType(retCombo.getType());
-
-            fun.setReturnType(type);
-
-            for (FundamentalTypeComboBox& t : params)
-            {
-                type = m_module.addType(t.getType());
-                fun.addParameters(type);
-            }
-            params.clear();
-
-            fun.finalize(spv::FunctionControlMask::Const, name);
-
-            m_addFunctionModal = false;
-        }
-        ImGui::SameLine();
-
-        if (ImGui::Button("Cancel"))
-        {
-            m_addFunctionModal = false;
-        }
-
-        ImGui::EndPopup();
-    }
-}
-
-void proto::Graph::addEntryPoint()
-{
-    //m_module.addEntryPoint();
+    m_newFunctionPopup.update(m_module);
 }
 
 proto::Node* proto::Graph::getNode(SpvObj _obj)
