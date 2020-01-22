@@ -2,8 +2,8 @@
 
 #include "ImNodesEz.h"
 //#include "SpvGenTwo/List.h"
-#include "SpvGenTwo/Vector.h"
-#include "SpvGenTwo/Hasher.h"
+#include "spvgentwo/Vector.h"
+#include "spvgentwo/Hasher.h"
 // forward decls
 
 namespace spvgentwo

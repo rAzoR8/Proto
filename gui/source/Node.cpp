@@ -1,8 +1,8 @@
 #include "proto/Node.h"
 
-#include "SpvGenTwo/EntryPoint.h"
-#include "SpvGenTwo/Type.h"
-#include "SpvGenTwo/String.h"
+#include "spvgentwo/EntryPoint.h"
+#include "spvgentwo/Type.h"
+#include "spvgentwo/String.h"
 
 using namespace spvgentwo;
 
@@ -10,11 +10,11 @@ proto::Node::Node(spvgentwo::IAllocator* _pAlloc, const char* _pTitle, ImVec2 _p
 	m_pAlloc(_pAlloc),
 	m_pTitle(_pTitle),
 	m_spv( _obj ),
-	m_inputs(_pAlloc),
+	m_pos(_pos),
 	m_inputSlots(_pAlloc),
-	m_outputs(_pAlloc),
+	m_inputs(_pAlloc),
 	m_outputSlots(_pAlloc),
-	m_pos(_pos)
+	m_outputs(_pAlloc)
 {
 	switch (m_spv.type)
 	{

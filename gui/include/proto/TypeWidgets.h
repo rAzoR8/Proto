@@ -1,7 +1,7 @@
 #pragma once
 
 // forward decls
-#include "SpvGenTwo/Type.h"
+#include "spvgentwo/Type.h"
 
 namespace proto
 {

@@ -1,6 +1,6 @@
 #include "proto/NewFunctionPopup.h"
 #include "imgui.h"
-#include "SpvGenTwo/Module.h"
+#include "spvgentwo/Module.h"
 
 using namespace spvgentwo;
 

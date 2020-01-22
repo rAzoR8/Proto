@@ -1,6 +1,6 @@
 #include "proto/AssemblyTextView.h"
 #include "imgui.h"
-#include "SpvGenTwo/Module.h"
+#include "spvgentwo/Module.h"
 #include <sstream>
 
 using namespace spvgentwo;
@@ -51,7 +51,7 @@ void proto::AssemblyTextView::update(spvgentwo::Module& _module)
 
         _module.iterateInstructions(instrPrint);
 
-        ImGui::Text(s.str().c_str());
+        ImGui::Text("%s", s.str().c_str());
     }
     ImGui::End();
 }

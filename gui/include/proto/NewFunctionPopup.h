@@ -1,8 +1,8 @@
 #pragma once
 
-#include "SpvGenTwo/List.h"
+#include "spvgentwo/List.h"
 #include "TypeWidgets.h"
-#include "SpvGenTwo/String.h"
+#include "spvgentwo/String.h"
 
 // forward delcs
 namespace spvgentwo

@@ -2,8 +2,8 @@
 #include "imgui.h"
 
 proto::FundamentalTypeComboBox::FundamentalTypeComboBox(spvgentwo::IAllocator* _pAlloc, const char* _pTitle) :
-    m_type(_pAlloc),
-    m_pTitle(_pTitle)
+    m_pTitle(_pTitle),
+    m_type(_pAlloc)
 {
 }
 

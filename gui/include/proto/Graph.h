@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SpvGenTwo/Module.h"
+#include "spvgentwo/Module.h"
 #include "Node.h"
 #include "AssemblyTextView.h"
 #include "NewFunctionPopup.h"
