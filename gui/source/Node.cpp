@@ -12,19 +12,18 @@ proto::Node::Node(spvgentwo::IAllocator* _pAlloc, const char* _pTitle, ImVec2 _p
 	m_spv( _obj ),
 	m_pos(_pos),
 	m_inputSlots(_pAlloc),
-	m_inputs(_pAlloc),
 	m_outputSlots(_pAlloc),
-	m_outputs(_pAlloc)
+	m_connections(_pAlloc)
 {
 	switch (m_spv.type)
 	{
 	case Type::Instruction:
 		break;
 	case Type::BasicBlock:
-		addInputSlot("EntryBlock",Slot::EntryBlock);
+		addInputSlot(Slot::EntryBlock);
 		break;
 	case Type::Function:
-		addOutputSlot("EntryBlock", Slot::EntryBlock);
+		addOutputSlot(Slot::EntryBlock);
 		break;
 	case Type::EntryPoint:
 		break;
@@ -63,50 +62,58 @@ void proto::Node::update()
 		
 		ImNodes::Ez::OutputSlots(m_outputSlots.data(), (int)m_outputSlots.size());
 
+		Connection new_connection;
+		if (ImNodes::GetNewConnection(&new_connection.input_node, &new_connection.input_slot,
+			&new_connection.output_node, &new_connection.output_slot))
+		{
+			((Node*)new_connection.input_node)->m_connections.emplace_back(new_connection);
+			((Node*)new_connection.output_node)->m_connections.emplace_back(new_connection);
+		}
+
 		// only render outputs
-		for (const Connection& out : m_outputs)
+		for (const Connection& connection : m_connections)
 		{
-			ImNodes::Connection(this, "EntryBlock", out.node, "EntryBlock");
+			if (connection.output_node != this)
+				continue;
+
+			if (!ImNodes::Connection(connection.input_node, connection.input_slot, connection.output_node,
+				connection.output_slot))
+			{
+				// Remove deleted connections
+				((Node*)connection.input_node)->disconnect(connection);
+				((Node*)connection.output_node)->disconnect(connection);
+			}
 		}
-
-		for (const Connection& in : m_inputs)
-		{
-			ImNodes::Connection(in.node, "EntryBlock", this, "EntryBlock"); // todo replace slot
-		}
-
-		//for (const Connection& in : m_inputs)
-		//{
-		//	ImNodes::Connection(in.node, "EntryBlock", this, "EntryBlock");
-		//}
-
 	}
 	ImNodes::Ez::EndNode();
 }
 
-void proto::Node::addInputSlot(const char* _pSlotTitle, Slot _kind)
+void proto::Node::addInputSlot(Slot _kind)
 {
-	m_inputSlots.emplace_back( _pSlotTitle, (int)_kind);
+	m_inputSlots.emplace_back(getSlotTitle(_kind), (int)_kind);
 }
 
-void proto::Node::addOutputSlot(const char* _pSlotTitle, Slot _kind)
+void proto::Node::addOutputSlot(Slot _kind)
 {
-	m_outputSlots.emplace_back(_pSlotTitle, (int)_kind);
-}
-
-// connect this (source _ output) to input
-void proto::Node::connect(const char* _pSrcSlot, Node* _pTarget, const char* _pDstSlot)
-{
-	m_outputs.emplace_back(_pTarget, _pSrcSlot, _pDstSlot);
-	_pTarget->m_inputs.emplace_back(this, _pSrcSlot, _pDstSlot);
+	m_outputSlots.emplace_back(getSlotTitle(_kind), (int)_kind);
 }
 
 void proto::Node::clear()
 {
-	m_inputs.clear();
 	m_inputSlots.clear();
-
-	m_outputs.clear();
 	m_outputSlots.clear();
+
+	m_connections.clear();
+}
+
+void proto::Node::disconnect(const Connection& _con)
+{
+	auto it = m_connections.find(_con);
+
+	if (it != nullptr)
+	{
+		m_connections.erase(it);
+	}
 }
 
 void proto::Node::updateEntryPoint()
@@ -172,4 +179,14 @@ void proto::Node::updateInstruction()
 {
 	Instruction& i = *m_spv.obj.instr;
 	ImGui::Text("%u = %u %s", i.getResultId(), (unsigned int)i.getOperation(), i.getName());
+}
+
+proto::Slot proto::getSlot(const char* _pSlot)
+{
+	for (int i = 0; i < IM_ARRAYSIZE(g_slotTitles); ++i)
+	{
+		if (g_slotTitles[i] == _pSlot || strcmp(g_slotTitles[i], _pSlot) == 0)
+			return Slot(i + 1);
+	}
+	return Slot::Unknown;
 }

@@ -123,11 +123,11 @@ void proto::Graph::updateNodes()
         {
             Node& bbNode = m_nodes.emplace(&bb, Node(m_pAlloc, "BBNode", pos, &bb)).first->second;
             ImNodes::AutoPositionNode(&bbNode);
-            Node* func = getNode(&f);
+            //Node* func = getNode(&f);
 
-            func->connect("EntryBlock", &bbNode, "EntryBlock");
+            //func->connect(Slot::EntryBlock, &bbNode, Slot::EntryBlock);
 
-            bbNode.update();
+            //bbNode.update();
 
         }, [&](Node& fNode) // Remove node func
         {

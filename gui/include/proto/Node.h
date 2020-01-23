@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ImNodesEz.h"
-//#include "SpvGenTwo/List.h"
+#include "SpvGenTwo/List.h"
 #include "spvgentwo/Vector.h"
 #include "spvgentwo/Hasher.h"
 // forward decls
@@ -50,19 +50,40 @@ namespace proto
 
 	enum class Slot : int
 	{
+		Unknown = 0,
 		EntryBlock = 1, // functionEntryBlock
 		Instruction,
 		BasicBlock
 	};
 
-	// forward decl
-	class Node;
+	static const char* g_slotTitles[] = { "EntryBlock", "Instruction", "BasicBlock" };
+	inline const char* getSlotTitle(Slot _slot) { return g_slotTitles[(int)_slot - 1]; }
+	Slot getSlot(const char* _pSlot);
 
+	/// A structure defining a connection between two slots of two nodes.
 	struct Connection
 	{
-		Node* node = nullptr;
-		const char* srcSlot = nullptr;
-		const char* dstSlot = nullptr;
+		/// `id` that was passed to BeginNode() of input node.
+		void* input_node = nullptr;
+		/// Descriptor of input slot.
+		const char* input_slot = nullptr;
+		/// `id` that was passed to BeginNode() of output node.
+		void* output_node = nullptr;
+		/// Descriptor of output slot.
+		const char* output_slot = nullptr;
+
+		bool operator==(const Connection& other) const
+		{
+			return input_node == other.input_node &&
+				input_slot == other.input_slot &&
+				output_node == other.output_node &&
+				output_slot == other.output_slot;
+		}
+
+		bool operator!=(const Connection& other) const
+		{
+			return !operator ==(other);
+		}
 	};
 
 	class Node
@@ -77,17 +98,16 @@ namespace proto
 
 		void update();
 
-		void addInputSlot(const char* _pSlotTitle, Slot _kind);
-		void addOutputSlot(const char* _pSlotTitle, Slot _kind);
-
-		// connect this node to _pTarget
-		void connect(const char* _pSrcSlot, Node* _pTarget, const char* _pDstSlot);
+		void addInputSlot(Slot _kind);
+		void addOutputSlot(Slot _kind);
 
 		void clear();
 
 	private:
 		Node(spvgentwo::IAllocator* _pAlloc, const char* _pTitle, ImVec2 _pos, Type _type);
 
+		void disconnect(const Connection& _con);
+	
 	private:
 		void updateEntryPoint();
 		void updateFunction();
@@ -104,10 +124,8 @@ namespace proto
 		bool m_selected = false;
 
 		spvgentwo::Vector<ImNodes::Ez::SlotInfo> m_inputSlots;
-		spvgentwo::Vector<Connection> m_inputs;
-
 		spvgentwo::Vector<ImNodes::Ez::SlotInfo> m_outputSlots;
-		spvgentwo::Vector<Connection> m_outputs;
+		spvgentwo::List<Connection> m_connections;
 	};
 } // !proto
 
