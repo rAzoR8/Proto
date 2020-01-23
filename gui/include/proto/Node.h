@@ -55,10 +55,6 @@ namespace proto
 		BasicBlock
 	};
 
-	static const char* g_slotTitles[] = { "FuncEntry", "FuncEntry", "BasicBlock" };
-	inline const char* getSlotTitle(Slot _slot) { return g_slotTitles[(int)_slot - 1]; }
-	Slot getSlot(const char* _pSlot);
-
 	/// A structure defining a connection between two slots of two nodes.
 	struct Connection
 	{
@@ -97,10 +93,13 @@ namespace proto
 
 		void update();
 
-		void addInputSlot(Slot _kind, const char* _pTitle = nullptr);
-		void addOutputSlot(Slot _kind, const char* _pTitle = nullptr);
+		void addInputSlot(Slot _kind, const char* _pTitle);
+		void addOutputSlot(Slot _kind, const char* _pTitle);
 
 		void clear();
+
+		static void connect(const Connection& _con);
+		static void disconnect(const Connection& _con);
 
 	private:
 		Node(spvgentwo::IAllocator* _pAlloc, const char* _pTitle, ImVec2 _pos, Type _type);
@@ -108,9 +107,6 @@ namespace proto
 		bool allowedDisconnection(const Connection& _con);
 		bool allowedConnection(const Connection& _con);
 		spvgentwo::List<Connection>::Iterator remove(const Connection& _con);
-
-		static void connect(const Connection& _con);
-		static void disconnect(const Connection& _con);
 
 	private:
 		void updateEntryPoint();

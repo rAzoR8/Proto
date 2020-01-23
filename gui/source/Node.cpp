@@ -20,7 +20,7 @@ proto::Node::Node(spvgentwo::IAllocator* _pAlloc, const char* _pTitle, ImVec2 _p
 	case Type::Instruction:
 		break;
 	case Type::BasicBlock:
-		addInputSlot(Slot::FuncEntry);
+		addInputSlot(Slot::FuncEntry, "FuncEntry");
 		break;
 	case Type::Function:
 		addOutputSlot(Slot::FuncEntry, "EntryBlock");
@@ -97,12 +97,12 @@ void proto::Node::update()
 
 void proto::Node::addInputSlot(Slot _kind, const char* _pTitle)
 {
-	m_inputSlots.emplace_back(_pTitle ? _pTitle : getSlotTitle(_kind), (int)_kind);
+	m_inputSlots.emplace_back(_pTitle, (int)_kind);
 }
 
 void proto::Node::addOutputSlot(Slot _kind, const char* _pTitle)
 {
-	m_outputSlots.emplace_back(_pTitle ? _pTitle : getSlotTitle(_kind), (int)_kind);
+	m_outputSlots.emplace_back(_pTitle, (int)_kind);
 }
 
 void proto::Node::clear()
@@ -219,14 +219,4 @@ void proto::Node::updateInstruction()
 {
 	Instruction& i = *m_spv.obj.instr;
 	ImGui::Text("%u = %u %s", i.getResultId(), (unsigned int)i.getOperation(), i.getName());
-}
-
-proto::Slot proto::getSlot(const char* _pSlot)
-{
-	for (int i = 0; i < IM_ARRAYSIZE(g_slotTitles); ++i)
-	{
-		if (g_slotTitles[i] == _pSlot || strcmp(g_slotTitles[i], _pSlot) == 0)
-			return Slot(i + 1);
-	}
-	return Slot::Unknown;
 }
