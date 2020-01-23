@@ -106,7 +106,8 @@ namespace proto
 	private:
 		Node(spvgentwo::IAllocator* _pAlloc, const char* _pTitle, ImVec2 _pos, Type _type);
 
-		bool allowed(const Connection& _con);
+		bool allowedDisconnection(const Connection& _con);
+		bool allowedConnection(const Connection& _con);
 		void disconnect(const Connection& _con);
 	
 	private:

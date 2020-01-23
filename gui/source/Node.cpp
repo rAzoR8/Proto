@@ -64,7 +64,7 @@ void proto::Node::update()
 
 		Connection con{};
 		if (ImNodes::GetNewConnection(&con.input_node, &con.input_slot,
-			&con.output_node, &con.output_slot) && allowed(con))
+			&con.output_node, &con.output_slot) && allowedConnection(con))
 		{
 			((Node*)con.input_node)->m_connections.emplace_back(con);
 			((Node*)con.output_node)->m_connections.emplace_back(con);
@@ -76,8 +76,8 @@ void proto::Node::update()
 			if (connection.output_node != this)
 				continue;
 
-			if (!ImNodes::Connection(connection.input_node, connection.input_slot, connection.output_node,
-				connection.output_slot))
+			if (ImNodes::Connection(connection.input_node, connection.input_slot,
+				connection.output_node, connection.output_slot) == false && allowedDisconnection(connection))
 			{
 				// Remove deleted connections
 				((Node*)connection.input_node)->disconnect(connection);
@@ -106,7 +106,12 @@ void proto::Node::clear()
 	m_connections.clear();
 }
 
-bool proto::Node::allowed(const Connection& _con)
+bool proto::Node::allowedDisconnection(const Connection& _con)
+{
+	return true;
+}
+
+bool proto::Node::allowedConnection(const Connection& _con)
 {
 	return true;
 }
