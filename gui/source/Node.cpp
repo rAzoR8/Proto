@@ -67,22 +67,28 @@ void proto::Node::update()
 			&con.output_node, &con.output_slot) && allowedConnection(con))
 		{
 			connect(con);
-			//((Node*)con.input_node)->m_connections.emplace_back(con);
-			//((Node*)con.output_node)->m_connections.emplace_back(con);
 		}
 
 		// only render outputs
-		for (const Connection& connection : m_connections)
+		for (auto it = m_connections.begin(); it != m_connections.end();)
 		{
-			if (connection.output_node != this)
+			const Connection& con = *it;
+			if (con.output_node != this)
+			{
+				++it;
 				continue;
+			}
 
-			if (ImNodes::Connection(connection.input_node, connection.input_slot,
-				connection.output_node, connection.output_slot) == false && allowedDisconnection(connection))
+			if (ImNodes::Connection(con.input_node, con.input_slot,
+				con.output_node, con.output_slot) == false && allowedDisconnection(con))
 			{
 				// Remove deleted connections
-				((Node*)connection.input_node)->disconnect(connection);
-				((Node*)connection.output_node)->disconnect(connection);
+				((Node*)con.input_node)->remove(con);
+				it = ((Node*)con.output_node)->remove(con); // // output node == this
+			}
+			else
+			{
+				++it;
 			}
 		}
 	}
@@ -117,14 +123,16 @@ bool proto::Node::allowedConnection(const Connection& _con)
 	return true;
 }
 
-void proto::Node::disconnect(const Connection& _con)
+spvgentwo::List<proto::Connection>::Iterator proto::Node::remove(const Connection& _con)
 {
 	auto it = m_connections.find(_con);
 
 	if (it != nullptr)
 	{
-		m_connections.erase(it);
+		return m_connections.erase(it);
 	}
+
+	return it;
 }
 
 void proto::Node::connect(const Connection& _con)
@@ -137,6 +145,15 @@ void proto::Node::connect(const Connection& _con)
 		in->m_connections.emplace_back(_con);
 		out->m_connections.emplace_back(_con);
 	}
+}
+
+void proto::Node::disconnect(const Connection& _con)
+{
+	Node* in = (Node*)_con.input_node;
+	Node* out = (Node*)_con.output_node;
+
+	in->remove(_con);
+	out->remove(_con);
 }
 
 void proto::Node::updateEntryPoint()
