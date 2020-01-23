@@ -115,7 +115,8 @@ void proto::Node::clear()
 
 bool proto::Node::allowedDisconnection(const Connection& _con)
 {
-	return true;
+	return strcmp(_con.input_slot, "FuncEntry") != 0;
+	//return true;
 }
 
 bool proto::Node::allowedConnection(const Connection& _con)
