@@ -108,6 +108,8 @@ namespace proto
 		bool allowedDisconnection(const Connection& _con);
 		bool allowedConnection(const Connection& _con);
 		void disconnect(const Connection& _con);
+
+		static void connect(const Connection& _con);
 	
 	private:
 		void updateEntryPoint();

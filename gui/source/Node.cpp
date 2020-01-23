@@ -66,8 +66,9 @@ void proto::Node::update()
 		if (ImNodes::GetNewConnection(&con.input_node, &con.input_slot,
 			&con.output_node, &con.output_slot) && allowedConnection(con))
 		{
-			((Node*)con.input_node)->m_connections.emplace_back(con);
-			((Node*)con.output_node)->m_connections.emplace_back(con);
+			connect(con);
+			//((Node*)con.input_node)->m_connections.emplace_back(con);
+			//((Node*)con.output_node)->m_connections.emplace_back(con);
 		}
 
 		// only render outputs
@@ -123,6 +124,18 @@ void proto::Node::disconnect(const Connection& _con)
 	if (it != nullptr)
 	{
 		m_connections.erase(it);
+	}
+}
+
+void proto::Node::connect(const Connection& _con)
+{
+	Node* in = (Node*)_con.input_node;
+	Node* out = (Node*)_con.output_node;
+
+	if (in->m_connections.contains(_con) == false && out->m_connections.contains(_con) == false)
+	{
+		in->m_connections.emplace_back(_con);
+		out->m_connections.emplace_back(_con);
 	}
 }
 
