@@ -62,12 +62,12 @@ void proto::Node::update()
 		
 		ImNodes::Ez::OutputSlots(m_outputSlots.data(), (int)m_outputSlots.size());
 
-		Connection new_connection;
-		if (ImNodes::GetNewConnection(&new_connection.input_node, &new_connection.input_slot,
-			&new_connection.output_node, &new_connection.output_slot))
+		Connection con{};
+		if (ImNodes::GetNewConnection(&con.input_node, &con.input_slot,
+			&con.output_node, &con.output_slot) && allowed(con))
 		{
-			((Node*)new_connection.input_node)->m_connections.emplace_back(new_connection);
-			((Node*)new_connection.output_node)->m_connections.emplace_back(new_connection);
+			((Node*)con.input_node)->m_connections.emplace_back(con);
+			((Node*)con.output_node)->m_connections.emplace_back(con);
 		}
 
 		// only render outputs
@@ -104,6 +104,11 @@ void proto::Node::clear()
 	m_outputSlots.clear();
 
 	m_connections.clear();
+}
+
+bool proto::Node::allowed(const Connection& _con)
+{
+	return true;
 }
 
 void proto::Node::disconnect(const Connection& _con)
