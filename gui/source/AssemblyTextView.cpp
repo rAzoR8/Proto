@@ -30,13 +30,13 @@ void proto::AssemblyTextView::update(spvgentwo::Module& _module)
                 switch (operand.type)
                 {
                 case Operand::Type::Instruction:
-                    s << " %%" << operand.instruction->getResultId();
+                    s << " %" << operand.instruction->getResultId();
                     break;
                 case Operand::Type::ResultId:
-                    s << " %%" << operand.resultId;
+                    s << " %" << operand.resultId;
                     break;
                 case Operand::Type::BranchTarget:
-                    s << " %%" << operand.branchTarget->front().getResultId();
+                    s << " %" << operand.branchTarget->front().getResultId();
                     break;
                 case Operand::Type::Literal:
                     s << " " << operand.value.value;
