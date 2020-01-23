@@ -51,12 +51,11 @@ namespace proto
 	enum class Slot : int
 	{
 		Unknown = 0,
-		EntryBlock = 1, // functionEntryBlock
-		Instruction,
+		FuncEntry = 1, // functionEntryBlock
 		BasicBlock
 	};
 
-	static const char* g_slotTitles[] = { "EntryBlock", "Instruction", "BasicBlock" };
+	static const char* g_slotTitles[] = { "FuncEntry", "FuncEntry", "BasicBlock" };
 	inline const char* getSlotTitle(Slot _slot) { return g_slotTitles[(int)_slot - 1]; }
 	Slot getSlot(const char* _pSlot);
 
@@ -98,8 +97,8 @@ namespace proto
 
 		void update();
 
-		void addInputSlot(Slot _kind);
-		void addOutputSlot(Slot _kind);
+		void addInputSlot(Slot _kind, const char* _pTitle = nullptr);
+		void addOutputSlot(Slot _kind, const char* _pTitle = nullptr);
 
 		void clear();
 

@@ -20,10 +20,10 @@ proto::Node::Node(spvgentwo::IAllocator* _pAlloc, const char* _pTitle, ImVec2 _p
 	case Type::Instruction:
 		break;
 	case Type::BasicBlock:
-		addInputSlot(Slot::EntryBlock);
+		addInputSlot(Slot::FuncEntry);
 		break;
 	case Type::Function:
-		addOutputSlot(Slot::EntryBlock);
+		addOutputSlot(Slot::FuncEntry, "EntryBlock");
 		break;
 	case Type::EntryPoint:
 		break;
@@ -88,14 +88,14 @@ void proto::Node::update()
 	ImNodes::Ez::EndNode();
 }
 
-void proto::Node::addInputSlot(Slot _kind)
+void proto::Node::addInputSlot(Slot _kind, const char* _pTitle)
 {
-	m_inputSlots.emplace_back(getSlotTitle(_kind), (int)_kind);
+	m_inputSlots.emplace_back(_pTitle ? _pTitle : getSlotTitle(_kind), (int)_kind);
 }
 
-void proto::Node::addOutputSlot(Slot _kind)
+void proto::Node::addOutputSlot(Slot _kind, const char* _pTitle)
 {
-	m_outputSlots.emplace_back(getSlotTitle(_kind), (int)_kind);
+	m_outputSlots.emplace_back(_pTitle ? _pTitle : getSlotTitle(_kind), (int)_kind);
 }
 
 void proto::Node::clear()
