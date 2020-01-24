@@ -52,7 +52,9 @@ namespace proto
 	{
 		Unknown = 0,
 		FuncEntry = 1, // functionEntryBlock
-		BasicBlock
+		InstrArg0,
+		InstrArg1,
+		InstrArg2
 	};
 
 	/// A structure defining a connection between two slots of two nodes.
@@ -101,18 +103,20 @@ namespace proto
 		static void connect(const Connection& _con);
 		static void disconnect(const Connection& _con);
 
-	private:
-		Node(spvgentwo::IAllocator* _pAlloc, const char* _pTitle, ImVec2 _pos, Type _type);
+		bool isSelected() const { return m_selected; }
+		ImVec2 getPosition() const { return m_pos; }
 
+	private:
 		bool allowedDisconnection(const Connection& _con);
 		bool allowedConnection(const Connection& _con);
 		spvgentwo::List<Connection>::Iterator remove(const Connection& _con);
 
-	private:
 		void updateEntryPoint();
 		void updateFunction();
 		void updateBasicBlock();
 		void updateInstruction();
+
+		void updateInstructionSlots();
 
 	private:
 		spvgentwo::IAllocator* m_pAlloc = nullptr;

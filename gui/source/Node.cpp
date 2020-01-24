@@ -18,6 +18,7 @@ proto::Node::Node(spvgentwo::IAllocator* _pAlloc, const char* _pTitle, ImVec2 _p
 	switch (m_spv.type)
 	{
 	case Type::Instruction:
+		updateInstructionSlots();
 		break;
 	case Type::BasicBlock:
 		addInputSlot(Slot::FuncEntry, "FuncEntry");
@@ -209,6 +210,26 @@ void proto::Node::updateBasicBlock()
 	//const char* label = bb.getName();
 	//ImGui::Text("Label: %s", label);
 
+	if (m_selected && ImGui::IsMouseReleased(1) && ImGui::IsWindowHovered() && !ImGui::IsMouseDragging(1))
+	{
+		ImGui::FocusWindow(ImGui::GetCurrentWindow());
+		ImGui::OpenPopup("BasicBlockContextMenu");
+	}
+
+	if (ImGui::BeginPopup("BasicBlockContextMenu"))
+	{
+		if (ImGui::MenuItem("Add Instruction"))
+		{
+			bb.addInstruction();
+		}
+
+		if (ImGui::IsAnyMouseDown() && !ImGui::IsWindowHovered())
+		{
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
+
 	//for (Instruction& i : bb) 
 	//{
 	//	const char* name = i.getName();
@@ -220,4 +241,8 @@ void proto::Node::updateInstruction()
 {
 	Instruction& i = *m_spv.obj.instr;
 	ImGui::Text("%u = %u %s", i.getResultId(), (unsigned int)i.getOperation(), i.getName());
+}
+
+void proto::Node::updateInstructionSlots()
+{
 }

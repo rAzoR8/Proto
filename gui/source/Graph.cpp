@@ -133,6 +133,23 @@ void proto::Graph::updateNodes()
         {
 
         });
+
+		for (BasicBlock& bb : f)
+		{
+			updateNodeFromContainer(bb, Type::Instruction,
+				[&](Instruction& instr) // add node func
+			{
+				Node& instrNode = m_nodes.emplace(&instr, Node(m_pAlloc, "IntrsNode", pos, &instr)).first->second;
+				ImNodes::AutoPositionNode(&instrNode);
+
+				//Node::connect({ &instrNode, "FuncEntry", getNode(&bb), "EntryBlock" });
+
+			}, [&](Node& fNode) // Remove node func
+			{
+
+			});
+		}
+
     }
 
     //updateNodeFromContainer(m_module.getEntryPoints(), Node::Type::EntryPoint,
@@ -151,8 +168,18 @@ void proto::Graph::updateContextMenu()
 {
     if (ImGui::IsMouseReleased(1) && ImGui::IsWindowHovered() && !ImGui::IsMouseDragging(1))
     {
-        ImGui::FocusWindow(ImGui::GetCurrentWindow());
-        ImGui::OpenPopup("NodesContextMenu");
+        bool anySelected = false;
+
+        for (const auto& [spv, node] : m_nodes)
+        {
+            anySelected |= node.isSelected();
+        }
+
+        if (anySelected == false)
+        {
+            ImGui::FocusWindow(ImGui::GetCurrentWindow());
+            ImGui::OpenPopup("NodesContextMenu");
+        }
     }
 
     if (ImGui::BeginPopup("NodesContextMenu"))
