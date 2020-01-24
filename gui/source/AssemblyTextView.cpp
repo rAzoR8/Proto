@@ -21,25 +21,52 @@ void proto::AssemblyTextView::update(spvgentwo::Module& _module)
 
         std::ostringstream s;
 
-        auto instrPrint = [&s](const Instruction& instr)
+        auto nameOrId = [&s](const Instruction* instr)
         {
-            s << instr.getResultId() << " = " << (unsigned int)instr.getOperation();
+            const char* resName = instr->getName();
+            if (resName != nullptr && *resName != '\0')
+            {
+                s << resName;
+            }
+            else
+            {
+                s << instr->getResultId();
+            }
+        };
+
+        auto instrPrint = [&](const Instruction& instr)
+        {
+            if (instr.hasResult())
+            {
+                nameOrId(&instr);
+                s << " = ";
+            }
+            s << (unsigned int)instr.getOperation();
 
             for (const Operand& operand : instr)
             {
+                if (operand.type == Operand::Type::Literal)
+                {
+                    s << " ";
+                }
+                else
+                {
+                    s << " %";
+                }
+
                 switch (operand.type)
                 {
                 case Operand::Type::Instruction:
-                    s << " %" << operand.instruction->getResultId();
+                    nameOrId(operand.instruction);
                     break;
                 case Operand::Type::ResultId:
-                    s << " %" << operand.resultId;
+                    s << operand.resultId;
                     break;
                 case Operand::Type::BranchTarget:
-                    s << " %" << operand.branchTarget->front().getResultId();
+                    nameOrId(&operand.branchTarget->front());
                     break;
                 case Operand::Type::Literal:
-                    s << " " << operand.value.value;
+                    s << operand.value.value;
                     break;
                 default:
                     break;
