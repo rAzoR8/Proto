@@ -116,8 +116,8 @@ void proto::Node::clear()
 
 bool proto::Node::allowedDisconnection(const Connection& _con)
 {
-	return strcmp(_con.input_slot, "FuncEntry") != 0;
-	//return true;
+	//return strcmp(_con.input_slot, "FuncEntry") != 0;
+	return true;
 }
 
 bool proto::Node::allowedConnection(const Connection& _con)
@@ -193,7 +193,7 @@ void proto::Node::updateFunction()
 	{
 		if (ImGui::MenuItem("Add BasicBlock"))
 		{
-			func.addBasicBlock("Block");
+			//func.addBasicBlock("Block");
 		}
 
 		if (ImGui::IsAnyMouseDown() && !ImGui::IsWindowHovered())

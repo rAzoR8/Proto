@@ -11,37 +11,6 @@ proto::Graph::Graph(spvgentwo::IAllocator* _pAlloc, spvgentwo::ILogger* _pLogger
     m_pName(_pName),
     m_newFunctionPopup(_pAlloc)
 {
-    // configure capabilities and extensions
-    m_module.addCapability(spv::Capability::Shader);
-
-    return;
-
-    // global variables
-    Instruction* uniformVar = m_module.uniform<vector_t<float, 3>>("u_Position");
-
-    // float add(float x, float y)
-    Function& funcAdd = m_module.addFunction<float, float, float>("add", spv::FunctionControlMask::Const);
-    {
-        BasicBlock& bb = *funcAdd; // get entry block to this function
-
-        Instruction* x = funcAdd.getParameter(0);
-        Instruction* y = funcAdd.getParameter(1);
-
-        Instruction* z = bb.Add(x, y);
-        bb.returnValue(z);
-    }
-
-    // void entryPoint();
-    {
-        EntryPoint& entry = m_module.addEntryPoint(spv::ExecutionModel::Fragment, "main");
-        entry.addExecutionMode(spv::ExecutionMode::OriginUpperLeft);
-        BasicBlock& bb = *entry; // get entry block to this function
-
-        Instruction* uniVec = bb->opLoad(uniformVar);
-        Instruction* s = bb->opDot(uniVec, uniVec);
-        entry->call(&funcAdd, s, s); // call add(s, s)
-        entry->opReturn();
-    }
 }
 
 proto::Graph::~Graph()
@@ -56,6 +25,10 @@ proto::Graph::~Graph()
 void proto::Graph::update()
 {
     createCanvas();
+
+    m_module.reset();
+    // configure capabilities and extensions
+    m_module.addCapability(spv::Capability::Shader);
 
     if (ImGui::Begin(m_pName, nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
     {
