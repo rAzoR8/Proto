@@ -3,7 +3,8 @@
 using namespace proto;
 using namespace spvgentwo;
 
-OpNodeExpr::OpNodeExpr()
+OpNodeExpr::OpNodeExpr(OpNodeType _type) :
+	m_type(_type)
 {
 }
 

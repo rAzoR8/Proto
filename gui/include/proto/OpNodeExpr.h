@@ -66,12 +66,14 @@ namespace proto
 	class OpNodeExpr
 	{
 	public:
-		OpNodeExpr();
+		OpNodeExpr(OpNodeType mtype = OpNodeType::NumOf);
 		~OpNodeExpr();
 
 		void operator()(const spvgentwo::List<OpNodeExpr*>& _inputs, const spvgentwo::List<OpNodeExpr*>& _outputs);		
 
 		OpNodeType getType() const { return m_type; }
+
+		OpNodeDesc getInfo() { return g_OpNodeDesc[uint32_t(m_type)]; }
 
 	private:
 		OpNodeType m_type = OpNodeType::NumOf;
