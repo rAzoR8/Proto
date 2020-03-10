@@ -21,8 +21,13 @@ void OpNodeExpr::operator()(const List<OpNodeExpr*>& _inputs, const List<OpNodeE
 
 	switch (m_type)
 	{
-    case OpNodeType::Var: // turn var desc into opVar & accesschain / load
+    case OpNodeType::InVar: // turn var desc into opVar & load
         makeVar();
+        m_pResult = (*m_pBB)->opLoad(m_pVar);
+        break;
+    case OpNodeType::OutVar: // turn var desc into opVar & store
+        makeVar();
+        (*m_pBB)->opStore(m_pVar, lhs);
         break;
     case OpNodeType::Const:
         makeConst();
@@ -40,6 +45,7 @@ void OpNodeExpr::operator()(const List<OpNodeExpr*>& _inputs, const List<OpNodeE
     case OpNodeType::GreaterEqual:
         break;
     case OpNodeType::Add:
+        m_pResult = (*m_pBB)->Add(lhs, rhs);
         break;
     case OpNodeType::Sub:
         break;
@@ -50,9 +56,6 @@ void OpNodeExpr::operator()(const List<OpNodeExpr*>& _inputs, const List<OpNodeE
     case OpNodeType::Dot:
         break;
     case OpNodeType::Select:
-        break;
-    case OpNodeType::Store:
-        makeStore(_inputs.front()->m_pVar, rhs);
         break;
     case OpNodeType::Cast:
         break;
@@ -75,16 +78,9 @@ void OpNodeExpr::makeVar()
     {
         m_pVar = pModule->variable(pType, m_pVarDesc->storageClass, m_pVarDesc->name, nullptr);
     }
-
-    m_pResult = (*m_pBB)->opLoad(m_pVar);
 }
 
 void  OpNodeExpr::makeConst()
 {
     m_pResult = m_pBB->getModule()->addConstant(m_pConstDesc->constant, m_pConstDesc->name);
-}
-
-void OpNodeExpr::makeStore(Instruction* _pVar, Instruction* _pValue)
-{
-    (*m_pBB)->opStore(_pVar, _pValue);
 }

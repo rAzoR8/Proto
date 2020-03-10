@@ -15,7 +15,8 @@ namespace proto
 {
 	enum class OpNodeType : uint32_t
 	{
-		Var = 0, // needs load
+		InVar = 0, // needs load
+		OutVar, // needs store
 		Const,
 
 		Equal,
@@ -33,7 +34,6 @@ namespace proto
 
 		Select,
 		//Phi,
-		Store, // output
 
 		Cast,
 
@@ -48,8 +48,9 @@ namespace proto
 	};
 
 	constexpr OpNodeDesc g_OpNodeDesc[uint32_t(OpNodeType::NumOf)] = { 
-		{ OpNodeType::Var, 1u, 1u},
-		{ OpNodeType::Const, 1u, 1u},
+		{ OpNodeType::InVar, 0u, 1u},
+		{ OpNodeType::OutVar, 1u, 0u},
+		{ OpNodeType::Const, 0u, 1u},
 		{ OpNodeType::Equal, 2u, 1u},
 		{ OpNodeType::NotEqual, 2u, 1u},
 		{ OpNodeType::Less, 2u, 1u},
@@ -62,7 +63,6 @@ namespace proto
 		{ OpNodeType::Div, 2u, 1u},
 		{ OpNodeType::Dot, 2u, 1u},
 		{ OpNodeType::Select, 2u, 1u},
-		{ OpNodeType::Store, 2u, 0u}, // value and destination var (exit node)
 		//{ OpNodeType::Phi, ~0u, 1u},
 		{ OpNodeType::Cast, 1u, 1u},
 	};
@@ -98,7 +98,6 @@ namespace proto
 	private:
 		void makeVar();
 		void makeConst();
-		void makeStore(spvgentwo::Instruction* _pVar, spvgentwo::Instruction* _pValue);
 
 	private:
 		OpNodeType m_type = OpNodeType::NumOf;
