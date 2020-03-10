@@ -1,7 +1,7 @@
 #pragma once
 
 #include "proto/Window.h"
-#include "Graph.h"
+#include "EditorGraph.h"
 #include "common/HeapAllocator.h"
 #include "common/ConsoleLogger.h"
 
@@ -27,7 +27,7 @@ namespace proto
 
 		bool m_shouldClose = false;
 
-		Graph m_graph;		
+		EditorGraph m_graph;		
 	};
 
 } // !proto

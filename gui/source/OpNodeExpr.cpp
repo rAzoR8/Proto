@@ -4,10 +4,19 @@
 using namespace proto;
 using namespace spvgentwo;
 
-OpNodeExpr::OpNodeExpr(spvgentwo::BasicBlock* _pBB, OpNodeType _type) :
+OpNodeExpr::OpNodeExpr(ImVec2 _pos, spvgentwo::BasicBlock* _pBB, OpNodeType _type) :
+    m_pos(_pos),
 	m_type(_type),
 	m_pBB(_pBB)
 {
+	for (auto i = 0; i < getInfo().numInputs; ++i)
+	{
+		m_inputSlots.emplace_back("In", i);
+	}
+	for (auto i = 0; i < getInfo().numOutputs; ++i)
+	{
+		m_outputSlots.emplace_back("Out", i);
+	}
 }
 
 OpNodeExpr::~OpNodeExpr()
@@ -84,3 +93,149 @@ void  OpNodeExpr::makeConst()
 {
     m_pResult = m_pBB->getModule()->addConstant(m_pConstDesc->constant, m_pConstDesc->name);
 }
+
+void OpNodeExpr::update()
+{
+	const char* name = getInfo().name;
+	if (ImNodes::Ez::BeginNode(this, name, &m_pos, &m_selected))
+	{
+		ImNodes::Ez::InputSlots(m_inputSlots.data(), (int)m_inputSlots.size());
+
+		// draw body here
+
+		ImNodes::Ez::OutputSlots(m_outputSlots.data(), (int)m_outputSlots.size());
+
+		Connection con{};
+		if (ImNodes::GetNewConnection(&con.input_node, &con.input_slot,
+			&con.output_node, &con.output_slot) && allowedConnection(con))
+		{
+			connect(con);
+		}
+
+		// only render outputs
+		for (auto it = m_connections.begin(); it != m_connections.end();)
+		{
+			const Connection& con = *it;
+			if (con.output_node != this)
+			{
+				++it;
+				continue;
+			}
+
+			if (ImNodes::Connection(con.input_node, con.input_slot,
+				con.output_node, con.output_slot) == false && allowedDisconnection(con))
+			{
+				// Remove deleted connections
+				((OpNodeExpr*)con.input_node)->remove(con);
+				it = ((OpNodeExpr*)con.output_node)->remove(con); // // output node == this
+			}
+			else
+			{
+				++it;
+			}
+		}
+	}
+	ImNodes::Ez::EndNode();
+}
+
+void OpNodeExpr::addInputSlot(Slot _kind, const char* _pTitle)
+{
+	m_inputSlots.emplace_back(_pTitle, (int)_kind);
+}
+
+void OpNodeExpr::addOutputSlot(Slot _kind, const char* _pTitle)
+{
+	m_outputSlots.emplace_back(_pTitle, (int)_kind);
+}
+
+void OpNodeExpr::clear()
+{
+	m_inputSlots.clear();
+	m_outputSlots.clear();
+
+	m_connections.clear();
+}
+
+bool OpNodeExpr::allowedDisconnection(const Connection& _con)
+{
+	//return strcmp(_con.input_slot, "FuncEntry") != 0;
+	return true;
+}
+
+bool OpNodeExpr::allowedConnection(const Connection& _con)
+{
+	return true;
+}
+
+spvgentwo::List<proto::Connection>::Iterator OpNodeExpr::remove(const Connection& _con)
+{
+	auto it = m_connections.find(_con);
+
+	if (it != nullptr)
+	{
+		return m_connections.erase(it);
+	}
+
+	return it;
+}
+
+void OpNodeExpr::connect(const Connection& _con)
+{
+	OpNodeExpr* in = (OpNodeExpr*)_con.input_node;
+	OpNodeExpr* out = (OpNodeExpr*)_con.output_node;
+
+	if (in->m_connections.contains(_con) == false && out->m_connections.contains(_con) == false)
+	{
+		in->m_connections.emplace_back(_con);
+		out->m_connections.emplace_back(_con);
+	}
+}
+
+void OpNodeExpr::disconnect(const Connection& _con)
+{
+	OpNodeExpr* in = (OpNodeExpr*)_con.input_node;
+	OpNodeExpr* out = (OpNodeExpr*)_con.output_node;
+
+	in->remove(_con);
+	out->remove(_con);
+}
+
+//void OpNodeExpr::updateFunction()
+//{
+//	Function& func = *m_spv.obj.func;
+//
+//	String args(m_pAlloc);
+//	const char* ret =  func.getReturnType()->getType()->getString();
+//	const char* name =  func.getName();
+//	
+//	for (auto it = func.getParameters().begin(), end = func.getParameters().end(); it != end; ++it)
+//	{
+//		args += it->getType()->getString();
+//		if (it + 1 != end)
+//		{
+//			args += ", ";		
+//		}
+//	}
+//
+//	ImGui::Text("%s %s(%s)", ret, name, args.c_str());
+//
+//	if (m_selected && ImGui::IsMouseReleased(1) && ImGui::IsWindowHovered() && !ImGui::IsMouseDragging(1))
+//	{
+//		ImGui::FocusWindow(ImGui::GetCurrentWindow());
+//		ImGui::OpenPopup("FunctionContextMenu");
+//	}
+//
+//	if (ImGui::BeginPopup("FunctionContextMenu"))
+//	{
+//		if (ImGui::MenuItem("Add BasicBlock"))
+//		{
+//			//func.addBasicBlock("Block");
+//		}
+//
+//		if (ImGui::IsAnyMouseDown() && !ImGui::IsWindowHovered())
+//		{
+//			ImGui::CloseCurrentPopup();
+//		}
+//		ImGui::EndPopup();
+//	}	
+//}

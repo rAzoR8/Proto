@@ -3,6 +3,7 @@
 #include "spvgentwo/List.h"
 #include "spvgentwo/Constant.h"
 #include <stdint.h>
+#include "ImNodesEz.h"
 
 //forward decl
 namespace spvgentwo
@@ -42,29 +43,29 @@ namespace proto
 
 	struct OpNodeDesc
 	{
-		OpNodeType type; 
+		const char* name; 
 		uint32_t numInputs;
 		uint32_t numOutputs;
 	};
 
 	constexpr OpNodeDesc g_OpNodeDesc[uint32_t(OpNodeType::NumOf)] = { 
-		{ OpNodeType::InVar, 0u, 1u},
-		{ OpNodeType::OutVar, 1u, 0u},
-		{ OpNodeType::Const, 0u, 1u},
-		{ OpNodeType::Equal, 2u, 1u},
-		{ OpNodeType::NotEqual, 2u, 1u},
-		{ OpNodeType::Less, 2u, 1u},
-		{ OpNodeType::LessEqual, 2u, 1u},
-		{ OpNodeType::Greater, 2u, 1u},
-		{ OpNodeType::GreaterEqual, 2u, 1u},
-		{ OpNodeType::Add, 2u, 1u},
-		{ OpNodeType::Sub, 2u, 1u},
-		{ OpNodeType::Mul, 2u, 1u},
-		{ OpNodeType::Div, 2u, 1u},
-		{ OpNodeType::Dot, 2u, 1u},
-		{ OpNodeType::Select, 2u, 1u},
+		{ "InVar", 0u, 1u},
+		{ "OutVar", 1u, 0u},
+		{ "Const", 0u, 1u},
+		{ "Equal", 2u, 1u},
+		{ "NotEqual", 2u, 1u},
+		{ "Less", 2u, 1u},
+		{ "LessEqual", 2u, 1u},
+		{ "Greater", 2u, 1u},
+		{ "GreaterEqual", 2u, 1u},
+		{ "Add", 2u, 1u},
+		{ "Sub", 2u, 1u},
+		{ "Mul", 2u, 1u},
+		{ "Div", 2u, 1u},
+		{ "Dot", 2u, 1u},
+		{ "Select", 2u, 1u},
 		//{ OpNodeType::Phi, ~0u, 1u},
-		{ OpNodeType::Cast, 1u, 1u},
+		{ "Cast", 1u, 1u},
 	};
 
 	struct VarDesc
@@ -80,10 +81,44 @@ namespace proto
 		const char* name = nullptr;
 	};
 
+	enum class Slot : int
+	{
+		Unknown = 0,
+		InstrArg0,
+		InstrArg1,
+		InstrArg2
+	};
+
+	/// A structure defining a connection between two slots of two nodes.
+	struct Connection
+	{
+		/// `id` that was passed to BeginNode() of input node.
+		void* input_node = nullptr;
+		/// Descriptor of input slot.
+		const char* input_slot = nullptr;
+		/// `id` that was passed to BeginNode() of output node.
+		void* output_node = nullptr;
+		/// Descriptor of output slot.
+		const char* output_slot = nullptr;
+
+		bool operator==(const Connection& other) const
+		{
+			return input_node == other.input_node &&
+				input_slot == other.input_slot &&
+				output_node == other.output_node &&
+				output_slot == other.output_slot;
+		}
+
+		bool operator!=(const Connection& other) const
+		{
+			return !operator ==(other);
+		}
+	};
+
 	class OpNodeExpr
 	{
 	public:
-		OpNodeExpr(spvgentwo::BasicBlock* _pBB = nullptr, OpNodeType mtype = OpNodeType::NumOf);
+		OpNodeExpr(ImVec2 _pos = ImVec2(), spvgentwo::BasicBlock* _pBB = nullptr, OpNodeType mtype = OpNodeType::NumOf);
 		~OpNodeExpr();
 
 		void operator()(const spvgentwo::List<OpNodeExpr*>& _inputs, const spvgentwo::List<OpNodeExpr*>& _outputs);		
@@ -94,6 +129,26 @@ namespace proto
 
 		void setVarDesc(const VarDesc* _pVarDesc) { m_pVarDesc = _pVarDesc; }
 		void setConstDesc(const ConstDesc* _pConstDesc) { m_pConstDesc = _pConstDesc; }
+
+
+		// editor note:
+		void update();
+
+		void addInputSlot(Slot _kind, const char* _pTitle);
+		void addOutputSlot(Slot _kind, const char* _pTitle);
+
+		void clear();
+
+		static void connect(const Connection& _con);
+		static void disconnect(const Connection& _con);
+
+		bool isSelected() const { return m_selected; }
+		ImVec2 getPosition() const { return m_pos; }
+
+	private:
+		bool allowedDisconnection(const Connection& _con);
+		bool allowedConnection(const Connection& _con);
+		spvgentwo::List<Connection>::Iterator remove(const Connection& _con);
 
 	private:
 		void makeVar();
@@ -106,5 +161,12 @@ namespace proto
 		spvgentwo::Instruction* m_pVar = nullptr;
 		const VarDesc* m_pVarDesc = nullptr;
 		const ConstDesc* m_pConstDesc = nullptr;
+
+		ImVec2 m_pos{};
+		bool m_selected = false;
+
+		spvgentwo::Vector<ImNodes::Ez::SlotInfo> m_inputSlots;
+		spvgentwo::Vector<ImNodes::Ez::SlotInfo> m_outputSlots;
+		spvgentwo::List<Connection> m_connections;
 	};
 } // !proto
