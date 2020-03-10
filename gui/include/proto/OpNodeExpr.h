@@ -1,6 +1,7 @@
 #pragma once
 
 #include "spvgentwo/List.h"
+#include "spvgentwo/Vector.h"
 #include "spvgentwo/Constant.h"
 #include <stdint.h>
 #include "ImNodesEz.h"
@@ -143,6 +144,8 @@ namespace proto
 		static void disconnect(const Connection& _con);
 
 		bool isSelected() const { return m_selected; }
+		bool toBeRemoved() const { return m_toBeRemoved; }
+
 		ImVec2 getPosition() const { return m_pos; }
 
 	private:
@@ -164,6 +167,7 @@ namespace proto
 
 		ImVec2 m_pos{};
 		bool m_selected = false;
+		bool m_toBeRemoved = false;
 
 		spvgentwo::Vector<ImNodes::Ez::SlotInfo> m_inputSlots;
 		spvgentwo::Vector<ImNodes::Ez::SlotInfo> m_outputSlots;

@@ -41,7 +41,7 @@ void proto::EditorGraph::update()
 
         for (auto& node : m_nodes)
         {
-            node.update();
+            node.data().get().update();
         }
 
         ImNodes::EndCanvas();

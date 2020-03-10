@@ -125,9 +125,12 @@ void OpNodeExpr::update()
 			if (ImNodes::Connection(con.input_node, con.input_slot,
 				con.output_node, con.output_slot) == false && allowedDisconnection(con))
 			{
+				// todo: mark fore removal
+				m_toBeRemoved = true;
+
 				// Remove deleted connections
 				((OpNodeExpr*)con.input_node)->remove(con);
-				it = ((OpNodeExpr*)con.output_node)->remove(con); // // output node == this
+				it = ((OpNodeExpr*)con.output_node)->remove(con); // output node == this
 			}
 			else
 			{
