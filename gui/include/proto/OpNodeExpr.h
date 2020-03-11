@@ -3,6 +3,7 @@
 #include "spvgentwo/List.h"
 #include "spvgentwo/Vector.h"
 #include "spvgentwo/Constant.h"
+#include "common/ExprGraph.h"
 #include <stdint.h>
 #include "ImNodesEz.h"
 
@@ -11,6 +12,9 @@ namespace spvgentwo
 {
 	class Instruction;
 	class BasicBlock;
+
+	//template <class Func>
+	//class ExprGraph;
 } // !spvgentwo
 
 namespace proto
@@ -125,18 +129,15 @@ namespace proto
 		void operator()(const spvgentwo::List<OpNodeExpr*>& _inputs, const spvgentwo::List<OpNodeExpr*>& _outputs);		
 
 		OpNodeType getType() const { return m_type; }
-
 		OpNodeDesc getInfo() { return g_OpNodeDesc[uint32_t(m_type)]; }
+
+		void setParent(spvgentwo::ExprGraph<OpNodeExpr>* _pGraph, typename spvgentwo::ExprGraph<OpNodeExpr>::NodeType* _pParent);
 
 		void setVarDesc(const VarDesc* _pVarDesc) { m_pVarDesc = _pVarDesc; }
 		void setConstDesc(const ConstDesc* _pConstDesc) { m_pConstDesc = _pConstDesc; }
-
-
+		
 		// editor note:
 		void update();
-
-		void addInputSlot(Slot _kind, const char* _pTitle);
-		void addOutputSlot(Slot _kind, const char* _pTitle);
 
 		void clear();
 
@@ -172,5 +173,8 @@ namespace proto
 		spvgentwo::Vector<ImNodes::Ez::SlotInfo> m_inputSlots;
 		spvgentwo::Vector<ImNodes::Ez::SlotInfo> m_outputSlots;
 		spvgentwo::List<Connection> m_connections;
+
+		spvgentwo::ExprGraph<OpNodeExpr>* m_pGraph = nullptr; 
+		typename spvgentwo::ExprGraph<OpNodeExpr>::NodeType* m_pParent = nullptr;
 	};
 } // !proto

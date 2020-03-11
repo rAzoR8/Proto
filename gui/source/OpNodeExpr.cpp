@@ -9,13 +9,13 @@ OpNodeExpr::OpNodeExpr(ImVec2 _pos, spvgentwo::BasicBlock* _pBB, OpNodeType _typ
 	m_type(_type),
 	m_pBB(_pBB)
 {
-	for (auto i = 0; i < getInfo().numInputs; ++i)
+	for (auto i = 0u; i < getInfo().numInputs; ++i)
 	{
-		m_inputSlots.emplace_back("In", i);
+		m_inputSlots.emplace_back("In", (int)i);
 	}
-	for (auto i = 0; i < getInfo().numOutputs; ++i)
+	for (auto i = 0u; i < getInfo().numOutputs; ++i)
 	{
-		m_outputSlots.emplace_back("Out", i);
+		m_outputSlots.emplace_back("Out", (int)i);
 	}
 }
 
@@ -75,6 +75,12 @@ void OpNodeExpr::operator()(const List<OpNodeExpr*>& _inputs, const List<OpNodeE
 	}
 }
 
+void OpNodeExpr::setParent(spvgentwo::ExprGraph<OpNodeExpr>* _pGraph, typename spvgentwo::ExprGraph<OpNodeExpr>::NodeType* _pParent)
+{
+	m_pGraph = _pGraph;
+	m_pParent = _pParent;
+}
+
 void OpNodeExpr::makeVar()
 {
     Module* pModule = m_pBB->getModule();
@@ -125,7 +131,7 @@ void OpNodeExpr::update()
 			if (ImNodes::Connection(con.input_node, con.input_slot,
 				con.output_node, con.output_slot) == false && allowedDisconnection(con))
 			{
-				// todo: mark fore removal
+				// mark fore removal
 				m_toBeRemoved = true;
 
 				// Remove deleted connections
@@ -139,16 +145,6 @@ void OpNodeExpr::update()
 		}
 	}
 	ImNodes::Ez::EndNode();
-}
-
-void OpNodeExpr::addInputSlot(Slot _kind, const char* _pTitle)
-{
-	m_inputSlots.emplace_back(_pTitle, (int)_kind);
-}
-
-void OpNodeExpr::addOutputSlot(Slot _kind, const char* _pTitle)
-{
-	m_outputSlots.emplace_back(_pTitle, (int)_kind);
 }
 
 void OpNodeExpr::clear()

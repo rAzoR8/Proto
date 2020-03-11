@@ -3,8 +3,6 @@
 #include "spvgentwo/Module.h"
 #include "AssemblyTextView.h"
 #include "NewFunctionPopup.h"
-//#include <unordered_map>
-#include "common/ExprGraph.h"
 #include "OpNodeExpr.h"
 
 // forward decls
