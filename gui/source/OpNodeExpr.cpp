@@ -10,11 +10,11 @@ OpNodeExpr::OpNodeExpr(ImVec2 _pos, OpNodeType _type) :
 {
 	for (auto i = 0u; i < getInfo().numInputs; ++i)
 	{
-		m_inputSlots.emplace_back("In", (int)i);
+		m_inputSlots.emplace_back("In", (int)i + 1);
 	}
 	for (auto i = 0u; i < getInfo().numOutputs; ++i)
 	{
-		m_outputSlots.emplace_back("Out", (int)i);
+		m_outputSlots.emplace_back("Out", (int)i + 1);
 	}
 }
 
