@@ -9,7 +9,8 @@ proto::EditorGraph::EditorGraph(spvgentwo::IAllocator* _pAlloc, spvgentwo::ILogg
     m_pAlloc(_pAlloc),
     m_module(_pAlloc, spv::Version, _pLogger),
     m_pName(_pName),
-    m_newFunctionPopup(_pAlloc)
+    m_newFunctionPopup(_pAlloc),
+    m_nodes(_pAlloc)
 {
 }
 
@@ -29,15 +30,14 @@ void proto::EditorGraph::update()
     m_module.reset();
     // configure capabilities and extensions
     m_module.addCapability(spv::Capability::Shader);
+    Function& main = m_module.addEntryPoint<void>(spv::ExecutionModel::Vertex, "main");
+    m_pBB = &main.front();
 
     if (ImGui::Begin(m_pName, nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
     {
         ImNodes::BeginCanvas(m_pCanvas);
 
         updateContextMenu();
-
-        // nodes from module
-        updateNodes();
 
         for (auto& node : m_nodes)
         {
@@ -94,6 +94,8 @@ void proto::EditorGraph::updateNodes()
 
 void proto::EditorGraph::updateContextMenu()
 {
+    ImVec2 pos = ImGui::GetCursorPos();
+
     if (ImGui::IsMouseReleased(1) && ImGui::IsWindowHovered() && !ImGui::IsMouseDragging(1))
     {
         bool anySelected = false;
@@ -112,14 +114,35 @@ void proto::EditorGraph::updateContextMenu()
 
     if (ImGui::BeginPopup("NodesContextMenu"))
     {
-        if (ImGui::MenuItem("Add Function"))
+        spvgentwo::ExprGraph<OpNodeExpr>::NodeType* pNode = nullptr;
+
+        if (ImGui::MenuItem("Constant"))
         {
-            m_newFunctionPopup.show(true);
+            pNode = m_nodes.emplace(OpNodeExpr{ pos, OpNodeType::Const });
         }
 
-        if (ImGui::MenuItem("Add EntryPoint"))
+        if (ImGui::MenuItem("InputVar"))
         {
-            //addEntryPoint();
+            pNode = m_nodes.emplace(OpNodeExpr{ pos, OpNodeType::InVar });
+        }
+
+        if (ImGui::MenuItem("OutputVar"))
+        {
+            pNode = m_nodes.emplace(OpNodeExpr{ pos, OpNodeType::OutVar });
+        }
+
+        if (ImGui::MenuItem("Add"))
+        {
+            pNode = m_nodes.emplace(OpNodeExpr{ pos, OpNodeType::Add });
+        }
+
+        if (pNode != nullptr)
+        {
+            auto& editorNode = pNode->data().get();
+            editorNode.setBasicBlock(m_pBB);
+            editorNode.setParent(&m_nodes, pNode);
+            editorNode.update();
+            ImNodes::AutoPositionNode(&editorNode);
         }
 
         if (ImGui::IsAnyMouseDown() && !ImGui::IsWindowHovered())
@@ -128,6 +151,4 @@ void proto::EditorGraph::updateContextMenu()
         }
         ImGui::EndPopup();
     }
-
-    m_newFunctionPopup.update(m_module);
 }

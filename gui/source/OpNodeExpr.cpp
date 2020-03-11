@@ -4,10 +4,9 @@
 using namespace proto;
 using namespace spvgentwo;
 
-OpNodeExpr::OpNodeExpr(ImVec2 _pos, spvgentwo::BasicBlock* _pBB, OpNodeType _type) :
+OpNodeExpr::OpNodeExpr(ImVec2 _pos, OpNodeType _type) :
     m_pos(_pos),
-	m_type(_type),
-	m_pBB(_pBB)
+	m_type(_type)
 {
 	for (auto i = 0u; i < getInfo().numInputs; ++i)
 	{
@@ -73,6 +72,11 @@ void OpNodeExpr::operator()(const List<OpNodeExpr*>& _inputs, const List<OpNodeE
     default:
         break;
 	}
+}
+
+void OpNodeExpr::setBasicBlock(spvgentwo::BasicBlock* _pBB)
+{
+	m_pBB = _pBB;
 }
 
 void OpNodeExpr::setParent(spvgentwo::ExprGraph<OpNodeExpr>* _pGraph, typename spvgentwo::ExprGraph<OpNodeExpr>::NodeType* _pParent)

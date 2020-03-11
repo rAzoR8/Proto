@@ -36,6 +36,7 @@ namespace proto
 		spvgentwo::IAllocator* m_pAlloc = nullptr;
 		ImNodes::CanvasState* m_pCanvas = nullptr;
 		spvgentwo::Module m_module;
+		spvgentwo::BasicBlock* m_pBB = nullptr;
 		AssemblyTextView m_textView;
 
 		const char* m_pName = nullptr;

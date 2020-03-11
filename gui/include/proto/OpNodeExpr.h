@@ -123,7 +123,7 @@ namespace proto
 	class OpNodeExpr
 	{
 	public:
-		OpNodeExpr(ImVec2 _pos = ImVec2(), spvgentwo::BasicBlock* _pBB = nullptr, OpNodeType mtype = OpNodeType::NumOf);
+		OpNodeExpr(ImVec2 _pos = ImVec2(), OpNodeType _type = OpNodeType::NumOf);
 		~OpNodeExpr();
 
 		void operator()(const spvgentwo::List<OpNodeExpr*>& _inputs, const spvgentwo::List<OpNodeExpr*>& _outputs);		
@@ -131,6 +131,7 @@ namespace proto
 		OpNodeType getType() const { return m_type; }
 		OpNodeDesc getInfo() { return g_OpNodeDesc[uint32_t(m_type)]; }
 
+		void setBasicBlock(spvgentwo::BasicBlock* _pBB);
 		void setParent(spvgentwo::ExprGraph<OpNodeExpr>* _pGraph, typename spvgentwo::ExprGraph<OpNodeExpr>::NodeType* _pParent);
 
 		void setVarDesc(const VarDesc* _pVarDesc) { m_pVarDesc = _pVarDesc; }
