@@ -41,7 +41,10 @@ void proto::EditorGraph::update()
 
         for (auto& node : m_nodes)
         {
-            node.data().get().update();
+            OpNodeExpr& expr = node.data().get();
+            expr.setBasicBlock(m_pBB);
+
+            expr.update();
         }
 
         ImNodes::EndCanvas();
@@ -66,30 +69,6 @@ void proto::EditorGraph::createCanvas()
     {
         m_pCanvas = m_pAlloc->construct<ImNodes::CanvasState>();
     }
-}
-
-void proto::EditorGraph::updateNodes()
-{
-    ImVec2 pos = ImGui::GetCursorPos();
-
-    //updateNodeFromContainer(m_module.getEntryPoints(), EditorNode::Type::EntryPoint,
-    //    [&](EntryPoint& f) // add node func
-    //{
-    //    EditorNode& newNode = m_nodes.emplace_back(m_pAlloc, "EntryPoint", ImVec2{}, &f);
-    //    newNode.update();
-    //    ImNodes::AutoPositionNode(&newNode);
-    //}, [&](EditorNode& n) // Remove node func
-    //{
-
-    //});
-
-    //EditorNode& bbNode = m_nodes.emplace(&bb, EditorNode(m_pAlloc, "BBNode", pos, &bb)).first->second;
-    //ImNodes::AutoPositionNode(&bbNode);
-
-    //if (f.size() == 1u)
-    //{
-    //    EditorNode::connect({ &bbNode, "FuncEntry", getNode(&f), "EntryBlock" });
-    //}
 }
 
 void proto::EditorGraph::updateContextMenu()
@@ -141,7 +120,6 @@ void proto::EditorGraph::updateContextMenu()
             auto& editorNode = pNode->data().get();
             editorNode.setBasicBlock(m_pBB);
             editorNode.setParent(&m_nodes, pNode);
-            editorNode.update();
             ImNodes::AutoPositionNode(&editorNode);
         }
 

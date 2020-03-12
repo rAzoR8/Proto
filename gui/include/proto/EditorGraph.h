@@ -28,8 +28,6 @@ namespace proto
 	private:
 		void createCanvas();
 
-		void updateNodes();
-
 		void updateContextMenu();
 
 	private:

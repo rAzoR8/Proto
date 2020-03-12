@@ -13,11 +13,11 @@ OpNodeExpr::OpNodeExpr(spvgentwo::IAllocator* _pAlloc,ImVec2 _pos, OpNodeType _t
 {
 	for (auto i = 0u; i < getInfo().numInputs; ++i)
 	{
-		m_inputSlots.emplace_back("In", (int)i + 1);
+		m_inputSlots.emplace_back("In", /*(int)i + */1);
 	}
 	for (auto i = 0u; i < getInfo().numOutputs; ++i)
 	{
-		m_outputSlots.emplace_back("Out", (int)i + 1);
+		m_outputSlots.emplace_back("Out", /*(int)i +*/ 1);
 	}
 }
 
@@ -205,43 +205,3 @@ void OpNodeExpr::disconnect(const Connection& _con)
 	in->remove(_con);
 	out->remove(_con);
 }
-
-//void OpNodeExpr::updateFunction()
-//{
-//	Function& func = *m_spv.obj.func;
-//
-//	String args(m_pAlloc);
-//	const char* ret =  func.getReturnType()->getType()->getString();
-//	const char* name =  func.getName();
-//	
-//	for (auto it = func.getParameters().begin(), end = func.getParameters().end(); it != end; ++it)
-//	{
-//		args += it->getType()->getString();
-//		if (it + 1 != end)
-//		{
-//			args += ", ";		
-//		}
-//	}
-//
-//	ImGui::Text("%s %s(%s)", ret, name, args.c_str());
-//
-//	if (m_selected && ImGui::IsMouseReleased(1) && ImGui::IsWindowHovered() && !ImGui::IsMouseDragging(1))
-//	{
-//		ImGui::FocusWindow(ImGui::GetCurrentWindow());
-//		ImGui::OpenPopup("FunctionContextMenu");
-//	}
-//
-//	if (ImGui::BeginPopup("FunctionContextMenu"))
-//	{
-//		if (ImGui::MenuItem("Add BasicBlock"))
-//		{
-//			//func.addBasicBlock("Block");
-//		}
-//
-//		if (ImGui::IsAnyMouseDown() && !ImGui::IsWindowHovered())
-//		{
-//			ImGui::CloseCurrentPopup();
-//		}
-//		ImGui::EndPopup();
-//	}	
-//}
