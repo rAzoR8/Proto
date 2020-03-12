@@ -118,22 +118,22 @@ void proto::EditorGraph::updateContextMenu()
 
         if (ImGui::MenuItem("Constant"))
         {
-            pNode = m_nodes.emplace(OpNodeExpr{ pos, OpNodeType::Const });
+            pNode = m_nodes.emplace(OpNodeExpr{m_pAlloc, pos, OpNodeType::Const });
         }
 
         if (ImGui::MenuItem("InputVar"))
         {
-            pNode = m_nodes.emplace(OpNodeExpr{ pos, OpNodeType::InVar });
+            pNode = m_nodes.emplace(OpNodeExpr{ m_pAlloc, pos, OpNodeType::InVar });
         }
 
         if (ImGui::MenuItem("OutputVar"))
         {
-            pNode = m_nodes.emplace(OpNodeExpr{ pos, OpNodeType::OutVar });
+            pNode = m_nodes.emplace(OpNodeExpr{ m_pAlloc, pos, OpNodeType::OutVar });
         }
 
         if (ImGui::MenuItem("Add"))
         {
-            pNode = m_nodes.emplace(OpNodeExpr{ pos, OpNodeType::Add });
+            pNode = m_nodes.emplace(OpNodeExpr{ m_pAlloc, pos, OpNodeType::Add });
         }
 
         if (pNode != nullptr)

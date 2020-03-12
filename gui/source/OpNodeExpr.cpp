@@ -4,9 +4,12 @@
 using namespace proto;
 using namespace spvgentwo;
 
-OpNodeExpr::OpNodeExpr(ImVec2 _pos, OpNodeType _type) :
+OpNodeExpr::OpNodeExpr(spvgentwo::IAllocator* _pAlloc,ImVec2 _pos, OpNodeType _type) :
     m_pos(_pos),
-	m_type(_type)
+	m_type(_type),
+	m_connections(_pAlloc),
+	m_inputSlots(_pAlloc),
+	m_outputSlots(_pAlloc)
 {
 	for (auto i = 0u; i < getInfo().numInputs; ++i)
 	{

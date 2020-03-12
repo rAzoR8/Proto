@@ -123,7 +123,7 @@ namespace proto
 	class OpNodeExpr
 	{
 	public:
-		OpNodeExpr(ImVec2 _pos = ImVec2(), OpNodeType _type = OpNodeType::NumOf);
+		OpNodeExpr(spvgentwo::IAllocator* _pAlloc, ImVec2 _pos = ImVec2(), OpNodeType _type = OpNodeType::NumOf);
 		~OpNodeExpr();
 
 		void operator()(const spvgentwo::List<OpNodeExpr*>& _inputs, const spvgentwo::List<OpNodeExpr*>& _outputs);		
