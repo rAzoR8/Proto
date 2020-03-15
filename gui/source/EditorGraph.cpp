@@ -56,7 +56,7 @@ void proto::EditorGraph::update()
 
 void proto::EditorGraph::clear()
 {
-    //m_module.clear();
+    m_nodes.clear();
 }
 
 void proto::EditorGraph::save()

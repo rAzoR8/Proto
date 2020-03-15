@@ -2,6 +2,7 @@
 
 #include "spvgentwo/List.h"
 #include "spvgentwo/Vector.h"
+#include "spvgentwo/String.h"
 #include "spvgentwo/Constant.h"
 #include "common/ExprGraph.h"
 #include <stdint.h>
@@ -12,9 +13,6 @@ namespace spvgentwo
 {
 	class Instruction;
 	class BasicBlock;
-
-	//template <class Func>
-	//class ExprGraph;
 } // !spvgentwo
 
 namespace proto
@@ -86,14 +84,6 @@ namespace proto
 		const char* name = nullptr;
 	};
 
-	enum class Slot : int
-	{
-		Unknown = 0,
-		InstrArg0,
-		InstrArg1,
-		InstrArg2
-	};
-
 	/// A structure defining a connection between two slots of two nodes.
 	struct Connection
 	{
@@ -123,6 +113,7 @@ namespace proto
 	class OpNodeExpr
 	{
 	public:
+		OpNodeExpr(OpNodeExpr&& _other) noexcept;
 		OpNodeExpr(spvgentwo::IAllocator* _pAlloc, ImVec2 _pos = ImVec2(), OpNodeType _type = OpNodeType::NumOf);
 		~OpNodeExpr();
 
@@ -171,6 +162,7 @@ namespace proto
 		bool m_selected = false;
 		bool m_toBeRemoved = false;
 
+		spvgentwo::Vector<spvgentwo::String> m_inputSlotNames;
 		spvgentwo::Vector<ImNodes::Ez::SlotInfo> m_inputSlots;
 		spvgentwo::Vector<ImNodes::Ez::SlotInfo> m_outputSlots;
 		spvgentwo::List<Connection> m_connections;

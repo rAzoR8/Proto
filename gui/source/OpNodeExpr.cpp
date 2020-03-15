@@ -1,23 +1,57 @@
 #include "proto/OpNodeExpr.h"
 #include "spvgentwo/Module.h"
+#include <string>
 
 using namespace proto;
 using namespace spvgentwo;
+
+OpNodeExpr::OpNodeExpr(OpNodeExpr&& _other) noexcept:
+	m_type(_other.m_type),
+	m_pBB(_other.m_pBB),
+	m_pResult(_other.m_pResult),
+	m_pVar(_other.m_pVar),
+	m_pVarDesc(_other.m_pVarDesc),
+	m_pConstDesc(_other.m_pConstDesc),
+	m_pos(_other.m_pos),
+	m_selected(_other.m_selected),
+	m_toBeRemoved(_other.m_toBeRemoved),
+	m_inputSlotNames(stdrep::move(_other.m_inputSlotNames)),
+	m_inputSlots(stdrep::move(_other.m_inputSlots)),
+	m_outputSlots(stdrep::move(_other.m_outputSlots)),
+	m_connections(stdrep::move(_other.m_connections)),
+	m_pGraph(_other.m_pGraph),
+	m_pParent(_other.m_pParent)
+{
+	_other.m_pBB = nullptr;
+	_other.m_pResult = nullptr;
+	_other.m_pVar = nullptr;
+	_other.m_pVarDesc = nullptr;
+	_other.m_pConstDesc = nullptr;
+	_other.m_pGraph = nullptr;
+	_other.m_pGraph = nullptr;
+}
 
 OpNodeExpr::OpNodeExpr(spvgentwo::IAllocator* _pAlloc,ImVec2 _pos, OpNodeType _type) :
     m_pos(_pos),
 	m_type(_type),
 	m_connections(_pAlloc),
+	m_inputSlotNames(_pAlloc),
 	m_inputSlots(_pAlloc),
 	m_outputSlots(_pAlloc)
 {
 	for (auto i = 0u; i < getInfo().numInputs; ++i)
 	{
-		m_inputSlots.emplace_back("In", /*(int)i + */1);
+		(*m_inputSlotNames.emplace_back(_pAlloc) += "In") += std::to_string(i).c_str();
+	}
+
+	for (auto i = 0u; i < getInfo().numInputs; ++i)
+	{
+		const char* pStr = m_inputSlotNames[i].c_str();
+		m_inputSlots.emplace_back(pStr, /*(int)i + */1);
 	}
 	for (auto i = 0u; i < getInfo().numOutputs; ++i)
 	{
-		m_outputSlots.emplace_back("Out", /*(int)i +*/ 1);
+		m_outputSlots.emplace_back("Out", /*(int)i + */1);
 	}
 }
 
@@ -122,7 +156,11 @@ void OpNodeExpr::update()
 		if (ImNodes::GetNewConnection(&con.input_node, &con.input_slot,
 			&con.output_node, &con.output_slot) && allowedConnection(con))
 		{
-			connect(con);
+			OpNodeExpr* in = (OpNodeExpr*)con.input_node;
+			OpNodeExpr* out = (OpNodeExpr*)con.output_node;
+			in->m_connections.emplace_back(con);
+			out->m_connections.emplace_back(con);
+			//connect(con);
 		}
 
 		// only render outputs
@@ -170,7 +208,10 @@ bool OpNodeExpr::allowedDisconnection(const Connection& _con)
 
 bool OpNodeExpr::allowedConnection(const Connection& _con)
 {
-	return true;
+	OpNodeExpr* in = (OpNodeExpr*)_con.input_node;
+	OpNodeExpr* out = (OpNodeExpr*)_con.output_node;
+
+	return (in->m_connections.contains(_con) == false && out->m_connections.contains(_con) == false);
 }
 
 spvgentwo::List<proto::Connection>::Iterator OpNodeExpr::remove(const Connection& _con)
