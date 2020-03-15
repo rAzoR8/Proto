@@ -133,9 +133,6 @@ namespace proto
 
 		void clear();
 
-		static void connect(const Connection& _con);
-		static void disconnect(const Connection& _con);
-
 		bool isSelected() const { return m_selected; }
 		bool toBeRemoved() const { return m_toBeRemoved; }
 

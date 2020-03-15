@@ -165,7 +165,8 @@ void OpNodeExpr::update()
 			OpNodeExpr* out = (OpNodeExpr*)con.output_node;
 			in->m_connections.emplace_back(con);
 			out->m_connections.emplace_back(con);
-			//connect(con);
+			
+			out->m_pParent->connect(in->m_pParent);
 		}
 
 		// only render outputs
@@ -184,9 +185,14 @@ void OpNodeExpr::update()
 				// mark fore removal
 				m_toBeRemoved = true;
 
+				OpNodeExpr* in = (OpNodeExpr*)con.input_node;
+				OpNodeExpr* out = (OpNodeExpr*)con.output_node;
+
+				// TODO: disconnect parents
+
 				// Remove deleted connections
-				((OpNodeExpr*)con.input_node)->remove(con);
-				it = ((OpNodeExpr*)con.output_node)->remove(con); // output node == this
+				in->remove(con);
+				it = out->remove(con); // output node == this
 			}
 			else
 			{
@@ -229,25 +235,4 @@ spvgentwo::List<proto::Connection>::Iterator OpNodeExpr::remove(const Connection
 	}
 
 	return it;
-}
-
-void OpNodeExpr::connect(const Connection& _con)
-{
-	OpNodeExpr* in = (OpNodeExpr*)_con.input_node;
-	OpNodeExpr* out = (OpNodeExpr*)_con.output_node;
-
-	if (in->m_connections.contains(_con) == false && out->m_connections.contains(_con) == false)
-	{
-		in->m_connections.emplace_back(_con);
-		out->m_connections.emplace_back(_con);
-	}
-}
-
-void OpNodeExpr::disconnect(const Connection& _con)
-{
-	OpNodeExpr* in = (OpNodeExpr*)_con.input_node;
-	OpNodeExpr* out = (OpNodeExpr*)_con.output_node;
-
-	in->remove(_con);
-	out->remove(_con);
 }
