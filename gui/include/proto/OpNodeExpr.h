@@ -163,6 +163,7 @@ namespace proto
 		bool m_toBeRemoved = false;
 
 		spvgentwo::Vector<spvgentwo::String> m_inputSlotNames;
+		spvgentwo::Vector<spvgentwo::String> m_outputSlotNames;
 		spvgentwo::Vector<ImNodes::Ez::SlotInfo> m_inputSlots;
 		spvgentwo::Vector<ImNodes::Ez::SlotInfo> m_outputSlots;
 		spvgentwo::List<Connection> m_connections;
