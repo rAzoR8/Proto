@@ -175,7 +175,7 @@ void OpNodeExpr::update()
 				OpNodeExpr* in = (OpNodeExpr*)con.input_node;
 				OpNodeExpr* out = (OpNodeExpr*)con.output_node;
 
-				// TODO: disconnect parents
+				out->m_pParent->connect(in->m_pParent);
 
 				// Remove deleted connections
 				in->remove(con);
