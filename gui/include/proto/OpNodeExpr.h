@@ -7,6 +7,7 @@
 #include "common/ExprGraph.h"
 #include <stdint.h>
 #include "ImNodesEz.h"
+#include "proto/TypeWidgets.h"
 
 //forward decl
 namespace spvgentwo
@@ -131,7 +132,6 @@ namespace proto
 		void setBasicBlock(spvgentwo::BasicBlock* _pBB);
 		void setParent(spvgentwo::ExprGraph<OpNodeExpr>* _pGraph, typename spvgentwo::ExprGraph<OpNodeExpr>::NodeType* _pParent);
 		
-		// editor note:
 		void update();
 
 		void clear();
@@ -146,10 +146,15 @@ namespace proto
 		bool allowedConnection(const Connection& _con);
 		spvgentwo::List<Connection>::Iterator remove(const Connection& _con);
 
-	private:
+	// expr evaluation
 		bool makeVar();
 		bool makeConst();
 
+	// ui update:
+		void updateOpDesc();
+		void updateVarDesc();
+		void updateConstDesc();
+		
 	private:
 		OpNodeType m_type = OpNodeType::NumOf;
 		spvgentwo::BasicBlock* m_pBB = nullptr;
@@ -169,5 +174,8 @@ namespace proto
 
 		spvgentwo::ExprGraph<OpNodeExpr>* m_pGraph = nullptr; 
 		typename spvgentwo::ExprGraph<OpNodeExpr>::NodeType* m_pParent = nullptr;
+
+	private:
+		FundamentalTypeComboBox m_typeComboBox;
 	};
 } // !proto

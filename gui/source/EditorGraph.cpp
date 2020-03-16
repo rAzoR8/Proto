@@ -1,7 +1,6 @@
 #include "proto/EditorGraph.h"
 
 #include "ImNodesEz.h"
-#include "proto/TypeWidgets.h"
 #include "common/BinaryFileWriter.h"
 
 using namespace spvgentwo;

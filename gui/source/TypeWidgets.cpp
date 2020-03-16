@@ -45,6 +45,7 @@ void proto::FundamentalTypeComboBox::update()
             if (ImGui::Selectable(item.name, is_selected))
             {
                 m_selected = n;
+                is_selected = true;
             }
 
             if (is_selected)

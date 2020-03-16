@@ -1,6 +1,5 @@
 #include "proto/OpNodeExpr.h"
 #include "spvgentwo/Module.h"
-#include <string>
 
 using namespace proto;
 using namespace spvgentwo;
@@ -19,7 +18,8 @@ OpNodeExpr::OpNodeExpr(OpNodeExpr&& _other) noexcept:
 	m_outputSlots(stdrep::move(_other.m_outputSlots)),
 	m_connections(stdrep::move(_other.m_connections)),
 	m_pGraph(_other.m_pGraph),
-	m_pParent(_other.m_pParent)
+	m_pParent(_other.m_pParent),
+	m_typeComboBox(stdrep::move(_other.m_typeComboBox))
 {
 	_other.m_pBB = nullptr;
 	_other.m_pResult = nullptr;
@@ -35,7 +35,8 @@ OpNodeExpr::OpNodeExpr(spvgentwo::IAllocator* _pAlloc, ImVec2 _pos, OpNodeType _
 	m_outputSlots(_pAlloc),
 	m_connections(_pAlloc),
 	m_varDesc{_pAlloc},
-	m_constDesc{_pAlloc}
+	m_constDesc{_pAlloc},
+	m_typeComboBox(_pAlloc, "Type")
 {
 	for (auto i = 0u; i < getInfo().numInputs; ++i)
 	{
@@ -146,6 +147,48 @@ bool OpNodeExpr::makeConst()
 	return m_pResult != nullptr;
 }
 
+void OpNodeExpr::updateOpDesc()
+{
+	switch (m_type)
+	{
+	case OpNodeType::InVar:
+	case OpNodeType::OutVar:
+		updateVarDesc();
+		break;
+	case OpNodeType::Const:
+		updateConstDesc();
+		break;
+	default:
+		break;
+	}
+}
+
+void OpNodeExpr::updateVarDesc()
+{
+	m_typeComboBox.update();
+	m_varDesc.type = m_typeComboBox.getType();
+}
+
+void OpNodeExpr::updateConstDesc()
+{
+	m_constDesc.constant.reset();
+	m_typeComboBox.update();
+
+	const Type& t = m_typeComboBox.getType();
+	if (t.isFloat())
+	{
+		static float val = 0.f;
+		ImGui::DragFloat("Value", &val);
+		m_constDesc.constant.make(val);
+	}
+	else if (t.isVectorOfFloat(3u, 32u))
+	{
+		static const_vector_t<float, 3> vec3{0.f, 0.f, 0.f};
+		ImGui::DragScalarN("Value", ImGuiDataType_Float, vec3.data, 3, 1.f);
+		m_constDesc.constant.make(vec3);
+	}	
+}
+
 void OpNodeExpr::update()
 {
 	const char* name = getInfo().name;
@@ -154,6 +197,7 @@ void OpNodeExpr::update()
 		ImNodes::Ez::InputSlots(m_inputSlots.data(), (int)m_inputSlots.size());
 
 		// draw body here
+		updateOpDesc();
 
 		ImNodes::Ez::OutputSlots(m_outputSlots.data(), (int)m_outputSlots.size());
 
