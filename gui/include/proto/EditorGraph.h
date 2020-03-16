@@ -30,6 +30,8 @@ namespace proto
 
 		void updateContextMenu();
 
+		void evaluateExprGraph();
+
 	private:
 		spvgentwo::IAllocator* m_pAlloc = nullptr;
 		ImNodes::CanvasState* m_pCanvas = nullptr;

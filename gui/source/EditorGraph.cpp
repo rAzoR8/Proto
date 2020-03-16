@@ -2,6 +2,7 @@
 
 #include "ImNodesEz.h"
 #include "proto/TypeWidgets.h"
+#include "common/BinaryFileWriter.h"
 
 using namespace spvgentwo;
 
@@ -51,6 +52,8 @@ void proto::EditorGraph::update()
     }
     ImGui::End();
 
+    evaluateExprGraph();
+
     m_textView.update(m_module);
 }
 
@@ -61,6 +64,8 @@ void proto::EditorGraph::clear()
 
 void proto::EditorGraph::save()
 {
+    BinaryFileWriter writer("proto.spv");
+    m_module.write(&writer);
 }
 
 void proto::EditorGraph::createCanvas()
@@ -81,7 +86,7 @@ void proto::EditorGraph::updateContextMenu()
 
         for (const auto& node : m_nodes)
         {
-            anySelected |= node.data();
+            anySelected |= node.data().get().isSelected();
         }
 
         if (anySelected == false)
@@ -128,5 +133,19 @@ void proto::EditorGraph::updateContextMenu()
             ImGui::CloseCurrentPopup();
         }
         ImGui::EndPopup();
+    }
+}
+
+void proto::EditorGraph::evaluateExprGraph()
+{
+    m_nodes.resetEvaluationState();
+
+    for(auto& node : m_nodes)
+    {
+        // output vars are cfg sinks
+        if (node.data()->getType() == OpNodeType::OutVar)
+        {
+            spvgentwo::ExprGraph<OpNodeExpr>::evaluateRecursive<ExprArgs::FunctionPtrLists>(&node);
+        }
     }
 }

@@ -64,7 +64,10 @@ void OpNodeExpr::operator()(const List<OpNodeExpr*>& _inputs, const List<OpNodeE
         break;
     case OpNodeType::OutVar: // turn var desc into opVar & store
         makeVar();
-        (*m_pBB)->opStore(m_pVar, lhs);
+		if(lhs != nullptr)
+		{
+			(*m_pBB)->opStore(m_pVar, lhs);
+		}
         break;
     case OpNodeType::Const:
         makeConst();
@@ -82,7 +85,10 @@ void OpNodeExpr::operator()(const List<OpNodeExpr*>& _inputs, const List<OpNodeE
     case OpNodeType::GreaterEqual:
         break;
     case OpNodeType::Add:
-        m_pResult = (*m_pBB)->Add(lhs, rhs);
+		if (lhs != nullptr && rhs != nullptr)
+		{
+			m_pResult = (*m_pBB)->Add(lhs, rhs);
+		}
         break;
     case OpNodeType::Sub:
         break;
@@ -124,6 +130,7 @@ void OpNodeExpr::makeVar()
     }
     else
     {
+
         m_pVar = pModule->variable(pType, m_pVarDesc->storageClass, m_pVarDesc->name, nullptr);
     }
 }

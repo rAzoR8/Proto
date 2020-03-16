@@ -13,9 +13,9 @@ proto::ProtoWindow::~ProtoWindow()
 
 bool proto::ProtoWindow::updateUI()
 {
-    updateMenu();
-
     updateGraphs();
+
+    updateMenu();
 
 	return m_shouldClose == false;
 }
