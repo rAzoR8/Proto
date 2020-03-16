@@ -87,15 +87,18 @@ namespace proto
 		const char* name = nullptr;
 	};
 
+	// forward decl
+	class OpNodeExpr;
+
 	/// A structure defining a connection between two slots of two nodes.
 	struct Connection
 	{
 		/// `id` that was passed to BeginNode() of input node.
-		void* input_node = nullptr;
+		OpNodeExpr* input_node = nullptr;
 		/// Descriptor of input slot.
 		const char* input_slot = nullptr;
 		/// `id` that was passed to BeginNode() of output node.
-		void* output_node = nullptr;
+		OpNodeExpr* output_node = nullptr;
 		/// Descriptor of output slot.
 		const char* output_slot = nullptr;
 
@@ -127,9 +130,6 @@ namespace proto
 
 		void setBasicBlock(spvgentwo::BasicBlock* _pBB);
 		void setParent(spvgentwo::ExprGraph<OpNodeExpr>* _pGraph, typename spvgentwo::ExprGraph<OpNodeExpr>::NodeType* _pParent);
-
-		void setVarDesc(const VarDesc* _pVarDesc) { m_pVarDesc = _pVarDesc; }
-		void setConstDesc(const ConstDesc* _pConstDesc) { m_pConstDesc = _pConstDesc; }
 		
 		// editor note:
 		void update();
@@ -147,16 +147,17 @@ namespace proto
 		spvgentwo::List<Connection>::Iterator remove(const Connection& _con);
 
 	private:
-		void makeVar();
-		void makeConst();
+		bool makeVar();
+		bool makeConst();
 
 	private:
 		OpNodeType m_type = OpNodeType::NumOf;
 		spvgentwo::BasicBlock* m_pBB = nullptr;
 		spvgentwo::Instruction* m_pResult = nullptr;
 		spvgentwo::Instruction* m_pVar = nullptr;
-		const VarDesc* m_pVarDesc = nullptr;
-		const ConstDesc* m_pConstDesc = nullptr;
+
+		VarDesc m_varDesc{};
+		ConstDesc m_constDesc{};
 
 		ImVec2 m_pos{};
 		bool m_selected = false;

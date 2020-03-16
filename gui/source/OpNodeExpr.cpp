@@ -10,8 +10,8 @@ OpNodeExpr::OpNodeExpr(OpNodeExpr&& _other) noexcept:
 	m_pBB(_other.m_pBB),
 	m_pResult(_other.m_pResult),
 	m_pVar(_other.m_pVar),
-	m_pVarDesc(_other.m_pVarDesc),
-	m_pConstDesc(_other.m_pConstDesc),
+	m_varDesc(stdrep::move(_other.m_varDesc)),
+	m_constDesc(stdrep::move(_other.m_constDesc)),
 	m_pos(_other.m_pos),
 	m_selected(_other.m_selected),
 	m_toBeRemoved(_other.m_toBeRemoved),
@@ -24,18 +24,18 @@ OpNodeExpr::OpNodeExpr(OpNodeExpr&& _other) noexcept:
 	_other.m_pBB = nullptr;
 	_other.m_pResult = nullptr;
 	_other.m_pVar = nullptr;
-	_other.m_pVarDesc = nullptr;
-	_other.m_pConstDesc = nullptr;
 	_other.m_pGraph = nullptr;
 	_other.m_pGraph = nullptr;
 }
 
-OpNodeExpr::OpNodeExpr(spvgentwo::IAllocator* _pAlloc,ImVec2 _pos, OpNodeType _type) :
+OpNodeExpr::OpNodeExpr(spvgentwo::IAllocator* _pAlloc, ImVec2 _pos, OpNodeType _type) :
 	m_type(_type),
     m_pos(_pos),
 	m_inputSlots(_pAlloc),
 	m_outputSlots(_pAlloc),
-	m_connections(_pAlloc)
+	m_connections(_pAlloc),
+	m_varDesc{_pAlloc},
+	m_constDesc{_pAlloc}
 {
 	for (auto i = 0u; i < getInfo().numInputs; ++i)
 	{
@@ -59,12 +59,13 @@ void OpNodeExpr::operator()(const List<OpNodeExpr*>& _inputs, const List<OpNodeE
 	switch (m_type)
 	{
     case OpNodeType::InVar: // turn var desc into opVar & load
-        makeVar();
-        m_pResult = (*m_pBB)->opLoad(m_pVar);
+		if (makeVar())
+		{
+			m_pResult = (*m_pBB)->opLoad(m_pVar);		
+		}
         break;
     case OpNodeType::OutVar: // turn var desc into opVar & store
-        makeVar();
-		if(lhs != nullptr)
+		if(makeVar() && lhs != nullptr)
 		{
 			(*m_pBB)->opStore(m_pVar, lhs);
 		}
@@ -120,24 +121,29 @@ void OpNodeExpr::setParent(spvgentwo::ExprGraph<OpNodeExpr>* _pGraph, typename s
 	m_pParent = _pParent;
 }
 
-void OpNodeExpr::makeVar()
+bool OpNodeExpr::makeVar()
 {
+	if (m_varDesc.type.isVoid())
+		return false;
+
     Module* pModule = m_pBB->getModule();
-    Instruction* pType = pModule->addType(m_pVarDesc->type); // type needs to be a pointer with storage class
-    if (m_pVarDesc->storageClass == spv::StorageClass::Function)
+    Instruction* pType = pModule->addType(m_varDesc.type); // type needs to be a pointer with storage class
+    if (m_varDesc.storageClass == spv::StorageClass::Function)
     {
-        m_pVar = m_pBB->getFunction()->variable(pType, nullptr, m_pVarDesc->name);
+        m_pVar = m_pBB->getFunction()->variable(pType, nullptr, m_varDesc.name);
     }
     else
     {
-
-        m_pVar = pModule->variable(pType, m_pVarDesc->storageClass, m_pVarDesc->name, nullptr);
+        m_pVar = pModule->variable(pType, m_varDesc.storageClass, m_varDesc.name, nullptr);
     }
+
+	return m_pVar != nullptr;
 }
 
-void  OpNodeExpr::makeConst()
+bool OpNodeExpr::makeConst()
 {
-    m_pResult = m_pBB->getModule()->addConstant(m_pConstDesc->constant, m_pConstDesc->name);
+    m_pResult = m_pBB->getModule()->addConstant(m_constDesc.constant, m_constDesc.name);
+	return m_pResult != nullptr;
 }
 
 void OpNodeExpr::update()
@@ -152,15 +158,13 @@ void OpNodeExpr::update()
 		ImNodes::Ez::OutputSlots(m_outputSlots.data(), (int)m_outputSlots.size());
 
 		Connection con{};
-		if (ImNodes::GetNewConnection(&con.input_node, &con.input_slot,
-			&con.output_node, &con.output_slot) && allowedConnection(con))
+		if (ImNodes::GetNewConnection((void**)&con.input_node, &con.input_slot,
+			(void**)&con.output_node, &con.output_slot) && allowedConnection(con))
 		{
-			OpNodeExpr* in = (OpNodeExpr*)con.input_node;
-			OpNodeExpr* out = (OpNodeExpr*)con.output_node;
-			in->m_connections.emplace_back(con);
-			out->m_connections.emplace_back(con);
+			con.input_node->m_connections.emplace_back(con);
+			con.output_node->m_connections.emplace_back(con);
 			
-			out->m_pParent->connect(in->m_pParent);
+			con.output_node->m_pParent->connect(con.input_node->m_pParent);
 		}
 
 		// only render outputs
@@ -179,14 +183,11 @@ void OpNodeExpr::update()
 				// mark fore removal
 				m_toBeRemoved = true;
 
-				OpNodeExpr* in = (OpNodeExpr*)con.input_node;
-				OpNodeExpr* out = (OpNodeExpr*)con.output_node;
-
-				out->m_pParent->connect(in->m_pParent);
+				con.output_node->m_pParent->connect(con.input_node->m_pParent);
 
 				// Remove deleted connections
-				in->remove(con);
-				it = out->remove(con); // output node == this
+				con.input_node->remove(con);
+				it = con.output_node->remove(con); // output node == this
 			}
 			else
 			{
@@ -213,10 +214,7 @@ bool OpNodeExpr::allowedDisconnection(const Connection& _con)
 
 bool OpNodeExpr::allowedConnection(const Connection& _con)
 {
-	OpNodeExpr* in = (OpNodeExpr*)_con.input_node;
-	OpNodeExpr* out = (OpNodeExpr*)_con.output_node;
-
-	return (in->m_connections.contains(_con) == false && out->m_connections.contains(_con) == false);
+	return (_con.input_node->m_connections.contains(_con) == false && _con.output_node->m_connections.contains(_con) == false);
 }
 
 spvgentwo::List<proto::Connection>::Iterator OpNodeExpr::remove(const Connection& _con)

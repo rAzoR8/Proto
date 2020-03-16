@@ -42,7 +42,7 @@ void proto::ProtoWindow::updateMenuFile()
         m_graph.clear();
     }
 
-    if (ImGui::MenuItem("Save"))
+    if (ImGui::MenuItem("Save", "Ctrl+S") /*|| (ImGui::GetIO().KeyCtrl && ImGui::GetIO().KeyShift*/)
     {
         m_graph.save();
     }

@@ -66,6 +66,8 @@ void proto::EditorGraph::save()
 {
     BinaryFileWriter writer("proto.spv");
     m_module.write(&writer);
+    system("spirv-dis proto.spv");
+    assert(system("spirv-val proto.spv") == 0);
 }
 
 void proto::EditorGraph::createCanvas()
@@ -84,10 +86,10 @@ void proto::EditorGraph::updateContextMenu()
     {
         bool anySelected = false;
 
-        for (const auto& node : m_nodes)
-        {
-            anySelected |= node.data().get().isSelected();
-        }
+        //for (const auto& node : m_nodes)
+        //{
+        //    anySelected |= node.data().get().isSelected();
+        //}
 
         if (anySelected == false)
         {
