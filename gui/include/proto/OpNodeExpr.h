@@ -71,6 +71,9 @@ namespace proto
 		{ "Cast", 1u, 1u},
 	};
 
+	constexpr const char* g_OpNodeInputName[] = {"In0","In1","In2","In3","In4"};
+	constexpr const char* g_OpNodeOutputName[] = { "Out0","Out1","Out2","Out3","Out4" };
+
 	struct VarDesc
 	{
 		spvgentwo::Type type;
@@ -159,8 +162,6 @@ namespace proto
 		bool m_selected = false;
 		bool m_toBeRemoved = false;
 
-		spvgentwo::Vector<spvgentwo::String> m_inputSlotNames;
-		spvgentwo::Vector<spvgentwo::String> m_outputSlotNames;
 		spvgentwo::Vector<ImNodes::Ez::SlotInfo> m_inputSlots;
 		spvgentwo::Vector<ImNodes::Ez::SlotInfo> m_outputSlots;
 		spvgentwo::List<Connection> m_connections;

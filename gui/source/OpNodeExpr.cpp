@@ -15,8 +15,6 @@ OpNodeExpr::OpNodeExpr(OpNodeExpr&& _other) noexcept:
 	m_pos(_other.m_pos),
 	m_selected(_other.m_selected),
 	m_toBeRemoved(_other.m_toBeRemoved),
-	m_inputSlotNames(stdrep::move(_other.m_inputSlotNames)),
-	m_outputSlotNames(stdrep::move(_other.m_outputSlotNames)),
 	m_inputSlots(stdrep::move(_other.m_inputSlots)),
 	m_outputSlots(stdrep::move(_other.m_outputSlots)),
 	m_connections(stdrep::move(_other.m_connections)),
@@ -35,28 +33,17 @@ OpNodeExpr::OpNodeExpr(OpNodeExpr&& _other) noexcept:
 OpNodeExpr::OpNodeExpr(spvgentwo::IAllocator* _pAlloc,ImVec2 _pos, OpNodeType _type) :
 	m_type(_type),
     m_pos(_pos),
-	m_inputSlotNames(_pAlloc),
-	m_outputSlotNames(_pAlloc),
 	m_inputSlots(_pAlloc),
 	m_outputSlots(_pAlloc),
 	m_connections(_pAlloc)
 {
 	for (auto i = 0u; i < getInfo().numInputs; ++i)
 	{
-		*m_inputSlotNames.emplace_back(_pAlloc, "In") += std::to_string(i).c_str();
+		m_inputSlots.emplace_back(g_OpNodeInputName[i], 1);
 	}
 	for (auto i = 0u; i < getInfo().numOutputs; ++i)
 	{
-		*m_outputSlotNames.emplace_back(_pAlloc, "Out") += std::to_string(i).c_str();
-	}
-
-	for (auto i = 0u; i < getInfo().numInputs; ++i)
-	{
-		m_inputSlots.emplace_back(m_inputSlotNames[i].c_str(), 1);
-	}
-	for (auto i = 0u; i < getInfo().numOutputs; ++i)
-	{
-		m_outputSlots.emplace_back(m_outputSlotNames[i].c_str(), 1);
+		m_outputSlots.emplace_back(g_OpNodeOutputName[i], 1);
 	}
 }
 
