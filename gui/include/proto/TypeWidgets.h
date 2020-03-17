@@ -2,21 +2,22 @@
 
 // forward decls
 #include "spvgentwo/Type.h"
+#include "ComboBox.h"
 
 namespace proto
 {
-	class FundamentalTypeComboBox
+	class FundamentalTypeComboBox : public ComboBox
 	{
 	public:
 		FundamentalTypeComboBox(spvgentwo::IAllocator* _pAlloc, const char* _pTitle);
 		~FundamentalTypeComboBox();
 
-		void update();
-
 		const spvgentwo::Type& getType() const { return m_type; }
 
 	private:
-		const char* m_pTitle = nullptr;
+		void onSelect(unsigned int _index) final;
+
+	private:
 		spvgentwo::Type m_type;
 		unsigned int m_selected = 0;
 	};

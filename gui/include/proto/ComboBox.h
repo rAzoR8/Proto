@@ -9,7 +9,7 @@ namespace proto
 	class ComboBox : public spvgentwo::Vector<spvgentwo::String>
 	{
 	public:
-		using OnSelectCallback = Callable<void(unsigned int, const spvgentwo::String&)>;
+		using OnSelectCallback = Callable<void(unsigned int)>;
 
 		ComboBox(spvgentwo::IAllocator* _pAlloc = nullptr, const char* _pTitle = nullptr);
 		~ComboBox();
@@ -18,6 +18,9 @@ namespace proto
 
 		template <class Functor>
 		void setOnSelectCallback(const Functor& _func);
+
+		// if callback is not called onSelect will be called
+		virtual void onSelect(unsigned int _index) {};
 
 	private:
 		const char* m_pTitle = nullptr;

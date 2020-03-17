@@ -4,6 +4,22 @@
 
 namespace proto
 {
+	template <typename Obj, typename ReturnValue, typename... Args>
+	struct MemberFunc
+	{
+		using MemberFuncType = ReturnValue(Obj::*)(Args...);
+		Obj* pObj = nullptr;
+		MemberFuncType pMemberFn = nullptr;
+
+		ReturnValue operator()(Args... _args) { return pObj->(*pMemberFn)(_args...); }
+	};
+
+	template <typename Obj, typename ReturnValue, typename... Args>
+	auto make_memeber_func(Obj* _obj, ReturnValue(Obj::* _func)(Args...))
+	{
+		return MemberFunc<Obj, ReturnValue, Args...> {_obj, _func};
+	}
+
 	template <typename T>
 	class Callable;
 
@@ -60,9 +76,13 @@ namespace proto
 		{}
 
 		Callable(const Callable& _other) :
-			m_pAllocator(_other.m_pAllocator),
-			m_pCallable(_other.m_pCallable->copy(_other.m_pAllocator))
-		{}
+			m_pAllocator(_other.m_pAllocator)
+		{
+			if (_other.m_pCallable != nullptr && m_pAllocator != nullptr)
+			{
+				m_pCallable = _other.m_pCallable->copy(_other.m_pAllocator);
+			}
+		}
 
 		Callable(Callable&& _other) :
 			m_pAllocator(_other.m_pAllocator),

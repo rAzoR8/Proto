@@ -28,19 +28,19 @@ void proto::ComboBox::update()
 
             bool is_selected = (current_item == item);
 
-            if (ImGui::Selectable(item, is_selected))
+            if (ImGui::Selectable(item, is_selected /*,0, ImVec2(1.f, 2.f)*/))
             {
                 m_selected = n;
-                is_selected = true;
-            }
 
-            if (is_selected)
-            {
-                ImGui::SetItemDefaultFocus();
-                if (m_onSelect)
-                {
-                    m_onSelect(m_selected, str);
-                }
+				ImGui::SetItemDefaultFocus();
+				if (m_onSelect)
+				{
+					m_onSelect(m_selected);
+				}
+				else
+				{
+					onSelect(m_selected);
+				}
             }
         }
         ImGui::EndCombo();
