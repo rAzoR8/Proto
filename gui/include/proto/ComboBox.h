@@ -12,6 +12,13 @@ namespace proto
 		using OnSelectCallback = Callable<void(unsigned int)>;
 
 		ComboBox(spvgentwo::IAllocator* _pAlloc = nullptr, const char* _pTitle = nullptr);
+
+		template <typename ...Args>
+		ComboBox(spvgentwo::IAllocator* _pAlloc, const char* _pTitle, const OnSelectCallback& _callback, const char* _firstElem, Args&& ... _args);
+
+		template <typename ...Args>
+		ComboBox(spvgentwo::IAllocator* _pAlloc, const char* _pTitle, const char* _firstElem, Args&& ... _args);
+
 		~ComboBox();
 
 		void update();
@@ -28,6 +35,21 @@ namespace proto
 		OnSelectCallback m_onSelect;
 		unsigned int m_selected = 0u;
 	};
+
+	template<typename ...Args>
+	inline ComboBox::ComboBox(spvgentwo::IAllocator* _pAlloc, const char* _pTitle, const OnSelectCallback& _callback, const char* _firstElem, Args&& ..._args) :
+		Vector(_pAlloc, spvgentwo::String(_pAlloc, _firstElem), stdrep::forward<Args>(_args)...),
+		m_onSelect(_callback),
+		m_pTitle(_pTitle)
+	{
+	}
+
+	template<typename ...Args>
+	inline ComboBox::ComboBox(spvgentwo::IAllocator* _pAlloc, const char* _pTitle, const char* _firstElem, Args&& ..._args) :
+		Vector(_pAlloc, spvgentwo::String(_pAlloc, _firstElem), stdrep::forward<Args>(_args)...),
+		m_pTitle(_pTitle)
+	{
+	}
 
 	template<class Functor>
 	inline void ComboBox::setOnSelectCallback(const Functor& _func)

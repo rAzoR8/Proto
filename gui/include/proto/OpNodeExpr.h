@@ -161,12 +161,12 @@ namespace proto
 		spvgentwo::Instruction* m_pResult = nullptr;
 		spvgentwo::Instruction* m_pVar = nullptr;
 
-		VarDesc m_varDesc{};
-		ConstDesc m_constDesc{};
-
 		ImVec2 m_pos{};
 		bool m_selected = false;
 		bool m_toBeRemoved = false;
+
+		VarDesc m_varDesc{};
+		ConstDesc m_constDesc{};
 
 		spvgentwo::Vector<ImNodes::Ez::SlotInfo> m_inputSlots;
 		spvgentwo::Vector<ImNodes::Ez::SlotInfo> m_outputSlots;
@@ -177,5 +177,7 @@ namespace proto
 
 	private:
 		FundamentalTypeComboBox m_typeComboBox;
+		//ComboBox m_typeComboBox;
+
 	};
 } // !proto

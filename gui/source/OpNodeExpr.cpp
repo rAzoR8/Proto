@@ -9,11 +9,11 @@ OpNodeExpr::OpNodeExpr(OpNodeExpr&& _other) noexcept:
 	m_pBB(_other.m_pBB),
 	m_pResult(_other.m_pResult),
 	m_pVar(_other.m_pVar),
-	m_varDesc(stdrep::move(_other.m_varDesc)),
-	m_constDesc(stdrep::move(_other.m_constDesc)),
 	m_pos(_other.m_pos),
 	m_selected(_other.m_selected),
 	m_toBeRemoved(_other.m_toBeRemoved),
+	m_varDesc(stdrep::move(_other.m_varDesc)),
+	m_constDesc(stdrep::move(_other.m_constDesc)),
 	m_inputSlots(stdrep::move(_other.m_inputSlots)),
 	m_outputSlots(stdrep::move(_other.m_outputSlots)),
 	m_connections(stdrep::move(_other.m_connections)),
@@ -31,11 +31,11 @@ OpNodeExpr::OpNodeExpr(OpNodeExpr&& _other) noexcept:
 OpNodeExpr::OpNodeExpr(spvgentwo::IAllocator* _pAlloc, ImVec2 _pos, OpNodeType _type) :
 	m_type(_type),
     m_pos(_pos),
+	m_varDesc{ _pAlloc },
+	m_constDesc{ _pAlloc },
 	m_inputSlots(_pAlloc),
 	m_outputSlots(_pAlloc),
 	m_connections(_pAlloc),
-	m_varDesc{_pAlloc},
-	m_constDesc{_pAlloc},
 	m_typeComboBox(_pAlloc, "Type")
 {
 	for (auto i = 0u; i < getInfo().numInputs; ++i)
