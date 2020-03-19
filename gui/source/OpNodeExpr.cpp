@@ -36,7 +36,7 @@ OpNodeExpr::OpNodeExpr(spvgentwo::IAllocator* _pAlloc, ImVec2 _pos, OpNodeType _
 	m_inputSlots(_pAlloc),
 	m_outputSlots(_pAlloc),
 	m_connections(_pAlloc),
-	m_typeComboBox(_pAlloc, "Type")
+	m_typeComboBox("Type")
 {
 	for (auto i = 0u; i < getInfo().numInputs; ++i)
 	{

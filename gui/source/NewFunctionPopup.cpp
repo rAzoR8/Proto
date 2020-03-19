@@ -7,7 +7,7 @@ using namespace spvgentwo;
 proto::NewFunctionPopup::NewFunctionPopup(spvgentwo::IAllocator* _pAllocator) :
 	m_pAllocator(_pAllocator),
 	m_name(_pAllocator),
-	m_returnType(_pAllocator, "Return Type"),
+	m_returnType("Return Type"),
 	m_parameterTypes(_pAllocator)
 {
     m_name.resize(64, "\0");
@@ -32,7 +32,7 @@ void proto::NewFunctionPopup::update(spvgentwo::Module& _module)
 
         if (ImGui::Button("Add Parameter"))
         {
-            m_parameterTypes.emplace_back(m_pAllocator, "Parameter Type");
+            m_parameterTypes.emplace_back("Parameter Type");
         }
 
         for (auto it = m_parameterTypes.begin(); it != m_parameterTypes.end();)

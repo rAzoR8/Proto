@@ -1,25 +1,25 @@
 #pragma once
 
-#include "spvgentwo/Vector.h"
-#include "spvgentwo/String.h"
-#include "Callable.h"
+#include "common/HeapString.h"
+#include "common/HeapVector.h"
+#include "common/HeapCallable.h"
 
 namespace proto
 {
-	class ComboBox : public spvgentwo::Vector<spvgentwo::String>
+	class ComboBox : public spvgentwo::HeapVector<spvgentwo::HeapString>
 	{
 	public:
-		using OnSelectCallback = Callable<void(unsigned int)>;
+		using OnSelectCallback = spvgentwo::HeapCallable<void(unsigned int)>;
 
-		ComboBox(spvgentwo::IAllocator* _pAlloc = nullptr, const char* _pTitle = nullptr);
-
-		template <typename ...Args>
-		ComboBox(spvgentwo::IAllocator* _pAlloc, const char* _pTitle, const OnSelectCallback& _callback, const char* _firstElem, Args&& ... _args);
+		ComboBox(const char* _pTitle = nullptr);
 
 		template <typename ...Args>
-		ComboBox(spvgentwo::IAllocator* _pAlloc, const char* _pTitle, const char* _firstElem, Args&& ... _args);
+		ComboBox(const char* _pTitle, const OnSelectCallback& _callback, const char* _firstElem, Args&& ... _args);
 
-		~ComboBox();
+		template <typename ...Args>
+		ComboBox(const char* _pTitle, const char* _firstElem, Args&& ... _args);
+
+		virtual ~ComboBox() override;
 
 		void update();
 
@@ -37,16 +37,16 @@ namespace proto
 	};
 
 	template<typename ...Args>
-	inline ComboBox::ComboBox(spvgentwo::IAllocator* _pAlloc, const char* _pTitle, const OnSelectCallback& _callback, const char* _firstElem, Args&& ..._args) :
-		Vector(_pAlloc, spvgentwo::String(_pAlloc, _firstElem), stdrep::forward<Args>(_args)...),
+	inline ComboBox::ComboBox(const char* _pTitle, const OnSelectCallback& _callback, const char* _firstElem, Args&& ..._args) :
+		HeapVector(_firstElem, spvgentwo::stdrep::forward<Args>(_args)...),
 		m_onSelect(_callback),
 		m_pTitle(_pTitle)
 	{
 	}
 
 	template<typename ...Args>
-	inline ComboBox::ComboBox(spvgentwo::IAllocator* _pAlloc, const char* _pTitle, const char* _firstElem, Args&& ..._args) :
-		Vector(_pAlloc, spvgentwo::String(_pAlloc, _firstElem), stdrep::forward<Args>(_args)...),
+	inline ComboBox::ComboBox(const char* _pTitle, const char* _firstElem, Args&& ..._args) :
+		HeapVector(_firstElem, spvgentwo::stdrep::forward<Args>(_args)...),
 		m_pTitle(_pTitle)
 	{
 	}

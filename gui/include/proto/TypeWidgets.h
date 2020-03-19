@@ -9,8 +9,8 @@ namespace proto
 	class FundamentalTypeComboBox : public ComboBox
 	{
 	public:
-		FundamentalTypeComboBox(spvgentwo::IAllocator* _pAlloc, const char* _pTitle);
-		~FundamentalTypeComboBox();
+		FundamentalTypeComboBox(const char* _pTitle);
+		~FundamentalTypeComboBox() override;
 
 		const spvgentwo::Type& getType() const { return m_type; }
 
@@ -19,6 +19,5 @@ namespace proto
 
 	private:
 		spvgentwo::Type m_type;
-		unsigned int m_selected = 0;
 	};
 } // !proto

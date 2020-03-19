@@ -19,16 +19,17 @@ constexpr Item items[] = {
     {"uint16", spv::Op::OpTypeInt, 16},
 };
 
-proto::FundamentalTypeComboBox::FundamentalTypeComboBox(spvgentwo::IAllocator* _pAlloc, const char* _pTitle) : ComboBox(_pAlloc, _pTitle)
+proto::FundamentalTypeComboBox::FundamentalTypeComboBox(const char* _pTitle) : ComboBox(_pTitle)
 {
     for (auto item : items)
     {
-        emplace_back(_pAlloc, item.name);
+        emplace_back(item.name);
     }
 }
 
 proto::FundamentalTypeComboBox::~FundamentalTypeComboBox()
 {
+    int i = 0;
 }
 
 void proto::FundamentalTypeComboBox::onSelect(unsigned int _index)

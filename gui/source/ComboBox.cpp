@@ -1,9 +1,10 @@
 #include "proto/ComboBox.h"
 #include "imgui.h"
 
-proto::ComboBox::ComboBox(spvgentwo::IAllocator* _pAlloc, const char* _pTitle) : Vector(_pAlloc),
+proto::ComboBox::ComboBox(const char* _pTitle) : 
+    HeapVector(),
 	m_pTitle(_pTitle),
-	m_onSelect(_pAlloc)
+	m_onSelect()
 {
 }
 
@@ -23,8 +24,7 @@ void proto::ComboBox::update()
     {
         for (int n = 0; n < m_elements; n++)
         {
-            const spvgentwo::String& str = operator[](n);
-            const char* item = str.c_str();
+            const char* item = operator[](n).c_str();
 
             bool is_selected = (current_item == item);
 
