@@ -1,8 +1,8 @@
 #pragma once
 
-#include "spvgentwo/List.h"
 #include "TypeWidgets.h"
-#include "spvgentwo/String.h"
+#include "common/HeapList.h"
+#include "common/HeapString.h"
 
 // forward delcs
 namespace spvgentwo
@@ -15,7 +15,7 @@ namespace proto
 	class NewFunctionPopup
 	{
 	public:
-		NewFunctionPopup(spvgentwo::IAllocator* _pAllocator);
+		NewFunctionPopup();
 		~NewFunctionPopup();
 
 		void update(spvgentwo::Module& _module);
@@ -23,10 +23,9 @@ namespace proto
 		void show(bool _visible) {m_visble = _visible;};
 
 	private:
-		spvgentwo::IAllocator* m_pAllocator = nullptr;
 		spvgentwo::String m_name;
 		FundamentalTypeComboBox m_returnType;
-		spvgentwo::List<FundamentalTypeComboBox> m_parameterTypes;
+		spvgentwo::HeapList<FundamentalTypeComboBox> m_parameterTypes;
 		bool m_visble = false;
 	};
 }

@@ -2,7 +2,6 @@
 
 #include "proto/Window.h"
 #include "EditorGraph.h"
-#include "common/HeapAllocator.h"
 #include "common/ConsoleLogger.h"
 
 namespace proto
@@ -22,7 +21,6 @@ namespace proto
 		void updateGraphs();
 
 	private:
-		spvgentwo::HeapAllocator m_alloc;
 		spvgentwo::ConsoleLogger m_logger;
 
 		bool m_shouldClose = false;

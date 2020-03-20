@@ -6,6 +6,7 @@
 
 namespace proto
 {
+	// todo: change to heaplist
 	class ComboBox : public spvgentwo::HeapVector<spvgentwo::HeapString>
 	{
 	public:

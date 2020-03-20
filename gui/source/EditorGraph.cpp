@@ -2,15 +2,15 @@
 
 #include "ImNodesEz.h"
 #include "common/BinaryFileWriter.h"
+#include "common/HeapAllocator.h"
 
 using namespace spvgentwo;
 
-proto::EditorGraph::EditorGraph(spvgentwo::IAllocator* _pAlloc, spvgentwo::ILogger* _pLogger, const char* _pName) :
-    m_pAlloc(_pAlloc),
-    m_module(_pAlloc, spv::Version, _pLogger),
+proto::EditorGraph::EditorGraph(spvgentwo::ILogger* _pLogger, const char* _pName) :
+    m_module(HeapAllocator::instance(), spv::Version, _pLogger),
     m_pName(_pName),
-    m_newFunctionPopup(_pAlloc),
-    m_nodes(_pAlloc)
+    m_newFunctionPopup(),
+    m_nodes(HeapAllocator::instance())
 {
 }
 
@@ -18,7 +18,7 @@ proto::EditorGraph::~EditorGraph()
 {
     if (m_pCanvas != nullptr)
     {
-        m_pAlloc->destruct(m_pCanvas);
+        HeapAllocator::instance()->destruct(m_pCanvas);
         m_pCanvas = nullptr;
     }
 }
@@ -73,7 +73,7 @@ void proto::EditorGraph::createCanvas()
 {
     if (m_pCanvas == nullptr)
     {
-        m_pCanvas = m_pAlloc->construct<ImNodes::CanvasState>();
+        m_pCanvas = HeapAllocator::instance()->construct<ImNodes::CanvasState>();
     }
 }
 
@@ -103,22 +103,22 @@ void proto::EditorGraph::updateContextMenu()
 
         if (ImGui::MenuItem("Constant"))
         {
-            pNode = m_nodes.emplace(OpNodeExpr{m_pAlloc, pos, OpNodeType::Const });
+            pNode = m_nodes.emplace(OpNodeExpr{ pos, OpNodeType::Const });
         }
 
         if (ImGui::MenuItem("InputVar"))
         {
-            pNode = m_nodes.emplace(OpNodeExpr{ m_pAlloc, pos, OpNodeType::InVar });
+            pNode = m_nodes.emplace(OpNodeExpr{ pos, OpNodeType::InVar });
         }
 
         if (ImGui::MenuItem("OutputVar"))
         {
-            pNode = m_nodes.emplace(OpNodeExpr{ m_pAlloc, pos, OpNodeType::OutVar });
+            pNode = m_nodes.emplace(OpNodeExpr{ pos, OpNodeType::OutVar });
         }
 
         if (ImGui::MenuItem("Add"))
         {
-            pNode = m_nodes.emplace(OpNodeExpr{ m_pAlloc, pos, OpNodeType::Add });
+            pNode = m_nodes.emplace(OpNodeExpr{ pos, OpNodeType::Add });
         }
 
         if (pNode != nullptr)

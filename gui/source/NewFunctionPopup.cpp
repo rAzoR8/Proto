@@ -4,11 +4,10 @@
 
 using namespace spvgentwo;
 
-proto::NewFunctionPopup::NewFunctionPopup(spvgentwo::IAllocator* _pAllocator) :
-	m_pAllocator(_pAllocator),
-	m_name(_pAllocator),
+proto::NewFunctionPopup::NewFunctionPopup() :
+	m_name(),
 	m_returnType("Return Type"),
-	m_parameterTypes(_pAllocator)
+	m_parameterTypes()
 {
     m_name.resize(64, "\0");
 }

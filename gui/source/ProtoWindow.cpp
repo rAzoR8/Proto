@@ -3,7 +3,7 @@
 #include "imgui.h"
 
 proto::ProtoWindow::ProtoWindow() : Window(),
-    m_graph(&m_alloc, &m_logger, "Code Graph")
+    m_graph(&m_logger, "Code Graph")
 {
 }
 

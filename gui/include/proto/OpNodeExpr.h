@@ -1,8 +1,8 @@
 #pragma once
 
-#include "spvgentwo/List.h"
-#include "spvgentwo/Vector.h"
-#include "spvgentwo/String.h"
+#include "common/HeapList.h"
+#include "common/HeapVector.h"
+#include "common/HeapString.h"
 #include "spvgentwo/Constant.h"
 #include "common/ExprGraph.h"
 #include <stdint.h>
@@ -121,7 +121,7 @@ namespace proto
 	{
 	public:
 		OpNodeExpr(OpNodeExpr&& _other) noexcept;
-		OpNodeExpr(spvgentwo::IAllocator* _pAlloc, ImVec2 _pos = ImVec2(), OpNodeType _type = OpNodeType::NumOf);
+		OpNodeExpr(ImVec2 _pos = ImVec2(), OpNodeType _type = OpNodeType::NumOf);
 		~OpNodeExpr();
 
 		void operator()(const spvgentwo::List<OpNodeExpr*>& _inputs, const spvgentwo::List<OpNodeExpr*>& _outputs);		
@@ -168,16 +168,14 @@ namespace proto
 		VarDesc m_varDesc{};
 		ConstDesc m_constDesc{};
 
-		spvgentwo::Vector<ImNodes::Ez::SlotInfo> m_inputSlots;
-		spvgentwo::Vector<ImNodes::Ez::SlotInfo> m_outputSlots;
-		spvgentwo::List<Connection> m_connections;
+		spvgentwo::HeapVector<ImNodes::Ez::SlotInfo> m_inputSlots;
+		spvgentwo::HeapVector<ImNodes::Ez::SlotInfo> m_outputSlots;
+		spvgentwo::HeapList<Connection> m_connections;
 
 		spvgentwo::ExprGraph<OpNodeExpr>* m_pGraph = nullptr; 
 		typename spvgentwo::ExprGraph<OpNodeExpr>::NodeType* m_pParent = nullptr;
 
 	private:
 		FundamentalTypeComboBox m_typeComboBox;
-		//ComboBox m_typeComboBox;
-
 	};
 } // !proto

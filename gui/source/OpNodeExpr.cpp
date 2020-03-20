@@ -28,14 +28,14 @@ OpNodeExpr::OpNodeExpr(OpNodeExpr&& _other) noexcept:
 	_other.m_pGraph = nullptr;
 }
 
-OpNodeExpr::OpNodeExpr(spvgentwo::IAllocator* _pAlloc, ImVec2 _pos, OpNodeType _type) :
+OpNodeExpr::OpNodeExpr(ImVec2 _pos, OpNodeType _type) :
 	m_type(_type),
     m_pos(_pos),
-	m_varDesc{ _pAlloc },
-	m_constDesc{ _pAlloc },
-	m_inputSlots(_pAlloc),
-	m_outputSlots(_pAlloc),
-	m_connections(_pAlloc),
+	m_varDesc{ HeapAllocator::instance() },
+	m_constDesc{ HeapAllocator::instance() },
+	m_inputSlots(),
+	m_outputSlots(),
+	m_connections(),
 	m_typeComboBox("Type")
 {
 	for (auto i = 0u; i < getInfo().numInputs; ++i)

@@ -16,7 +16,7 @@ namespace proto
 	class EditorGraph
 	{
 	public:
-		EditorGraph(spvgentwo::IAllocator* _pAlloc, spvgentwo::ILogger* _pLogger, const char* _pName);
+		EditorGraph(spvgentwo::ILogger* _pLogger, const char* _pName);
 		~EditorGraph();
 
 		void update();
@@ -33,7 +33,6 @@ namespace proto
 		void evaluateExprGraph();
 
 	private:
-		spvgentwo::IAllocator* m_pAlloc = nullptr;
 		ImNodes::CanvasState* m_pCanvas = nullptr;
 		spvgentwo::Module m_module;
 		spvgentwo::BasicBlock* m_pBB = nullptr;
