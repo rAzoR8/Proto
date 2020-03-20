@@ -1,10 +1,28 @@
 #include "proto/ComboBox.h"
 #include "imgui.h"
 
-proto::ComboBox::ComboBox(const char* _pTitle) : 
+using namespace spvgentwo;
+
+proto::ComboBox::ComboBox(ComboBox&& _other) noexcept : HeapVector<HeapString>(stdrep::move(_other)),
+    m_pTitle(_other.m_pTitle),
+    m_onSelect(stdrep::move(_other.m_onSelect)),
+    m_selected(_other.m_selected)
+{
+    _other.m_selected = 0u;
+    _other.m_pTitle = nullptr;
+}
+
+proto::ComboBox::ComboBox(const ComboBox& _other) : HeapVector<HeapString>(_other),
+    m_pTitle(_other.m_pTitle),
+    m_onSelect(_other.m_onSelect),
+    m_selected(_other.m_selected)
+{
+}
+
+proto::ComboBox::ComboBox(const char* _pTitle) :
     HeapVector(),
 	m_pTitle(_pTitle),
-	m_onSelect()
+    m_onSelect()
 {
 }
 

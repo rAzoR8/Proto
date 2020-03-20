@@ -11,6 +11,10 @@ namespace proto
 	public:
 		using OnSelectCallback = spvgentwo::HeapCallable<void(unsigned int)>;
 
+		ComboBox(ComboBox&& _other) noexcept;
+
+		ComboBox(const ComboBox& _other);
+
 		ComboBox(const char* _pTitle = nullptr);
 
 		template <typename ...Args>
