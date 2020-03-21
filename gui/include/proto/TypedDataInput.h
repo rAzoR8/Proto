@@ -6,6 +6,7 @@
 namespace spvgentwo
 {
 	class Type;
+	class Constant;
 }
 
 namespace proto
@@ -17,9 +18,11 @@ namespace proto
 		TypedDataInput();
 		~TypedDataInput();
 
-		void update(const spvgentwo::Type& _type);
+		// returns true if type is valid / input was matched
+		bool update(const spvgentwo::Type& _type);
+		bool update(const spvgentwo::Type& _type, spvgentwo::Constant& _outConstant);
 
-		auto get() const { return data; }
+		auto get() const { return m_data; }
 	private:
 
 		const char* m_label = "Value";
@@ -34,7 +37,7 @@ namespace proto
 
 		union 
 		{
-			uint8_t u8;
+			//uint8_t u8;
 
 			// 16 bit vec
 			int16_t s16;
@@ -116,6 +119,6 @@ namespace proto
 
 			float f32m44[4][4];
 			double f64m44[4][4];
-		} data;
+		} m_data;
 	};
 }
