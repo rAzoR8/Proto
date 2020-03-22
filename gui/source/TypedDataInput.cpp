@@ -75,12 +75,12 @@ bool proto::TypedDataInput::update(const Type& _type)
 	else if (base.isF32())
 	{
 		type = ImGuiDataType_Float;
-		m_step.f32 = m_step.f32 == 0.f ? 1.f : m_step.f32;
+		m_step.f32 = m_step.s32 == 0 || m_step.s32 == 1 ? 1.f : m_step.f32;
 	}
 	else if (base.isF64())
 	{
 		type = ImGuiDataType_Double;
-		m_step.f64 = m_step.f64 == 0.0 ? 1.0 : m_step.f64;
+		m_step.f64 = m_step.s64 == 0 || m_step.s64 == 1 ? 1.0 : m_step.f64;
 	}
 	else
 	{
@@ -126,16 +126,16 @@ bool proto::TypedDataInput::update(const Type& _type)
 
 		if (m_inputDrag)
 		{
-			ImGui::InputScalar("Min", type, &m_min);
-			ImGui::InputScalar("Max", type, &m_max);
-			ImGui::InputFloat("Speed", &m_speed);
-			ImGui::InputFloat("Power", &m_power);
+			ImGui::DragScalar("Min", type, &m_min, 0.01f);
+			ImGui::DragScalar("Max", type, &m_max, 0.01f);
+			ImGui::DragFloat("Speed", &m_speed, 0.01f);
+			ImGui::DragFloat("Power", &m_power, 0.01f);
 		}
 
 		if (m_inputScalar)
 		{
-			ImGui::InputScalar("Step", type, &m_step);
-			ImGui::InputScalar("FastStep", type, &m_fastStep);
+			ImGui::DragScalar("Step", type, &m_step, 0.01f);
+			ImGui::DragScalar("FastStep", type, &m_fastStep, 0.01f);
 		}
 	}
 

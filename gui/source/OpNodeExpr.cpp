@@ -187,7 +187,7 @@ void OpNodeExpr::update()
 
 		ImGui::BeginGroup();
 
-		ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x * 0.25f);
+		ImGui::PushItemWidth(200/*ImGui::GetContentRegionAvail().x * 0.25f*/);
 
 		// draw body here
 		updateOpDesc();
