@@ -3,12 +3,14 @@
 #include "common/HeapList.h"
 #include "common/HeapVector.h"
 #include "common/HeapString.h"
-#include "spvgentwo/Constant.h"
 #include "common/ExprGraph.h"
+#include "spvgentwo/Constant.h"
+
+#include "proto/FundamentalTypeComboBox.h"
+#include "proto/TypedDataInput.h"
+
 #include <stdint.h>
 #include "ImNodesEz.h"
-#include "proto/TypeWidgets.h"
-#include "proto/TypedDataInput.h"
 
 //forward decl
 namespace spvgentwo

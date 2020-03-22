@@ -1,4 +1,4 @@
-#include "proto/TypeWidgets.h"
+#include "proto/FundamentalTypeComboBox.h"
 #include "imgui.h"
 
 struct Item

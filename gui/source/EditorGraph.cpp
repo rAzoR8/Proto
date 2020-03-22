@@ -9,7 +9,6 @@ using namespace spvgentwo;
 proto::EditorGraph::EditorGraph(spvgentwo::ILogger* _pLogger, const char* _pName) :
     m_module(HeapAllocator::instance(), spv::Version, _pLogger),
     m_pName(_pName),
-    m_newFunctionPopup(),
     m_nodes(HeapAllocator::instance())
 {
 }

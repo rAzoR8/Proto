@@ -2,7 +2,6 @@
 
 #include "spvgentwo/Module.h"
 #include "AssemblyTextView.h"
-#include "NewFunctionPopup.h"
 #include "OpNodeExpr.h"
 
 // forward decls
@@ -39,8 +38,6 @@ namespace proto
 		AssemblyTextView m_textView;
 
 		const char* m_pName = nullptr;
-		
-		NewFunctionPopup m_newFunctionPopup;
 
 		spvgentwo::ExprGraph<OpNodeExpr> m_nodes;
 	};
