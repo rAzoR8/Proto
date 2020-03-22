@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include "ImNodesEz.h"
 #include "proto/TypeWidgets.h"
+#include "proto/TypedDataInput.h"
 
 //forward decl
 namespace spvgentwo
@@ -177,5 +178,6 @@ namespace proto
 
 	private:
 		FundamentalTypeComboBox m_typeComboBox;
+		TypedDataInput m_dataInput;
 	};
 } // !proto

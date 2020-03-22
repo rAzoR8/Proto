@@ -175,18 +175,7 @@ void OpNodeExpr::updateConstDesc()
 	m_typeComboBox.update();
 
 	const Type& t = m_typeComboBox.getType();
-	if (t.isFloat())
-	{
-		static float val = 0.f;
-		ImGui::DragFloat("Value", &val);
-		m_constDesc.constant.make(val);
-	}
-	else if (t.isVectorOfFloat(3u, 32u))
-	{
-		static const_vector_t<float, 3> vec3{0.f, 0.f, 0.f};
-		ImGui::DragScalarN("Value", ImGuiDataType_Float, vec3.data, 3, 1.f);
-		m_constDesc.constant.make(vec3);
-	}	
+	m_dataInput.update(t, m_constDesc.constant);
 }
 
 void OpNodeExpr::update()
@@ -196,8 +185,16 @@ void OpNodeExpr::update()
 	{
 		ImNodes::Ez::InputSlots(m_inputSlots.data(), (int)m_inputSlots.size());
 
+		ImGui::BeginGroup();
+
+		ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x * 0.25f);
+
 		// draw body here
 		updateOpDesc();
+
+		ImGui::PopItemWidth();
+
+		ImGui::EndGroup();
 
 		ImNodes::Ez::OutputSlots(m_outputSlots.data(), (int)m_outputSlots.size());
 
