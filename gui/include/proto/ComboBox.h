@@ -38,7 +38,7 @@ namespace proto
 		const char* m_pTitle = nullptr;
 		// selection index, selected item
 		OnSelectCallback m_onSelect;
-		unsigned int m_selected = 0u;
+		int m_selected = -1;
 	};
 
 	template<typename ...Args>

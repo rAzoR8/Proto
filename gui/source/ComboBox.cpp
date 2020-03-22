@@ -35,7 +35,19 @@ void proto::ComboBox::update()
     if (empty())
         return;
 
-    m_selected = m_selected >= m_elements ? 0u : m_selected;
+    if (m_selected == -1)
+    {
+        if (m_onSelect)
+        {
+            m_onSelect(0);
+        }
+        else
+        {
+            onSelect(0);
+        }
+    }
+
+    m_selected = m_selected >= m_elements ? 0 : m_selected;
     const char* current_item = operator[](m_selected).c_str();
 
     if (ImGui::BeginCombo(m_pTitle, current_item))
