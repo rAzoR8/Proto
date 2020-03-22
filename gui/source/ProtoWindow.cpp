@@ -13,6 +13,8 @@ proto::ProtoWindow::~ProtoWindow()
 
 bool proto::ProtoWindow::updateUI()
 {
+    ImGui::ShowDemoWindow();
+
     updateGraphs();
 
     updateMenu();
