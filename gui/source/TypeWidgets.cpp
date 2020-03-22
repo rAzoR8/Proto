@@ -9,8 +9,8 @@ struct Item
 };
 
 constexpr Item items[] = {
-    {"void", spv::Op::OpTypeVoid, 0},
-    {"bool", spv::Op::OpTypeBool, 0},
+    //{"void", spv::Op::OpTypeVoid, 0},
+    //{"bool", spv::Op::OpTypeBool, 0},
     {"int32", spv::Op::OpTypeInt, -32},
     {"uint32", spv::Op::OpTypeInt, 32},
     {"float", spv::Op::OpTypeFloat, 32},
