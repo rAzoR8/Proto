@@ -6,20 +6,29 @@ struct Item
     const char* name;
     spv::Op type;
     int width;
+    int rows = 1;
+    int columns = 0;
 };
 
 constexpr Item items[] = {
-    //{"void", spv::Op::OpTypeVoid, 0},
-    //{"bool", spv::Op::OpTypeBool, 0},
-    {"int32", spv::Op::OpTypeInt, -32},
-    {"uint32", spv::Op::OpTypeInt, 32},
-    {"float", spv::Op::OpTypeFloat, 32},
-    {"double", spv::Op::OpTypeFloat, 64},
-    {"int16", spv::Op::OpTypeInt, -16},
-    {"uint16", spv::Op::OpTypeInt, 16},
+    {"bool", spv::Op::OpTypeBool, 0},
+    {"u32", spv::Op::OpTypeInt, 32},
+    {"f32", spv::Op::OpTypeFloat, 32},
+    {"f32v2", spv::Op::OpTypeFloat, 32, 2},
+    {"f32v3", spv::Op::OpTypeFloat, 32, 3},
+    {"f32v4", spv::Op::OpTypeFloat, 32, 4},
+    {"mat2", spv::Op::OpTypeFloat, 32, 2, 2},
+    {"mat3", spv::Op::OpTypeFloat, 32, 3, 3},
+    {"mat4", spv::Op::OpTypeFloat, 32, 4, 4},
+    {"f64", spv::Op::OpTypeFloat, 64},
+    {"s16", spv::Op::OpTypeInt, -16},
+    {"u16", spv::Op::OpTypeInt, 16},
+    {"s32", spv::Op::OpTypeInt, -32},
+    {"void", spv::Op::OpTypeVoid, 0},
 };
 
-proto::FundamentalTypeComboBox::FundamentalTypeComboBox(const char* _pTitle) : ComboBox(_pTitle)
+proto::FundamentalTypeComboBox::FundamentalTypeComboBox(const char* _pTitle) : ComboBox(_pTitle),
+    m_type(spvgentwo::HeapAllocator::instance())
 {
     for (auto item : items)
     {
@@ -47,5 +56,15 @@ void proto::FundamentalTypeComboBox::onSelect(unsigned int _index)
     else if (m_type.isFloat())
     {
         m_type.setFloatWidth(labs(item.width));
+    }
+
+    if (item.rows > 1)
+    {
+        m_type = m_type.wrapVector(item.rows);
+
+        if (item.columns > 1)
+        {
+            m_type = m_type.wrapMatrix(item.columns);        
+        }
     }
 }

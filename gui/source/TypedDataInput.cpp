@@ -20,20 +20,22 @@ proto::TypedDataInput::~TypedDataInput()
 
 bool proto::TypedDataInput::update(const Type& _type)
 {
-	int dim = 0u;
+	uint32_t rows = 0;
+	uint32_t cols = 1;
 	ImGuiDataType_ type = ImGuiDataType_COUNT;
 
 	if (_type.isScalar())
 	{
-		dim = 1u;
+		rows = 1u;
 	}
 	else if (_type.isVector())
 	{
-		dim = _type.getVectorComponentCount();
+		rows = _type.getVectorComponentCount();
 	}
 	else if (_type.isMatrix())
 	{
-		dim = _type.getMatrixColumnCount() * _type.front().getVectorComponentCount();
+		rows = _type.getMatrixRowCount();
+		cols = _type.getMatrixColumnCount();
 	}
 	else
 	{
@@ -87,23 +89,35 @@ bool proto::TypedDataInput::update(const Type& _type)
 		return false;
 	}
 
+	const uint32_t rowLength = (base.getIntWidth() / 4) * rows;
+
 	if (m_inputDrag)
 	{
-		ImGui::DragScalarN(m_label, type, &m_data, dim, m_speed, &m_min, &m_max, m_format, m_power);
+		for (auto i = 0u; i < cols; ++i)
+		{
+			ImGui::PushID(i);
+			ImGui::DragScalarN("##Value", type, &m_data.u8 + (uint64_t)i * rowLength, rows, m_speed, &m_min, &m_max, m_format, m_power);
+			ImGui::PopID();
+		}
 	}
 	if (m_inputScalar)
 	{
-		ImGui::InputScalarN(m_label, type, &m_data, dim, &m_step, &m_fastStep);
-	}
-	if (m_inputColor && type == ImGuiDataType_Float)
-	{
-		if (dim == 3)
+		for (auto i = 0u; i < cols; ++i)
 		{
-			ImGui::ColorEdit3(m_label, m_data.f32v3);
+			ImGui::PushID(i);
+			ImGui::InputScalarN("##Value", type, &m_data.u8 + (uint64_t)i * rowLength, rows, &m_step, &m_fastStep);
+			ImGui::PopID();
 		}
-		else if (dim == 4)
+	}
+	if (m_inputColor && type == ImGuiDataType_Float && cols < 2)
+	{
+		if (rows == 3)
 		{
-			ImGui::ColorEdit4(m_label, m_data.f32v4);
+			ImGui::ColorEdit3("##Value", m_data.f32v3);
+		}
+		else if (rows == 4)
+		{
+			ImGui::ColorEdit4("##Value", m_data.f32v4);
 		}
 	}
 

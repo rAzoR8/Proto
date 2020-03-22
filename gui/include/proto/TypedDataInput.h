@@ -60,7 +60,7 @@ namespace proto
 
 		union 
 		{
-			//uint8_t u8;
+			uint8_t u8;
 
 			// 16 bit vec
 			int16_t s16;
