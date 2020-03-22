@@ -91,6 +91,22 @@ bool proto::TypedDataInput::update(const Type& _type)
 
 	const uint32_t rowLength = (base.getIntWidth() / 4) * rows;
 
+	if (ImGui::RadioButton("Input Popup", m_inputInModal))
+	{
+		m_inputInModal = !m_inputInModal;
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Input Options"))
+	{
+		m_showOptions = !m_showOptions;
+	}
+
+	if (m_inputInModal)
+	{
+		ImGui::OpenPopup("Input Value");
+		m_inputModalOpen = ImGui::BeginPopupModal("Input Value", &m_inputInModal);
+	}	
+
 	if (m_inputDrag)
 	{
 		for (auto i = 0u; i < cols; ++i)
@@ -121,12 +137,17 @@ bool proto::TypedDataInput::update(const Type& _type)
 		}
 	}
 
-	if (ImGui::Button("Input options"))
-	{	
-		m_showOptions = !m_showOptions;
+	if (m_inputModalOpen)
+	{
+		ImGui::EndPopup();
 	}
 
-	if (m_showOptions) // CollapsingHeader
+	if (m_showOptions)
+	{
+		ImGui::OpenPopup("Options");
+	}
+
+	if (ImGui::BeginPopupModal("Options", &m_showOptions))
 	{
 		ImGui::RadioButton("Drag", &m_activeOption, 0);
 		ImGui::SameLine();
@@ -151,6 +172,7 @@ bool proto::TypedDataInput::update(const Type& _type)
 			ImGui::DragScalar("Step", type, &m_step, 0.01f);
 			ImGui::DragScalar("FastStep", type, &m_fastStep, 0.01f);
 		}
+		ImGui::EndPopup();
 	}
 
 	return true;

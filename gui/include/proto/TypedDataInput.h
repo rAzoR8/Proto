@@ -57,6 +57,8 @@ namespace proto
 		bool m_inputColor = false;
 
 		bool m_showOptions = false;
+		bool m_inputInModal = false;
+		bool m_inputModalOpen = false;
 
 		union 
 		{

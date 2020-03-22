@@ -11,7 +11,6 @@ struct Item
 };
 
 constexpr Item items[] = {
-    {"bool", spv::Op::OpTypeBool, 0},
     {"u32", spv::Op::OpTypeInt, 32},
     {"f32", spv::Op::OpTypeFloat, 32},
     {"f32v2", spv::Op::OpTypeFloat, 32, 2},
@@ -24,6 +23,7 @@ constexpr Item items[] = {
     {"s16", spv::Op::OpTypeInt, -16},
     {"u16", spv::Op::OpTypeInt, 16},
     {"s32", spv::Op::OpTypeInt, -32},
+    {"bool", spv::Op::OpTypeBool, 0},
     {"void", spv::Op::OpTypeVoid, 0},
 };
 
