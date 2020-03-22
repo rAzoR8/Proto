@@ -4,7 +4,12 @@
 
 using namespace spvgentwo;
 
-proto::TypedDataInput::TypedDataInput() :
+proto::TypedDataInput::TypedDataInput(const char* _label) :
+	m_label(_label),
+	m_min{},
+	m_max{},
+	m_step{},
+	m_fastStep{},
 	m_data{}
 {
 }
@@ -40,43 +45,98 @@ bool proto::TypedDataInput::update(const Type& _type)
 	if (base.isS16())
 	{		
 		type = ImGuiDataType_S16;
+		m_step.s16 = m_step.s16 == 0 ? 1 : m_step.s16;
 	}
 	else if (base.isS32())
 	{
 		type = ImGuiDataType_S32;
+		m_step.s32 = m_step.s32 == 0 ? 1 : m_step.s32;
 	}
 	else if (base.isS64())
 	{
 		type = ImGuiDataType_S64;
+		m_step.s64 = m_step.s64 == 0 ? 1 : m_step.s64;
 	}
-	if (base.isU16())
+	else if (base.isU16())
 	{
 		type = ImGuiDataType_U16;
+		m_step.u16 = m_step.u16 == 0 ? 1 : m_step.u16;
 	}
 	else if (base.isU32())
 	{
 		type = ImGuiDataType_U32;
+		m_step.u32 = m_step.u32 == 0 ? 1 : m_step.u32;
 	}
 	else if (base.isU64())
 	{
 		type = ImGuiDataType_U64;
+		m_step.u64 = m_step.u64 == 0 ? 1 : m_step.u64;
 	}
 	else if (base.isF32())
 	{
 		type = ImGuiDataType_Float;
+		m_step.f32 = m_step.f32 == 0.f ? 1.f : m_step.f32;
 	}
 	else if (base.isF64())
 	{
 		type = ImGuiDataType_Double;
+		m_step.f64 = m_step.f64 == 0.0 ? 1.0 : m_step.f64;
 	}
 	else
 	{
 		return false;
 	}
 
-	if (m_drag)
+	if (m_inputDrag)
 	{
 		ImGui::DragScalarN(m_label, type, &m_data, dim, m_speed, &m_min, &m_max, m_format, m_power);
+	}
+	if (m_inputScalar)
+	{
+		ImGui::InputScalarN(m_label, type, &m_data, dim, &m_step, &m_fastStep);
+	}
+	if (m_inputColor && type == ImGuiDataType_Float)
+	{
+		if (dim == 3)
+		{
+			ImGui::ColorEdit3(m_label, m_data.f32v3);
+		}
+		else if (dim == 4)
+		{
+			ImGui::ColorEdit4(m_label, m_data.f32v4);
+		}
+	}
+
+	if (ImGui::Button("Input options"))
+	{	
+		m_showOptions = !m_showOptions;
+	}
+
+	if (m_showOptions) // CollapsingHeader
+	{
+		ImGui::RadioButton("Drag", &m_activeOption, 0);
+		ImGui::SameLine();
+		ImGui::RadioButton("Scalar", &m_activeOption, 1);
+		ImGui::SameLine();
+		ImGui::RadioButton("Color", &m_activeOption, 2);
+
+		m_inputDrag = m_activeOption == 0;
+		m_inputScalar = m_activeOption == 1;
+		m_inputColor = m_activeOption == 2;
+
+		if (m_inputDrag)
+		{
+			ImGui::InputScalar("Min", type, &m_min);
+			ImGui::InputScalar("Max", type, &m_max);
+			ImGui::InputFloat("Speed", &m_speed);
+			ImGui::InputFloat("Power", &m_power);
+		}
+
+		if (m_inputScalar)
+		{
+			ImGui::InputScalar("Step", type, &m_step);
+			ImGui::InputScalar("FastStep", type, &m_fastStep);
+		}
 	}
 
 	return true;

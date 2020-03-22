@@ -15,7 +15,7 @@ namespace proto
 	class TypedDataInput
 	{
 	public:
-		TypedDataInput();
+		TypedDataInput(const char* _label = "Value");
 		~TypedDataInput();
 
 		// returns true if type is valid / input was matched
@@ -26,14 +26,37 @@ namespace proto
 	private:
 
 		const char* m_label = "Value";
-
-		float m_speed = 1.f;
-		float m_min = -(FLT_MAX);
-		float m_max = FLT_MAX;
 		const char* m_format = nullptr;
+
+		union Scalar
+		{
+			float f32;
+			double f64;
+			int16_t s16;
+			uint16_t u16;
+			int32_t s32;
+			uint32_t u32;
+			int64_t s64;
+			uint64_t u64;
+		};
+
+		// drag
+		Scalar m_min;
+		Scalar m_max;
+		float m_speed = 1.f;
 		float m_power = 1.f;
 
-		bool m_drag = true;
+		// input
+		Scalar m_step;
+		Scalar m_fastStep;
+
+		// options:
+		int m_activeOption = 0;
+		bool m_inputDrag = true;
+		bool m_inputScalar = false;
+		bool m_inputColor = false;
+
+		bool m_showOptions = false;
 
 		union 
 		{
