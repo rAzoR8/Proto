@@ -3,6 +3,7 @@
 #include "ImNodesEz.h"
 #include "common/BinaryFileWriter.h"
 #include "common/HeapAllocator.h"
+#include "proto/Logger.h"
 
 using namespace spvgentwo;
 
@@ -45,6 +46,8 @@ void proto::EditorGraph::update()
 
             expr.update();
         }
+
+        m_pBB->returnValue();
 
         ImNodes::EndCanvas();
     }
@@ -122,6 +125,7 @@ void proto::EditorGraph::updateContextMenu()
 
         if (pNode != nullptr)
         {
+            Logger::instance()->log(spvgentwo::LogLevel::Info, "Node added");
             auto& editorNode = pNode->data().get();
             editorNode.setBasicBlock(m_pBB);
             editorNode.setParent(&m_nodes, pNode);

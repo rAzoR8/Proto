@@ -1,8 +1,7 @@
 #pragma once
 
 #include "proto/Window.h"
-#include "EditorGraph.h"
-#include "common/ConsoleLogger.h"
+#include "proto/EditorGraph.h"
 
 namespace proto
 {
@@ -21,8 +20,6 @@ namespace proto
 		void updateGraphs();
 
 	private:
-		spvgentwo::ConsoleLogger m_logger;
-
 		bool m_shouldClose = false;
 
 		EditorGraph m_graph;		

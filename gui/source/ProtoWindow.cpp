@@ -1,9 +1,10 @@
 #include "proto/ProtoWindow.h"
+#include "proto/Logger.h"
 
 #include "imgui.h"
 
 proto::ProtoWindow::ProtoWindow() : Window(),
-    m_graph(&m_logger, "Code Graph")
+    m_graph(Logger::instance(), "Code Graph")
 {
 }
 
@@ -14,6 +15,8 @@ proto::ProtoWindow::~ProtoWindow()
 bool proto::ProtoWindow::updateUI()
 {
     ImGui::ShowDemoWindow();
+
+    Logger::instance()->update();
 
     updateGraphs();
 
@@ -46,6 +49,8 @@ void proto::ProtoWindow::updateMenuFile()
 
     if (ImGui::MenuItem("Save", "Ctrl+S") /*|| (ImGui::GetIO().KeyCtrl && ImGui::GetIO().KeyShift*/)
     {
+        Logger::instance()->log(spvgentwo::LogLevel::Info, "Saving...");
+
         m_graph.save();
     }
 
