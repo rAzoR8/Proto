@@ -25,14 +25,40 @@ void proto::Logger::update()
 {
 	if (ImGui::Begin("Log", &m_isOpen))
 	{
+		if (ImGui::RadioButton("AutoScroll", m_autoScroll))
+		{
+			m_autoScroll = !m_autoScroll;
+		}
+		ImGui::SameLine();
+		ImGui::InputText("##Filter", m_filter, sizeof(m_filter));
+
+		auto len = strnlen(m_filter, sizeof(m_filter));
+
 		ImGui::BeginChild("scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
 
 		for (const auto& msg : m_buffer)
 		{
-			ImGui::Text(msg.c_str());
+			if (len == 0 || strstr(msg.c_str(), m_filter) != nullptr)
+			{
+				bool pop_color = strstr(msg.c_str(), "error") != nullptr || strstr(msg.c_str(), "Error") != nullptr || strstr(msg.c_str(), "ERROR") != nullptr;
+				if (pop_color)
+				{
+					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.4f, 0.4f, 1.0f)); 
+				}
+
+				ImGui::Text(msg.c_str());
+
+				if (pop_color)
+				{
+					ImGui::PopStyleColor();
+				}
+			}
 		}
 
-		ImGui::SetScrollHereY();
+		if (m_autoScroll)
+		{
+			ImGui::SetScrollHereY();		
+		}
 
 		ImGui::EndChild();
 	}

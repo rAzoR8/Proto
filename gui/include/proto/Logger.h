@@ -23,6 +23,9 @@ namespace proto
 	private:
 		unsigned int m_maxHistory = 0u;
 		bool m_isOpen = true;
+		bool m_autoScroll = true;
+
+		char m_filter[64]{ };
 
 		spvgentwo::HeapList<spvgentwo::HeapString> m_buffer;
 	};
