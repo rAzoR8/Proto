@@ -2,16 +2,45 @@
 
 #include "imgui.h"
 
-proto::Logger::Logger(unsigned int _maxHistory) :
+#include <functional>
+#include "common/HeapCallable.h"
+#include "common/HeapAllocator.h"
+
+proto::Logger::Logger(unsigned int _maxHistory) : ILogger(LogImpl),
 	m_maxHistory(_maxHistory)
 {
+	using namespace spvgentwo;
+
+	auto abs = make_callable(fabsf);
+
+	auto val = abs(-1.f);
+
+	auto x = printf;
+	//auto x = fabsf;
+
+	auto f = maker_variadic_func(x);
+
+	f("hallo %d", 1);
+
+	using T = decltype(x);
+
+	Callable<int(const char*, ...)> cal(x);
+
+	cal("hallo %d", 1);
+
+	//auto s = sizeof(cal);
+
+	//auto fun = spvgentwo::make_callable(spvgentwo::HeapAllocator::instance(), x);
+
+	//std::function<decltype(x)> f = &printf;
+	//f("hallo %d", 43);
 }
 
 proto::Logger::~Logger()
 {
 }
 
-void proto::Logger::log(const spvgentwo::LogLevel _level, const char* _pMsg)
+void proto::Logger::addMsg(const spvgentwo::LogLevel _level, const char* _pMsg)
 {
 	if (m_buffer.size() >= m_maxHistory)
 	{
@@ -19,6 +48,37 @@ void proto::Logger::log(const spvgentwo::LogLevel _level, const char* _pMsg)
 	}
 
 	m_buffer.emplace_back(_pMsg);
+}
+
+void proto::Logger::LogImpl(ILogger* _pInstance, spvgentwo::LogLevel _level, const char* _pFormat, ...)
+{
+	char buffer[512]{};
+
+	int offset = 0u;
+
+	switch (_level)
+	{
+	case spvgentwo::LogLevel::Debug:
+		offset = sprintf_s(buffer, sizeof(buffer), "Debug: "); break;
+	case spvgentwo::LogLevel::Info:
+		offset = sprintf_s(buffer, sizeof(buffer), "Info: "); break;
+	case spvgentwo::LogLevel::Warning:
+		offset = sprintf_s(buffer, sizeof(buffer), "Warning: "); break;
+	case spvgentwo::LogLevel::Error:
+		offset = sprintf_s(buffer, sizeof(buffer), "Error: "); break;
+	case spvgentwo::LogLevel::Fatal:
+		offset = sprintf_s(buffer, sizeof(buffer), "Fatal: "); break;
+	default:
+		break;
+	}
+
+
+	va_list args;
+	va_start(args, _pFormat);
+	vsprintf_s(&buffer[offset], sizeof(buffer) - offset, _pFormat, args);
+	va_end(args);
+
+	reinterpret_cast<Logger*>(_pInstance)->addMsg(_level, buffer);
 }
 
 void proto::Logger::update()

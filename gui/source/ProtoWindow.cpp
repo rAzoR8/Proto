@@ -49,7 +49,7 @@ void proto::ProtoWindow::updateMenuFile()
 
     if (ImGui::MenuItem("Save", "Ctrl+S") /*|| (ImGui::GetIO().KeyCtrl && ImGui::GetIO().KeyShift*/)
     {
-        Logger::instance()->log(spvgentwo::LogLevel::Info, "Saving...");
+       logInfo("Saving...");
 
         m_graph.save();
     }

@@ -125,7 +125,7 @@ void proto::EditorGraph::updateContextMenu()
 
         if (pNode != nullptr)
         {
-            Logger::instance()->log(spvgentwo::LogLevel::Info, "Node added");
+            logInfo("%s node added", pNode->data()->getInfo().name);
             auto& editorNode = pNode->data().get();
             editorNode.setBasicBlock(m_pBB);
             editorNode.setParent(&m_nodes, pNode);
