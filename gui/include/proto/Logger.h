@@ -10,7 +10,7 @@ namespace proto
 	{
 	public:
 		Logger(unsigned int _maxHistory = 100u);
-		~Logger();
+		~Logger() override;
 
 		void update();
 
