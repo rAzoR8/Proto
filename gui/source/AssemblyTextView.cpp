@@ -7,8 +7,7 @@
 
 using namespace spvgentwo;
 
-proto::AssemblyTextView::AssemblyTextView() :
-    m_binary(1024u) // alloc some buffer to avoid reallocs
+proto::AssemblyTextView::AssemblyTextView()
 {
 }
 
@@ -16,14 +15,10 @@ proto::AssemblyTextView::~AssemblyTextView()
 {
 }
 
-void proto::AssemblyTextView::update(spvgentwo::Module& _module)
+void proto::AssemblyTextView::update(const spvgentwo::HeapVector<unsigned int>& _module)
 {
     if (ImGui::Begin("Text View"))
     {
-        m_binary.reset();
-        BinaryVectorWriter writer(m_binary);
-        _module.write(&writer);
-
         ImGui::Checkbox("Indent", &m_indent);
         ImGui::SameLine();
         ImGui::Checkbox("Show offsets", &m_offsets);
@@ -37,8 +32,8 @@ void proto::AssemblyTextView::update(spvgentwo::Module& _module)
 
         spv_text text = nullptr;
         spv_diagnostic diagnostic = nullptr;
-        spv_context context = spvContextCreate(SPV_ENV_VULKAN_1_1_SPIRV_1_4);
-        spv_result_t error = spvBinaryToText(context, m_binary.data(), m_binary.size(), options, &text, &diagnostic);
+        spv_context context = spvContextCreate(SPV_ENV_UNIVERSAL_1_5);
+        spv_result_t error = spvBinaryToText(context, _module.data(), _module.size(), options, &text, &diagnostic);
         spvContextDestroy(context);
 
         if (error)

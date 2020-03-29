@@ -4,6 +4,9 @@
 #include "common/BinaryFileWriter.h"
 #include "common/HeapAllocator.h"
 #include "proto/Logger.h"
+#include "common/BinaryVectorWriter.h"
+
+#include "proto/Validator.h"
 
 using namespace spvgentwo;
 
@@ -47,15 +50,13 @@ void proto::EditorGraph::update()
             expr.update();
         }
 
-        m_pBB->returnValue();
-
         ImNodes::EndCanvas();
     }
     ImGui::End();
 
     evaluateExprGraph();
 
-    m_textView.update(m_module);
+    m_textView.update(m_moduleBinary);
 }
 
 void proto::EditorGraph::clear()
@@ -102,6 +103,12 @@ void proto::EditorGraph::updateContextMenu()
     if (ImGui::BeginPopup("NodesContextMenu"))
     {
         spvgentwo::ExprGraph<OpNodeExpr>::NodeType* pNode = nullptr;
+
+        if (ImGui::MenuItem("Validate"))
+        {
+            Validator val;
+            val.validate(m_moduleBinary);
+        }
 
         if (ImGui::MenuItem("Constant"))
         {
@@ -152,4 +159,13 @@ void proto::EditorGraph::evaluateExprGraph()
             spvgentwo::ExprGraph<OpNodeExpr>::evaluateRecursive<ExprArgs::FunctionPtrLists>(&node);
         }
     }
+
+    spvgentwo::BasicBlock& bb = m_module.getEntryPoints().front().front();
+    bb.returnValue();
+
+    m_moduleBinary.reserve(1024);
+    m_moduleBinary.reset();
+
+    spvgentwo::BinaryVectorWriter writer(m_moduleBinary);
+    m_module.write(&writer);
 }

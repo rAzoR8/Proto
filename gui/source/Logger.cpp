@@ -62,6 +62,11 @@ void proto::Logger::update()
 		}
 		ImGui::SameLine();
 		ImGui::InputText("##Filter", m_filter, sizeof(m_filter));
+		ImGui::SameLine();
+		if (ImGui::Button("Clear"))
+		{
+			m_buffer.clear();
+		}
 
 		auto len = strnlen(m_filter, sizeof(m_filter));
 

@@ -17,9 +17,8 @@ namespace proto
 		AssemblyTextView();
 		~AssemblyTextView();
 
-		void update(spvgentwo::Module& _module);
+		void update(const spvgentwo::HeapVector<unsigned int>& _module);
 	private:
-		spvgentwo::HeapVector<unsigned int> m_binary;
 		bool m_indent = true;
 		bool m_offsets = false;
 		bool m_friendlyNames = true;
