@@ -22,5 +22,6 @@ namespace proto
 		bool m_indent = true;
 		bool m_offsets = false;
 		bool m_friendlyNames = true;
+		bool m_autoScroll = false;
 	};
 } // !proto

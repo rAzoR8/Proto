@@ -24,6 +24,8 @@ void proto::AssemblyTextView::update(const spvgentwo::HeapVector<unsigned int>& 
         ImGui::Checkbox("Show offsets", &m_offsets);
         ImGui::SameLine();
         ImGui::Checkbox("Friendly names", &m_friendlyNames);
+        ImGui::SameLine();
+        ImGui::Checkbox("Scroll", &m_autoScroll);
 
         uint32_t options = SPV_BINARY_TO_TEXT_OPTION_NONE;
         if (m_indent) options |= SPV_BINARY_TO_TEXT_OPTION_INDENT;
@@ -42,7 +44,16 @@ void proto::AssemblyTextView::update(const spvgentwo::HeapVector<unsigned int>& 
             spvDiagnosticDestroy(diagnostic);
         }
 
+        ImGui::BeginChild("scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
+
         ImGui::Text("%s", text->str);
+
+        if (m_autoScroll)
+        {
+            ImGui::SetScrollHereY();
+        }
+
+        ImGui::EndChild();
 
         spvTextDestroy(text);
     }
