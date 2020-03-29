@@ -166,7 +166,7 @@ void OpNodeExpr::updateOpDesc()
 void OpNodeExpr::updateVarDesc()
 {
 	m_typeComboBox.update();
-	m_varDesc.type = m_typeComboBox.getType();
+	m_varDesc.type = m_typeComboBox.getType().wrapPointer(m_varDesc.storageClass);
 }
 
 void OpNodeExpr::updateConstDesc()
