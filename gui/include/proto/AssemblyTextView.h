@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/HeapVector.h"
+
 // forward delcs
 
 namespace spvgentwo
@@ -17,5 +19,6 @@ namespace proto
 
 		void update(spvgentwo::Module& _module);
 	private:
+		spvgentwo::HeapVector<unsigned int> m_binary;
 	};
 } // !proto

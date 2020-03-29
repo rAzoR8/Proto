@@ -1,11 +1,14 @@
 #include "proto/AssemblyTextView.h"
 #include "imgui.h"
 #include "spvgentwo/Module.h"
-#include <sstream>
+
+#include <spirv-tools/libspirv.hpp>
+#include "common/BinaryVectorWriter.h"
 
 using namespace spvgentwo;
 
-proto::AssemblyTextView::AssemblyTextView()
+proto::AssemblyTextView::AssemblyTextView() :
+    m_binary(1024u) // alloc some buffer to avoid reallocs
 {
 }
 
@@ -17,68 +20,28 @@ void proto::AssemblyTextView::update(spvgentwo::Module& _module)
 {
     if (ImGui::Begin("Text View"))
     {
-        _module.assignIDs();
+        m_binary.reset();
+        BinaryVectorWriter writer(m_binary);
 
-        std::ostringstream s;
+        _module.write(&writer);
 
-        auto nameOrId = [&s](const Instruction* instr)
+        uint32_t options = 0u;
+        spv_text text = nullptr;
+        spv_diagnostic diagnostic = nullptr;
+        spv_context context = spvContextCreate(SPV_ENV_VULKAN_1_1_SPIRV_1_4);
+        spv_result_t error = spvBinaryToText(context, m_binary.data(), m_binary.size(), options, &text, &diagnostic);
+        spvContextDestroy(context);
+
+        if (error)
         {
-            const char* resName = instr->getName();
-            if (resName != nullptr && *resName != '\0')
-            {
-                s << resName;
-            }
-            else
-            {
-                s << instr->getResultId();
-            }
-        };
+            spvDiagnosticPrint(diagnostic);
+            spvDiagnosticDestroy(diagnostic);
+        }
 
-        auto instrPrint = [&](const Instruction& instr)
-        {
-            if (instr.hasResult())
-            {
-                nameOrId(&instr);
-                s << " = ";
-            }
-            s << (unsigned int)instr.getOperation();
+        ImGui::Text("%s", text->str);
 
-            for (const Operand& operand : instr)
-            {
-                if (operand.type == Operand::Type::Literal)
-                {
-                    s << " ";
-                }
-                else
-                {
-                    s << " %";
-                }
-
-                switch (operand.type)
-                {
-                case Operand::Type::Instruction:
-                    nameOrId(operand.instruction);
-                    break;
-                case Operand::Type::ResultId:
-                    s << operand.resultId;
-                    break;
-                case Operand::Type::BranchTarget:
-                    nameOrId(&operand.branchTarget->front());
-                    break;
-                case Operand::Type::Literal:
-                    s << operand.value.value;
-                    break;
-                default:
-                    break;
-                }
-            }
-
-            s << std::endl;
-        };
-
-        _module.iterateInstructions(instrPrint);
-
-        ImGui::Text("%s", s.str().c_str());
+        spvTextDestroy(text);
     }
+
     ImGui::End();
 }

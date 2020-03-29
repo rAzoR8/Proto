@@ -1,39 +1,10 @@
 #include "proto/Logger.h"
-
 #include "imgui.h"
-
-#include <functional>
-#include "common/HeapCallable.h"
-#include "common/HeapAllocator.h"
+#include <stdio.h>
 
 proto::Logger::Logger(unsigned int _maxHistory) : ILogger(LogImpl),
 	m_maxHistory(_maxHistory)
 {
-	using namespace spvgentwo;
-
-	auto abs = make_callable(fabsf);
-
-	auto val = abs(-1.f);
-
-	auto x = printf;
-	//auto x = fabsf;
-
-	auto f = maker_variadic_func(x);
-
-	f("hallo %d", 1);
-
-	using T = decltype(x);
-
-	Callable<int(const char*, ...)> cal(x);
-
-	cal("hallo %d", 1);
-
-	//auto s = sizeof(cal);
-
-	//auto fun = spvgentwo::make_callable(spvgentwo::HeapAllocator::instance(), x);
-
-	//std::function<decltype(x)> f = &printf;
-	//f("hallo %d", 43);
 }
 
 proto::Logger::~Logger()

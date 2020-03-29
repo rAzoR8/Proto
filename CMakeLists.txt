@@ -78,6 +78,14 @@ target_link_libraries(proto PUBLIC SpvGenTwoLib SpvGenTwoCommon)
 target_include_directories(proto PRIVATE "${Vulkan_INCLUDE_DIR}")
 target_link_libraries(proto PRIVATE "${Vulkan_LIBRARIES}")
 
+#link spir-v tools for dis
+option(SKIP_SPIRV_TOOLS_INSTALL "Skip installation" OFF)
+option(SPIRV_SKIP_TESTS "Skip tests" ON)
+add_subdirectory("${Vulkan_INCLUDE_DIR}/../spirv-tools" "${CMAKE_BINARY_DIR}/spirv-tools")
+
+target_include_directories(proto PRIVATE "${Vulkan_INCLUDE_DIR}/../spirv-tools/include" )
+target_link_libraries(proto PRIVATE SPIRV-Tools)
+
 #link glfw
 target_include_directories(proto PRIVATE "${glfw_INCLUDE_DIRS}")
 target_link_libraries(proto PRIVATE glfw)
