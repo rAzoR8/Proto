@@ -19,7 +19,8 @@ OpNodeExpr::OpNodeExpr(OpNodeExpr&& _other) noexcept:
 	m_connections(stdrep::move(_other.m_connections)),
 	m_pGraph(_other.m_pGraph),
 	m_pParent(_other.m_pParent),
-	m_typeComboBox(stdrep::move(_other.m_typeComboBox))
+	m_typeComboBox(stdrep::move(_other.m_typeComboBox)),
+	m_storageClassCombobox(stdrep::move(_other.m_storageClassCombobox))
 {
 	_other.m_pBB = nullptr;
 	_other.m_pResult = nullptr;
@@ -36,7 +37,13 @@ OpNodeExpr::OpNodeExpr(ImVec2 _pos, OpNodeType _type) :
 	m_inputSlots(),
 	m_outputSlots(),
 	m_connections(),
-	m_typeComboBox("Type")
+	m_typeComboBox("Type"),
+	m_storageClassCombobox("StorageClass",
+		"Input", spv::StorageClass::Input,
+		"Output", spv::StorageClass::Output,
+		"Uniform", spv::StorageClass::Uniform,
+		"UniformConstant", spv::StorageClass::UniformConstant,
+		"StorageBuffer", spv::StorageClass::StorageBuffer)
 {
 	for (auto i = 0u; i < getInfo().numInputs; ++i)
 	{
@@ -45,6 +52,15 @@ OpNodeExpr::OpNodeExpr(ImVec2 _pos, OpNodeType _type) :
 	for (auto i = 0u; i < getInfo().numOutputs; ++i)
 	{
 		m_outputSlots.emplace_back(g_OpNodeOutputName[i], 1);
+	}
+
+	if (_type == OpNodeType::InVar)
+	{
+		m_storageClassCombobox.setSelectedIndex(0);
+	}
+	else if (_type == OpNodeType::OutVar)
+	{
+		m_storageClassCombobox.setSelectedIndex(1);
 	}
 }
 
@@ -166,6 +182,8 @@ void OpNodeExpr::updateOpDesc()
 void OpNodeExpr::updateVarDesc()
 {
 	m_typeComboBox.update();
+	m_storageClassCombobox.update();
+	m_varDesc.storageClass = m_storageClassCombobox.getSelectedItem();
 	m_varDesc.type = m_typeComboBox.getType().wrapPointer(m_varDesc.storageClass);
 }
 

@@ -38,7 +38,6 @@ proto::FundamentalTypeComboBox::FundamentalTypeComboBox(const char* _pTitle) : C
 
 proto::FundamentalTypeComboBox::~FundamentalTypeComboBox()
 {
-    int i = 0;
 }
 
 void proto::FundamentalTypeComboBox::onSelect(unsigned int _index)

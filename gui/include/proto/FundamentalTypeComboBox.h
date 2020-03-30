@@ -6,7 +6,7 @@
 
 namespace proto
 {
-	class FundamentalTypeComboBox : public ComboBox
+	class FundamentalTypeComboBox : public ComboBox<>
 	{
 	public:
 		FundamentalTypeComboBox(const char* _pTitle);

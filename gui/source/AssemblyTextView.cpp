@@ -46,7 +46,10 @@ void proto::AssemblyTextView::update(const spvgentwo::HeapVector<unsigned int>& 
 
         ImGui::BeginChild("scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
 
-        ImGui::Text("%s", text->str);
+        if (text != nullptr)
+        {
+            ImGui::Text("%s", text->str);        
+        }
 
         if (m_autoScroll)
         {

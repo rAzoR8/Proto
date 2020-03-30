@@ -180,6 +180,7 @@ namespace proto
 
 	private:
 		FundamentalTypeComboBox m_typeComboBox;
+		ComboBox<spv::StorageClass> m_storageClassCombobox;
 		TypedDataInput m_dataInput;
 	};
 } // !proto
