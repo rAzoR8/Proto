@@ -6,8 +6,6 @@
 #include "proto/Logger.h"
 #include "common/BinaryVectorWriter.h"
 
-#include "proto/Validator.h"
-
 using namespace spvgentwo;
 
 proto::EditorGraph::EditorGraph(spvgentwo::ILogger* _pLogger, const char* _pName) :
@@ -104,12 +102,6 @@ void proto::EditorGraph::updateContextMenu()
     {
         spvgentwo::ExprGraph<OpNodeExpr>::NodeType* pNode = nullptr;
 
-        if (ImGui::MenuItem("Validate"))
-        {
-            Validator val;
-            val.validate(m_moduleBinary);
-        }
-
         if (ImGui::MenuItem("Constant"))
         {
             pNode = m_nodes.emplace(OpNodeExpr{ pos, OpNodeType::Const });
@@ -168,4 +160,6 @@ void proto::EditorGraph::evaluateExprGraph()
 
     spvgentwo::BinaryVectorWriter writer(m_moduleBinary);
     m_module.write(&writer);
+
+    m_validator.validate(m_moduleBinary);
 }

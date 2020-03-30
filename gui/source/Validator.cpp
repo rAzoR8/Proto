@@ -3,6 +3,8 @@
 #include <spirv-tools/libspirv.hpp>
 #include "proto/Logger.h"
 
+#include "spvgentwo/FNV1aHasher.h"
+
 proto::Validator::Validator()
 {
 }
@@ -38,20 +40,19 @@ void CLIMessageConsumer(spv_message_level_t level, const char* source,  const sp
 
 bool proto::Validator::validate(const spvgentwo::Vector<unsigned int>& _module)
 {
-    //m_moduleBinary
-    spvtools::SpirvTools tools(SPV_ENV_UNIVERSAL_1_5);
+    spvgentwo::FNV1aHasher hash;
 
-    //spv_message_level_t level, const char*,
-    //    const spv_position_t& position, const char* message
-    tools.SetMessageConsumer(CLIMessageConsumer);
-    spvtools::ValidatorOptions options;
-
-    bool result = tools.Validate(_module.data(), _module.size(), options);
-
-    if (result)
+    if (auto h = hash.add(_module.data(), _module.size() * sizeof(unsigned int)); h != m_hash)
     {
-        proto::logInfo("Generated valid module [%lluB]", _module.size() * sizeof(unsigned int));
+        m_hash = h;
+
+        spvtools::SpirvTools tools(SPV_ENV_UNIVERSAL_1_5);
+
+        tools.SetMessageConsumer(CLIMessageConsumer);
+        spvtools::ValidatorOptions options;
+
+        m_valid = tools.Validate(_module.data(), _module.size(), options);
     }
 
-    return result;
+    return m_valid;
 }
