@@ -12,7 +12,6 @@ OpNodeExpr::OpNodeExpr(OpNodeExpr&& _other) noexcept:
 	m_pVar(_other.m_pVar),
 	m_pos(_other.m_pos),
 	m_selected(_other.m_selected),
-	m_toBeRemoved(_other.m_toBeRemoved),
 	m_varDesc(stdrep::move(_other.m_varDesc)),
 	m_constDesc(stdrep::move(_other.m_constDesc)),
 	m_inputSlots(stdrep::move(_other.m_inputSlots)),
@@ -195,7 +194,7 @@ void OpNodeExpr::updateConstDesc()
 	m_dataInput.update(t, m_constDesc.constant);
 }
 
-void OpNodeExpr::update()
+bool OpNodeExpr::update()
 {
 	const char* name = getInfo().name;
 	if (ImNodes::Ez::BeginNode(this, name, &m_pos, &m_selected))
@@ -255,6 +254,29 @@ void OpNodeExpr::update()
 		}
 	}
 	ImNodes::Ez::EndNode();
+
+	if (m_selected && ImGui::IsKeyPressedMap(ImGuiKey_Delete))
+	{
+		for (auto& con : m_connections)
+		{
+			logInfo("Disconnected %s -> %s", con.output_node->getInfo().name, con.input_node->getInfo().name);
+			con.output_node->m_pParent->disconnect(con.input_node->m_pParent);
+
+			if (con.output_node == this)
+			{
+				con.input_node->remove(con);
+			}
+			else
+			{
+				con.output_node->remove(con);
+			}
+		}
+
+		m_connections.clear();
+		return true; // remove node
+	}
+
+	return false;
 }
 
 void OpNodeExpr::clear()

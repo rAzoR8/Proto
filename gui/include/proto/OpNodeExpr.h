@@ -135,12 +135,12 @@ namespace proto
 		void setBasicBlock(spvgentwo::BasicBlock* _pBB);
 		void setParent(spvgentwo::ExprGraph<OpNodeExpr>* _pGraph, typename spvgentwo::ExprGraph<OpNodeExpr>::NodeType* _pParent);
 		
-		void update();
+		// returns true if nodes is to be removed
+		bool update();
 
 		void clear();
 
 		bool isSelected() const { return m_selected; }
-		bool toBeRemoved() const { return m_toBeRemoved; }
 
 		ImVec2 getPosition() const { return m_pos; }
 
@@ -166,7 +166,6 @@ namespace proto
 
 		ImVec2 m_pos{};
 		bool m_selected = false;
-		bool m_toBeRemoved = false;
 
 		VarDesc m_varDesc{};
 		ConstDesc m_constDesc{};

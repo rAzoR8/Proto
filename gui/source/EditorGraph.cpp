@@ -40,12 +40,19 @@ void proto::EditorGraph::update()
 
         updateContextMenu();
 
-        for (auto& node : m_nodes)
+        for (auto it = m_nodes.begin(); it != m_nodes.end();)
         {
-            OpNodeExpr& expr = node.data().get();
+            OpNodeExpr& expr = it->data().get();
             expr.setBasicBlock(m_pBB);
 
-            expr.update();
+            if (expr.update()) // update UI, check if node is to be delted
+            {
+                it = m_nodes.erase(it);
+            }
+            else
+            {
+                ++it;
+            }
         }
 
         ImNodes::EndCanvas();
