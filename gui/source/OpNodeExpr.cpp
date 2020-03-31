@@ -71,7 +71,12 @@ OpNodeExpr::~OpNodeExpr()
 void OpNodeExpr::operator()(const List<OpNodeExpr*>& _inputs, const List<OpNodeExpr*>& _outputs)
 {
 	Instruction* lhs = _inputs.empty() ? nullptr : _inputs.front()->m_pResult;
-	Instruction* rhs = _inputs.size() == 2u ? _inputs.back()->m_pResult : nullptr;
+	Instruction* rhs = _inputs.size() > 1u ? (*(_inputs.begin()+1))->m_pResult : nullptr;
+
+	if ((lhs != nullptr && lhs->getOperation() == spv::Op::OpNop) || (rhs != nullptr && rhs->getOperation() == spv::Op::OpNop))
+	{
+		return;
+	}
 
 	switch (m_type)
 	{
@@ -91,16 +96,40 @@ void OpNodeExpr::operator()(const List<OpNodeExpr*>& _inputs, const List<OpNodeE
         makeConst();
         break;
     case OpNodeType::Equal:
+		if (lhs != nullptr && rhs != nullptr)
+		{
+			m_pResult = (*m_pBB)->Equal(lhs, rhs);
+		}
         break;
     case OpNodeType::NotEqual:
+		if (lhs != nullptr && rhs != nullptr)
+		{
+			m_pResult = (*m_pBB)->NotEqual(lhs, rhs);
+		}
         break;
     case OpNodeType::Less:
+		if (lhs != nullptr && rhs != nullptr)
+		{
+			m_pResult = (*m_pBB)->Less(lhs, rhs);
+		}
         break;
     case OpNodeType::LessEqual:
+		if (lhs != nullptr && rhs != nullptr)
+		{
+			m_pResult = (*m_pBB)->LessEqual(lhs, rhs);
+		}
         break;
     case OpNodeType::Greater:
+		if (lhs != nullptr && rhs != nullptr)
+		{
+			m_pResult = (*m_pBB)->Greater(lhs, rhs);
+		}
         break;
     case OpNodeType::GreaterEqual:
+		if (lhs != nullptr && rhs != nullptr)
+		{
+			m_pResult = (*m_pBB)->GreaterEqual(lhs, rhs);
+		}
         break;
     case OpNodeType::Add:
 		if (lhs != nullptr && rhs != nullptr)
@@ -109,14 +138,34 @@ void OpNodeExpr::operator()(const List<OpNodeExpr*>& _inputs, const List<OpNodeE
 		}
         break;
     case OpNodeType::Sub:
+		if (lhs != nullptr && rhs != nullptr)
+		{
+			m_pResult = (*m_pBB)->Sub(lhs, rhs);
+		}
         break;
     case OpNodeType::Mul:
+		if (lhs != nullptr && rhs != nullptr)
+		{
+			m_pResult = (*m_pBB)->Mul(lhs, rhs);
+		}
         break;
     case OpNodeType::Div:
+		if (lhs != nullptr && rhs != nullptr)
+		{
+			m_pResult = (*m_pBB)->Div(lhs, rhs);
+		}
         break;
     case OpNodeType::Dot:
+		if (lhs != nullptr && rhs != nullptr)
+		{
+			m_pResult = (*m_pBB)->opDot(lhs, rhs);
+		}
         break;
     case OpNodeType::Select:
+		if (_inputs.size() == 3u && _inputs.back()->m_pResult != nullptr)
+		{
+			m_pResult = (*m_pBB)->opSelect(lhs, rhs, _inputs.back()->m_pResult);
+		}
         break;
     case OpNodeType::Cast:
         break;

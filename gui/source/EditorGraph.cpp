@@ -113,20 +113,61 @@ void proto::EditorGraph::updateContextMenu()
         {
             pNode = m_nodes.emplace(OpNodeExpr{ pos, OpNodeType::Const });
         }
-
         if (ImGui::MenuItem("InputVar"))
         {
             pNode = m_nodes.emplace(OpNodeExpr{ pos, OpNodeType::InVar });
         }
-
         if (ImGui::MenuItem("OutputVar"))
         {
             pNode = m_nodes.emplace(OpNodeExpr{ pos, OpNodeType::OutVar });
         }
-
-        if (ImGui::MenuItem("Add"))
+        if (ImGui::MenuItem("+ Add"))
         {
             pNode = m_nodes.emplace(OpNodeExpr{ pos, OpNodeType::Add });
+        }
+        if (ImGui::MenuItem("- Sub"))
+        {
+            pNode = m_nodes.emplace(OpNodeExpr{ pos, OpNodeType::Sub });
+        }
+        if (ImGui::MenuItem("* Mul"))
+        {
+            pNode = m_nodes.emplace(OpNodeExpr{ pos, OpNodeType::Mul });
+        }
+        if (ImGui::MenuItem("/ Div"))
+        {
+            pNode = m_nodes.emplace(OpNodeExpr{ pos, OpNodeType::Div });
+        }
+        if (ImGui::MenuItem(". Dot"))
+        {
+            pNode = m_nodes.emplace(OpNodeExpr{ pos, OpNodeType::Dot });
+        }
+        if (ImGui::MenuItem("? Select"))
+        {
+            pNode = m_nodes.emplace(OpNodeExpr{ pos, OpNodeType::Select });
+        }
+        if (ImGui::MenuItem("= Equal"))
+        {
+            pNode = m_nodes.emplace(OpNodeExpr{ pos, OpNodeType::Equal });
+        }
+        if (ImGui::MenuItem("!= NotEqual"))
+        {
+            pNode = m_nodes.emplace(OpNodeExpr{ pos, OpNodeType::NotEqual });
+        }
+        if (ImGui::MenuItem("< Less"))
+        {
+            pNode = m_nodes.emplace(OpNodeExpr{ pos, OpNodeType::Less });
+        }
+        if (ImGui::MenuItem("<= LessEqual"))
+        {
+            pNode = m_nodes.emplace(OpNodeExpr{ pos, OpNodeType::LessEqual });
+        }
+        if (ImGui::MenuItem("> Greater"))
+        {
+            pNode = m_nodes.emplace(OpNodeExpr{ pos, OpNodeType::Greater });
+        }
+        if (ImGui::MenuItem(">+ GreaterEqual"))
+        {
+            pNode = m_nodes.emplace(OpNodeExpr{ pos, OpNodeType::GreaterEqual });
         }
 
         if (pNode != nullptr)
