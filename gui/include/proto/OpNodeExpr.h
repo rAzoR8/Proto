@@ -138,8 +138,6 @@ namespace proto
 		// returns true if nodes is to be removed
 		bool update();
 
-		void clear();
-
 		bool isSelected() const { return m_selected; }
 
 		ImVec2 getPosition() const { return m_pos; }

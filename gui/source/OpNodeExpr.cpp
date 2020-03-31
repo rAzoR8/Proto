@@ -279,23 +279,23 @@ bool OpNodeExpr::update()
 	return false;
 }
 
-void OpNodeExpr::clear()
-{
-	m_inputSlots.clear();
-	m_outputSlots.clear();
-
-	m_connections.clear();
-}
-
 bool OpNodeExpr::allowedDisconnection(const Connection& _con)
 {
-	//return strcmp(_con.input_slot, "FuncEntry") != 0;
 	return true;
 }
 
 bool OpNodeExpr::allowedConnection(const Connection& _con)
 {
-	return (_con.input_node->m_connections.contains(_con) == false && _con.output_node->m_connections.contains(_con) == false);
+	// check if the input slot is taken
+	for (const Connection& con : m_connections)
+	{
+		if (strcmp(con.input_slot, _con.input_slot) == 0)
+		{
+			return false;
+		}
+	}
+
+	return true;
 }
 
 spvgentwo::List<proto::Connection>::Iterator OpNodeExpr::remove(const Connection& _con)
