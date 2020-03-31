@@ -120,8 +120,6 @@ void OpNodeExpr::operator()(const List<OpNodeExpr*>& _inputs, const List<OpNodeE
         break;
     case OpNodeType::Cast:
         break;
-    case OpNodeType::NumOf:
-        break;
     default:
         break;
 	}

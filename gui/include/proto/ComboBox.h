@@ -12,21 +12,21 @@ namespace proto
 		struct Empty {};
 	}
 
-	template <typename T = detail::Empty>
+	template <typename Data = detail::Empty>
 	struct ComboBoxEntry
 	{
 		ComboBoxEntry(const char* _name = nullptr) :
 			name(_name) {}
 
-		ComboBoxEntry(const char* _name, const T& _data) :
+		ComboBoxEntry(const char* _name, const Data& _data) :
 			name(_name), data(_data) {}
 
 		const char* name;
-		T data;
+		Data data;
 	};
 
-	template <typename T = detail::Empty>
-	class ComboBox : public spvgentwo::HeapVector<ComboBoxEntry<T>>
+	template <typename X = detail::Empty>
+	class ComboBox : public spvgentwo::HeapVector<ComboBoxEntry<X>>
 	{
 	public:
 		using OnSelectCallback = spvgentwo::HeapCallable<void(unsigned int)>;
@@ -53,11 +53,11 @@ namespace proto
 		int getSelectedIndex() const { return m_selected; }
 		void setSelectedIndex(int _index) { m_selected = _index; }
 
-		const ComboBoxEntry<T>& getSelected() const { return this->operator[](m_selected < 0 ? 0 : m_selected); }
-		const T& getSelectedItem() const { return this->operator[](m_selected < 0 ? 0 : m_selected).data; }
+		const ComboBoxEntry<X>& getSelected() const { return this->operator[](m_selected < 0 ? 0 : m_selected); }
+		const X& getSelectedItem() const { return this->operator[](m_selected < 0 ? 0 : m_selected).data; }
 
 		template <class ...Args>
-		void emplace_back_args2(const char* _name, const T& _data, Args&& ..._tail);
+		void emplace_back_args2(const char* _name, const X& _data, Args&& ..._tail);
 
 	private:
 		const char* m_pTitle = nullptr;
@@ -66,30 +66,30 @@ namespace proto
 		int m_selected = -1;
 	};
 
-	template<typename T>
-	void add(ComboBox<T>* ptr, const char* _name = nullptr, const T& _data = {})
+	template <typename X>
+	void add(ComboBox<X>* ptr, const char* _name = nullptr, const X& _data = {})
 	{
 		ptr->emplace_back(ComboBoxEntry{ _name, _data });
 	}
 
-	template<typename T>
+	template<typename X>
 	template<typename ...Args>
-	inline ComboBox<T>::ComboBox(const char* _pTitle, Args&& ..._args) :
+	inline ComboBox<X>::ComboBox(const char* _pTitle, Args&& ..._args) :
 		m_pTitle(_pTitle)
 	{
 		emplace_back_args2(stdrep::forward<Args>(_args)...);
 	}
 
-	template<typename T>
+	template<typename X>
 	template<class Functor>
-	inline void ComboBox<T>::setOnSelectCallback(const Functor& _func)
+	inline void ComboBox<X>::setOnSelectCallback(const Functor& _func)
 	{
 		m_onSelect = _func;
 	}
 
-	template<typename T>
+	template<typename X>
 	template<class ...Args>
-	inline void ComboBox<T>::emplace_back_args2(const char* _name, const T& _data, Args&& ..._tail) 
+	inline void ComboBox<X>::emplace_back_args2(const char* _name, const X& _data, Args&& ..._tail) 
 	{
 		this->emplace_back(_name, _data);
 
@@ -99,8 +99,8 @@ namespace proto
 		}
 	}
 
-	template<typename T>
-	ComboBox<T>::ComboBox(ComboBox&& _other) noexcept : spvgentwo::HeapVector<ComboBoxEntry<T>>(stdrep::move(_other)),
+	template<typename X>
+	ComboBox<X>::ComboBox(ComboBox&& _other) noexcept : spvgentwo::HeapVector<ComboBoxEntry<X>>(stdrep::move(_other)),
 		m_pTitle(_other.m_pTitle),
 		m_onSelect(stdrep::move(_other.m_onSelect)),
 		m_selected(_other.m_selected)
@@ -109,29 +109,29 @@ namespace proto
 		_other.m_pTitle = nullptr;
 	}
 
-	template<typename T>
-	ComboBox<T>::ComboBox(const ComboBox& _other) : spvgentwo::HeapVector<ComboBoxEntry<T>>(_other),
+	template<typename X>
+	ComboBox<X>::ComboBox(const ComboBox& _other) : spvgentwo::HeapVector<ComboBoxEntry<X>>(_other),
 		m_pTitle(_other.m_pTitle),
 		m_onSelect(_other.m_onSelect),
 		m_selected(_other.m_selected)
 	{
 	}
 
-	template<typename T>
-	ComboBox<T>::ComboBox(const char* _pTitle) :
-		spvgentwo::HeapVector<ComboBoxEntry<T>>(),
+	template<typename X>
+	ComboBox<X>::ComboBox(const char* _pTitle) :
+		spvgentwo::HeapVector<ComboBoxEntry<X>>(),
 		m_pTitle(_pTitle),
 		m_onSelect()
 	{
 	}
 
-	template<typename T>
-	ComboBox<T>::~ComboBox()
+	template<typename X>
+	ComboBox<X>::~ComboBox()
 	{
 	}
 
-	template<typename T>
-	void ComboBox<T>::update()
+	template<typename X>
+	void ComboBox<X>::update()
 	{
 		if (this->empty())
 			return;
