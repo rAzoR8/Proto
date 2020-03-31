@@ -1,5 +1,6 @@
 #include "proto/OpNodeExpr.h"
 #include "spvgentwo/Module.h"
+#include "proto/Logger.h"
 
 using namespace proto;
 using namespace spvgentwo;
@@ -218,6 +219,8 @@ void OpNodeExpr::update()
 		if (ImNodes::GetNewConnection((void**)&con.input_node, &con.input_slot,
 			(void**)&con.output_node, &con.output_slot) && allowedConnection(con))
 		{
+			logInfo("Connected %s -> %s", con.output_node->getInfo().name, con.input_node->getInfo().name);
+
 			con.input_node->m_connections.emplace_back(con);
 			con.output_node->m_connections.emplace_back(con);
 			
@@ -237,10 +240,9 @@ void OpNodeExpr::update()
 			if (ImNodes::Connection(con.input_node, con.input_slot,
 				con.output_node, con.output_slot) == false && allowedDisconnection(con))
 			{
-				// mark fore removal
-				m_toBeRemoved = true;
+				logInfo("Disconnected %s -> %s", con.output_node->getInfo().name, con.input_node->getInfo().name);
 
-				con.output_node->m_pParent->connect(con.input_node->m_pParent);
+				con.output_node->m_pParent->disconnect(con.input_node->m_pParent);
 
 				// Remove deleted connections
 				con.input_node->remove(con);
