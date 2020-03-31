@@ -311,11 +311,11 @@ bool proto::TypedDataInput::update(const spvgentwo::Type& _type, spvgentwo::Cons
 	{
 		_outConstant.make(make_vector(m_data.f32v2));
 	}
-	else if (_type.isVectorOfFloat(3u, 64u))
+	else if (_type.isVectorOfFloat(3u, 32u))
 	{
 		_outConstant.make(make_vector(m_data.f32v3));
 	}
-	else if (_type.isVectorOfFloat(4u, 64u))
+	else if (_type.isVectorOfFloat(4u, 32u))
 	{
 		_outConstant.make(make_vector(m_data.f32v4));
 	}
