@@ -51,32 +51,29 @@ namespace proto
 	struct OpNodeDesc
 	{
 		const char* name; 
-		uint32_t numInputs;
-		uint32_t numOutputs;
+		spvgentwo::HeapVector<const char*> inputs;
+		spvgentwo::HeapVector<const char*> outputs;
 	};
 
-	constexpr OpNodeDesc g_OpNodeDesc[uint32_t(OpNodeType::NumOf)] = { 
-		{ "InVar", 0u, 1u},
-		{ "OutVar", 1u, 0u},
-		{ "Const", 0u, 1u},
-		{ "Equal", 2u, 1u},
-		{ "NotEqual", 2u, 1u},
-		{ "Less", 2u, 1u},
-		{ "LessEqual", 2u, 1u},
-		{ "Greater", 2u, 1u},
-		{ "GreaterEqual", 2u, 1u},
-		{ "Add", 2u, 1u},
-		{ "Sub", 2u, 1u},
-		{ "Mul", 2u, 1u},
-		{ "Div", 2u, 1u},
-		{ "Dot", 2u, 1u},
-		{ "Select", 2u, 1u},
+	static const OpNodeDesc g_OpNodeDesc[uint32_t(OpNodeType::NumOf)] = { 
+		{ "InVar", {}, {"Value"}},
+		{ "OutVar", "Value", {}},
+		{ "Const", {}, "Value"},
+		{ "Equal", {"X", "Y"}, {"bool"}},
+		{ "NotEqual", {"X", "Y"}, {"bool"}},
+		{ "Less", {"X", "Y"}, {"bool"}},
+		{ "LessEqual", {"X", "Y"}, {"bool"}},
+		{ "Greater", {"X", "Y"}, {"bool"}},
+		{ "GreaterEqual", {"X", "Y"}, {"bool"}},
+		{ "Add", {"X", "Y"}, {"Value"}},
+		{ "Sub",{"X", "Y"}, {"Value"}},
+		{ "Mul", {"X", "Y"}, {"Value"}},
+		{ "Div", {"X", "Y"}, {"Value"}},
+		{ "Dot", {"X", "Y"}, {"Value"}},
+		{ "Select",{"bool", "X", "Y"}, {"Value"}},
 		//{ OpNodeType::Phi, ~0u, 1u},
-		{ "Cast", 1u, 1u},
+		{ "Cast", {"Type1"}, {"Type2"}},
 	};
-
-	constexpr const char* g_OpNodeInputName[] = {"In0","In1","In2","In3","In4"};
-	constexpr const char* g_OpNodeOutputName[] = { "Out0","Out1","Out2","Out3","Out4" };
 
 	struct VarDesc
 	{

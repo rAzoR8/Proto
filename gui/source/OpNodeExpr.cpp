@@ -45,13 +45,14 @@ OpNodeExpr::OpNodeExpr(ImVec2 _pos, OpNodeType _type) :
 		"UniformConstant", spv::StorageClass::UniformConstant,
 		"StorageBuffer", spv::StorageClass::StorageBuffer)
 {
-	for (auto i = 0u; i < getInfo().numInputs; ++i)
+	const auto& info = getInfo();
+	for (const char* in : info.inputs)
 	{
-		m_inputSlots.emplace_back(g_OpNodeInputName[i], 1);
+		m_inputSlots.emplace_back(in, 1);
 	}
-	for (auto i = 0u; i < getInfo().numOutputs; ++i)
+	for (const char* out : info.outputs)
 	{
-		m_outputSlots.emplace_back(g_OpNodeOutputName[i], 1);
+		m_outputSlots.emplace_back(out, 1);
 	}
 
 	if (_type == OpNodeType::InVar)

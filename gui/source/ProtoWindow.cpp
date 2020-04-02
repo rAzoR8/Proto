@@ -14,7 +14,7 @@ proto::ProtoWindow::~ProtoWindow()
 
 bool proto::ProtoWindow::updateUI()
 {
-    ImGui::ShowDemoWindow();
+    //ImGui::ShowDemoWindow();
 
     Logger::instance()->update();
 

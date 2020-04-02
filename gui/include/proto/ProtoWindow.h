@@ -11,7 +11,7 @@ namespace proto
 		ProtoWindow();
 		~ProtoWindow();
 
-		bool updateUI() final;
+		bool updateUI() final;   
 
 	private:
 		void updateMenu();
