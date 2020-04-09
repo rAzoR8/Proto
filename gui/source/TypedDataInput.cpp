@@ -4,8 +4,7 @@
 
 using namespace spvgentwo;
 
-proto::TypedDataInput::TypedDataInput(const char* _label) :
-	m_label(_label),
+proto::TypedDataInput::TypedDataInput() :
 	m_min{},
 	m_max{},
 	m_step{},

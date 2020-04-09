@@ -82,7 +82,7 @@ void proto::Logger::update()
 					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.4f, 0.4f, 1.0f)); 
 				}
 
-				ImGui::Text(msg.c_str());
+				ImGui::Text("%s", msg.c_str());
 
 				if (pop_color)
 				{

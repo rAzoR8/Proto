@@ -15,7 +15,7 @@ namespace proto
 	class TypedDataInput
 	{
 	public:
-		TypedDataInput(const char* _label = "Value");
+		TypedDataInput();
 		~TypedDataInput();
 
 		// returns true if type is valid / input was matched
@@ -25,7 +25,6 @@ namespace proto
 		auto get() const { return m_data; }
 	private:
 
-		const char* m_label = "Value";
 		const char* m_format = nullptr;
 
 		union Scalar
