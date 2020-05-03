@@ -37,7 +37,9 @@ project(Proto)
 
 #dependencies
 find_package(Vulkan REQUIRED)
+find_package(SPIRV-Headers REQUIRED)
 
+#glfw
 option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" OFF)
 option(GLFW_BUILD_TESTS "Build the GLFW test programs" OFF)
 option(GLFW_BUILD_DOCS "Build the GLFW documentation" OFF)
@@ -45,6 +47,16 @@ option(GLFW_INSTALL "Generate installation target" OFF)
 option(GLFW_DOCUMENT_INTERNALS "Include internals in documentation" OFF)
 add_subdirectory(thirdparty/glfw)
 
+#spir-v tools
+option(SKIP_SPIRV_TOOLS_INSTALL "Skip installation" OFF)
+option(SPIRV_SKIP_TESTS "Skip tests" ON)
+
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/SPIRV-Headers" DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/SPIRV-Tools/external/")
+option(SPIRV_HEADERS_SKIP_EXAMPLES "" ON)
+option(SPIRV_HEADERS_SKIP_INSTALL "" ON)
+add_subdirectory(thirdparty/SPIRV-Tools)
+
+set(SPIRV_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/SPIRV-Tools/external/spirv-headers/include/spirv/unified1/" CACHE STRING "Path containing spirv.hpp11 and GLSL.std.450.h")
 add_subdirectory(SpvGenTwo)
 
 #proto sources
@@ -78,12 +90,8 @@ target_link_libraries(proto PUBLIC SpvGenTwoLib SpvGenTwoCommon)
 target_include_directories(proto PRIVATE "${Vulkan_INCLUDE_DIR}")
 target_link_libraries(proto PRIVATE "${Vulkan_LIBRARIES}")
 
-#link spir-v tools for dis
-option(SKIP_SPIRV_TOOLS_INSTALL "Skip installation" OFF)
-option(SPIRV_SKIP_TESTS "Skip tests" ON)
-add_subdirectory("${Vulkan_INCLUDE_DIR}/../spirv-tools" "${CMAKE_BINARY_DIR}/spirv-tools")
-
-target_include_directories(proto PRIVATE "${Vulkan_INCLUDE_DIR}/../spirv-tools/include" )
+#link spirv-tools
+target_include_directories(proto PRIVATE "thirdparty/SPIRV-Tools/include")
 target_link_libraries(proto PRIVATE SPIRV-Tools)
 
 #link glfw

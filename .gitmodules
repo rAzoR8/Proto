@@ -10,3 +10,9 @@
 [submodule "thirdparty/ImNodes"]
 	path = thirdparty/ImNodes
 	url = git@github.com:rAzoR8/ImNodes.git
+[submodule "thirdparty/SPIRV-Tools"]
+	path = thirdparty/SPIRV-Tools
+	url = https://github.com/KhronosGroup/SPIRV-Tools.git
+[submodule "thirdparty/SPIRV-Headers"]
+	path = thirdparty/SPIRV-Headers
+	url = https://github.com/KhronosGroup/SPIRV-Headers.git
