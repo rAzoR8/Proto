@@ -29,6 +29,7 @@ namespace proto
 
 		union Scalar
 		{
+			bool b;
 			float f32;
 			double f64;
 			int16_t s16;
@@ -61,6 +62,11 @@ namespace proto
 
 		union 
 		{
+			bool b;
+			bool bv2[2];
+			bool bv3[3];
+			bool bv4[4];
+
 			uint8_t u8;
 
 			// 16 bit vec

@@ -25,6 +25,9 @@ constexpr Item items[] = {
     {"s32", spv::Op::OpTypeInt, -32},
     {"bool", spv::Op::OpTypeBool, 0},
     {"void", spv::Op::OpTypeVoid, 0},
+    {"bvec2", spv::Op::OpTypeBool, 0, 2},
+    {"bvec3", spv::Op::OpTypeBool, 0, 3},
+    {"bvec4", spv::Op::OpTypeBool, 0, 4},
 };
 
 proto::FundamentalTypeComboBox::FundamentalTypeComboBox(const char* _pTitle) : ComboBox(_pTitle),

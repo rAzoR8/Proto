@@ -43,7 +43,11 @@ bool proto::TypedDataInput::update(const Type& _type)
 
 	const Type& base = _type.getBaseType();
 
-	if (base.isS16())
+	if (base.isBool())
+	{
+		// dont do anything
+	}
+	else if (base.isS16())
 	{		
 		type = ImGuiDataType_S16;
 		m_step.s16 = m_step.s16 == 0 ? 1 : m_step.s16;
@@ -106,7 +110,26 @@ bool proto::TypedDataInput::update(const Type& _type)
 		m_inputModalOpen = ImGui::BeginPopupModal("Input Value", &m_inputInModal);
 	}	
 
-	if (m_inputDrag)
+	if (base.isBool())
+	{
+		uint32_t i = 0u;
+		for (auto c = 0u; c < cols; ++c) 
+		{
+			for (auto r = 0u;r < rows; ++r)
+			{
+				ImGui::PushID(i);
+				bool& active = (&m_data.b)[i];
+				if (ImGui::RadioButton("##Value", active))
+				{
+					active = !active;
+				}
+				ImGui::PopID();
+				ImGui::SameLine();
+				++i;
+			}
+		}
+	}
+	else if (m_inputDrag)
 	{
 		for (auto i = 0u; i < cols; ++i)
 		{
@@ -115,7 +138,7 @@ bool proto::TypedDataInput::update(const Type& _type)
 			ImGui::PopID();
 		}
 	}
-	if (m_inputScalar)
+	else if (m_inputScalar)
 	{
 		for (auto i = 0u; i < cols; ++i)
 		{
@@ -124,7 +147,7 @@ bool proto::TypedDataInput::update(const Type& _type)
 			ImGui::PopID();
 		}
 	}
-	if (m_inputColor && type == ImGuiDataType_Float && cols < 2)
+	else if (m_inputColor && type == ImGuiDataType_Float && cols < 2)
 	{
 		if (rows == 3)
 		{
@@ -186,7 +209,11 @@ bool proto::TypedDataInput::update(const spvgentwo::Type& _type, spvgentwo::Cons
 
 	// integral scalar types
 
-	if (_type.isS16())
+	if (_type.isBool())
+	{
+		_outConstant.make(m_data.b);
+	}
+	else if (_type.isS16())
 	{
 		_outConstant.make(m_data.s16);
 	}
@@ -219,6 +246,20 @@ bool proto::TypedDataInput::update(const spvgentwo::Type& _type, spvgentwo::Cons
 	else if (_type.isF64())
 	{
 		_outConstant.make(m_data.f64);
+	}
+
+	// bool vecs
+	else if (_type.isVectorOfBool(2u))
+	{
+		_outConstant.make(make_vector(m_data.bv2));
+	}
+	else if (_type.isVectorOfBool(3u))
+	{
+		_outConstant.make(make_vector(m_data.bv3));
+	}
+	else if (_type.isVectorOfBool(4u))
+	{
+		_outConstant.make(make_vector(m_data.bv4));
 	}
 
 	// signed int 16 vec
