@@ -56,7 +56,6 @@ option(SPIRV_HEADERS_SKIP_EXAMPLES "" ON)
 option(SPIRV_HEADERS_SKIP_INSTALL "" ON)
 add_subdirectory(thirdparty/SPIRV-Tools)
 
-set(SPIRV_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/SPIRV-Tools/external/spirv-headers/include/spirv/unified1/" CACHE STRING "Path containing spirv.hpp11 and GLSL.std.450.h")
 add_subdirectory(SpvGenTwo)
 
 #proto sources

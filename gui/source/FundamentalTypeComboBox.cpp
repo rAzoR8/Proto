@@ -4,30 +4,30 @@
 struct Item
 {
     const char* name;
-    spv::Op type;
+    spvgentwo::spv::Op type;
     int width;
     int rows = 1;
     int columns = 0;
 };
 
 constexpr Item items[] = {
-    {"u32", spv::Op::OpTypeInt, 32},
-    {"f32", spv::Op::OpTypeFloat, 32},
-    {"f32v2", spv::Op::OpTypeFloat, 32, 2},
-    {"f32v3", spv::Op::OpTypeFloat, 32, 3},
-    {"f32v4", spv::Op::OpTypeFloat, 32, 4},
-    {"mat2", spv::Op::OpTypeFloat, 32, 2, 2},
-    {"mat3", spv::Op::OpTypeFloat, 32, 3, 3},
-    {"mat4", spv::Op::OpTypeFloat, 32, 4, 4},
-    {"f64", spv::Op::OpTypeFloat, 64},
-    {"s16", spv::Op::OpTypeInt, -16},
-    {"u16", spv::Op::OpTypeInt, 16},
-    {"s32", spv::Op::OpTypeInt, -32},
-    {"bool", spv::Op::OpTypeBool, 0},
-    {"void", spv::Op::OpTypeVoid, 0},
-    {"bvec2", spv::Op::OpTypeBool, 0, 2},
-    {"bvec3", spv::Op::OpTypeBool, 0, 3},
-    {"bvec4", spv::Op::OpTypeBool, 0, 4},
+    {"u32", spvgentwo::spv::Op::OpTypeInt, 32},
+    {"f32", spvgentwo::spv::Op::OpTypeFloat, 32},
+    {"f32v2", spvgentwo::spv::Op::OpTypeFloat, 32, 2},
+    {"f32v3", spvgentwo::spv::Op::OpTypeFloat, 32, 3},
+    {"f32v4", spvgentwo::spv::Op::OpTypeFloat, 32, 4},
+    {"mat2", spvgentwo::spv::Op::OpTypeFloat, 32, 2, 2},
+    {"mat3", spvgentwo::spv::Op::OpTypeFloat, 32, 3, 3},
+    {"mat4", spvgentwo::spv::Op::OpTypeFloat, 32, 4, 4},
+    {"f64", spvgentwo::spv::Op::OpTypeFloat, 64},
+    {"s16", spvgentwo::spv::Op::OpTypeInt, -16},
+    {"u16", spvgentwo::spv::Op::OpTypeInt, 16},
+    {"s32", spvgentwo::spv::Op::OpTypeInt, -32},
+    {"bool", spvgentwo::spv::Op::OpTypeBool, 0},
+    {"void", spvgentwo::spv::Op::OpTypeVoid, 0},
+    {"bvec2", spvgentwo::spv::Op::OpTypeBool, 0, 2},
+    {"bvec3", spvgentwo::spv::Op::OpTypeBool, 0, 3},
+    {"bvec4", spvgentwo::spv::Op::OpTypeBool, 0, 4},
 };
 
 proto::FundamentalTypeComboBox::FundamentalTypeComboBox(const char* _pTitle) : ComboBox(_pTitle),

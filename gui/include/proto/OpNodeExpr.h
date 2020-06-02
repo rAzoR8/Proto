@@ -78,7 +78,7 @@ namespace proto
 	struct VarDesc
 	{
 		spvgentwo::Type type;
-		spv::StorageClass storageClass = spv::StorageClass::UniformConstant;
+		spvgentwo::spv::StorageClass storageClass = spvgentwo::spv::StorageClass::UniformConstant;
 		const char* name = nullptr;
 	};
 
@@ -174,7 +174,7 @@ namespace proto
 
 	private:
 		FundamentalTypeComboBox m_typeComboBox;
-		ComboBox<spv::StorageClass> m_storageClassCombobox;
+		ComboBox<spvgentwo::spv::StorageClass> m_storageClassCombobox;
 		TypedDataInput m_dataInput;
 	};
 } // !proto
