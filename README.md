@@ -1,7 +1,17 @@
 # Proto
 Proof Of Concept SPIR-V Code Generator / Graph Editor GUI
 
-[Proto](proto.png)
+This is my test playground project for my IR-builder library SpvGenTwo
+
+![Proto](proto.png)
+
+## Usage
+
+Use right click context menu to crate new nodes.
+Click to select node.
+Press DEL to delete a node.
+
+Code will only be generated if control flow reaches output variables.
 
 ## Dependencies (Submodules)
 * [SpvGenTwo](https://github.com/rAzoR8/SpvGenTwo)
@@ -10,6 +20,7 @@ Proof Of Concept SPIR-V Code Generator / Graph Editor GUI
 * [GLFW](https://github.com/glfw/glfw)
 * [SPIRV-Tools](https://github.com/KhronosGroup/SPIRV-Tools)
 * [SPIRV-Headers](https://github.com/KhronosGroup/SPIRV-Headers)
+* [Vulkan](https://www.lunarg.com/vulkan-sdk/)
 
 ## Building
 
