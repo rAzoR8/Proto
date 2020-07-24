@@ -3,7 +3,6 @@
 #include "spvgentwo/Module.h"
 #include "AssemblyTextView.h"
 #include "OpNodeExpr.h"
-#include "Validator.h"
 
 // forward decls
 namespace ImNodes
@@ -38,7 +37,6 @@ namespace proto
 		spvgentwo::HeapVector<unsigned int> m_moduleBinary;
 		spvgentwo::BasicBlock* m_pBB = nullptr;
 
-		Validator m_validator;
 		AssemblyTextView m_textView;
 
 		const char* m_pName = nullptr;

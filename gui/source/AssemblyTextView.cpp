@@ -1,8 +1,6 @@
 #include "proto/AssemblyTextView.h"
 #include "imgui.h"
 #include "spvgentwo/Module.h"
-
-#include <spirv-tools/libspirv.hpp>
 #include "common/BinaryVectorWriter.h"
 
 using namespace spvgentwo;
@@ -27,29 +25,14 @@ void proto::AssemblyTextView::update(const spvgentwo::HeapVector<unsigned int>& 
         ImGui::SameLine();
         ImGui::Checkbox("Scroll", &m_autoScroll);
 
-        uint32_t options = SPV_BINARY_TO_TEXT_OPTION_NONE;
-        if (m_indent) options |= SPV_BINARY_TO_TEXT_OPTION_INDENT;
-        if (m_offsets) options |= SPV_BINARY_TO_TEXT_OPTION_SHOW_BYTE_OFFSET;
-        if (m_friendlyNames) options |= SPV_BINARY_TO_TEXT_OPTION_FRIENDLY_NAMES;
-
-        spv_text text = nullptr;
-        spv_diagnostic diagnostic = nullptr;
-        spv_context context = spvContextCreate(SPV_ENV_UNIVERSAL_1_5);
-        spv_result_t error = spvBinaryToText(context, _module.data(), _module.size(), options, &text, &diagnostic);
-        spvContextDestroy(context);
-
-        if (error)
-        {
-            spvDiagnosticPrint(diagnostic);
-            spvDiagnosticDestroy(diagnostic);
-        }
-
         ImGui::BeginChild("scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
 
-        if (text != nullptr)
-        {
-            ImGui::Text("%s", text->str);        
-        }
+        // TODO get string
+
+        //if (text != nullptr)
+        //{
+        //    ImGui::Text("%s", text->str);        
+        //}
 
         if (m_autoScroll)
         {
@@ -57,8 +40,6 @@ void proto::AssemblyTextView::update(const spvgentwo::HeapVector<unsigned int>& 
         }
 
         ImGui::EndChild();
-
-        spvTextDestroy(text);
     }
 
     ImGui::End();

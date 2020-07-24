@@ -208,6 +208,4 @@ void proto::EditorGraph::evaluateExprGraph()
 
     spvgentwo::BinaryVectorWriter writer(m_moduleBinary);
     m_module.write(&writer);
-
-    m_validator.validate(m_moduleBinary);
 }
