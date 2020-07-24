@@ -195,7 +195,7 @@ bool OpNodeExpr::makeVar()
     Instruction* pType = pModule->addType(m_varDesc.type); // type needs to be a pointer with storage class
     if (m_varDesc.storageClass == spv::StorageClass::Function)
     {
-        m_pVar = m_pBB->getFunction()->variable(pType, nullptr, m_varDesc.name);
+        m_pVar = m_pBB->getFunction()->variable(pType, m_varDesc.name);
     }
     else
     {
