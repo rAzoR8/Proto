@@ -11,7 +11,8 @@ using namespace spvgentwo;
 proto::EditorGraph::EditorGraph(spvgentwo::ILogger* _pLogger, const char* _pName) :
     m_module(HeapAllocator::instance(), spv::Version, _pLogger),
     m_pName(_pName),
-    m_nodes(HeapAllocator::instance())
+    m_nodes(HeapAllocator::instance()),
+    m_textView(HeapAllocator::instance())
 {
 }
 
@@ -61,7 +62,7 @@ void proto::EditorGraph::update()
 
     evaluateExprGraph();
 
-    m_textView.update(m_moduleBinary);
+    m_textView.update(m_module);
 }
 
 void proto::EditorGraph::clear()
@@ -202,10 +203,4 @@ void proto::EditorGraph::evaluateExprGraph()
 
     spvgentwo::BasicBlock& bb = m_module.getEntryPoints().front().front();
     bb.returnValue();
-
-    m_moduleBinary.reserve(1024);
-    m_moduleBinary.reset();
-
-    spvgentwo::BinaryVectorWriter writer(m_moduleBinary);
-    m_module.write(&writer);
 }

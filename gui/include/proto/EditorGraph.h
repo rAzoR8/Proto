@@ -34,7 +34,7 @@ namespace proto
 	private:
 		ImNodes::CanvasState* m_pCanvas = nullptr;
 		spvgentwo::Module m_module;
-		spvgentwo::HeapVector<unsigned int> m_moduleBinary;
+		//spvgentwo::HeapVector<unsigned int> m_moduleBinary;
 		spvgentwo::BasicBlock* m_pBB = nullptr;
 
 		AssemblyTextView m_textView;
