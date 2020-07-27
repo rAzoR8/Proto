@@ -32,6 +32,7 @@ void proto::AssemblyTextView::update(spvgentwo::Module& _module)
         ImGui::BeginChild("scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
 
         m_text.clear();
+        m_text.reserve(2048u);
         ModuleStringPrinter printer(m_text);
 
         moduleToString(_module, m_grammar, m_pAllocator, &printer);

@@ -203,4 +203,5 @@ void proto::EditorGraph::evaluateExprGraph()
 
     spvgentwo::BasicBlock& bb = m_module.getEntryPoints().front().front();
     bb.returnValue();
+    m_module.assignIDs();
 }
