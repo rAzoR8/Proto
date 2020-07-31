@@ -72,7 +72,7 @@ OpNodeExpr::~OpNodeExpr()
 void OpNodeExpr::operator()(const List<OpNodeExpr*>& _inputs, const List<OpNodeExpr*>& _outputs)
 {
 	Instruction* lhs = _inputs.empty() ? nullptr : _inputs.front()->m_pResult;
-	Instruction* rhs = _inputs.size() > 1u ? (*(_inputs.begin()+1))->m_pResult : nullptr;
+	Instruction* rhs = _inputs.size() > 1u ? (*(_inputs.begin()+1u))->m_pResult : nullptr;
 
 	if ((lhs != nullptr && lhs->getOperation() == spv::Op::OpNop) || (rhs != nullptr && rhs->getOperation() == spv::Op::OpNop))
 	{
