@@ -1,5 +1,7 @@
 #include "proto/OpNodeExpr.h"
 #include "spvgentwo/Module.h"
+#include "spvgentwo/Templates.h"
+
 #include "proto/Logger.h"
 
 using namespace proto;

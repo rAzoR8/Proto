@@ -4,6 +4,8 @@
 #include "common/HeapVector.h"
 #include "common/HeapCallable.h"
 
+#include "imgui.h"
+
 namespace proto
 {
 	
@@ -77,7 +79,7 @@ namespace proto
 	inline ComboBox<X>::ComboBox(const char* _pTitle, Args&& ..._args) :
 		m_pTitle(_pTitle)
 	{
-		emplace_back_args2(stdrep::forward<Args>(_args)...);
+		emplace_back_args2(spvgentwo::stdrep::forward<Args>(_args)...);
 	}
 
 	template<typename X>
@@ -95,14 +97,14 @@ namespace proto
 
 		if constexpr (sizeof...(_tail) > 1)
 		{
-			emplace_back_args2(stdrep::forward<Args>(_tail)...);
+			emplace_back_args2(spvgentwo::stdrep::forward<Args>(_tail)...);
 		}
 	}
 
 	template<typename X>
-	ComboBox<X>::ComboBox(ComboBox&& _other) noexcept : spvgentwo::HeapVector<ComboBoxEntry<X>>(stdrep::move(_other)),
+	ComboBox<X>::ComboBox(ComboBox&& _other) noexcept : spvgentwo::HeapVector<ComboBoxEntry<X>>(spvgentwo::stdrep::move(_other)),
 		m_pTitle(_other.m_pTitle),
-		m_onSelect(stdrep::move(_other.m_onSelect)),
+		m_onSelect(spvgentwo::stdrep::move(_other.m_onSelect)),
 		m_selected(_other.m_selected)
 	{
 		_other.m_selected = 0u;

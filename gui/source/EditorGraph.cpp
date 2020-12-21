@@ -6,6 +6,8 @@
 #include "proto/Logger.h"
 #include "common/BinaryVectorWriter.h"
 
+#include "spvgentwo/Templates.h"
+
 using namespace spvgentwo;
 
 proto::EditorGraph::EditorGraph(spvgentwo::ILogger* _pLogger, const char* _pName) :
