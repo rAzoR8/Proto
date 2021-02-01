@@ -76,8 +76,6 @@ void proto::EditorGraph::save()
 {
     BinaryFileWriter writer("proto.spv");
     m_module.write(&writer);
-    system("spirv-dis proto.spv");
-    assert(system("spirv-val proto.spv") == 0);
 }
 
 void proto::EditorGraph::createCanvas()

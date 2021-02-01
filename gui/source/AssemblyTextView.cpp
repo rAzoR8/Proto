@@ -35,7 +35,7 @@ void proto::AssemblyTextView::update(spvgentwo::Module& _module)
         m_text.reserve(2048u);
         ModuleStringPrinter printer(m_text);
 
-        moduleToString(_module, m_grammar, &printer);
+        printModule(_module, m_grammar, printer);
 
 		if (m_text.empty() == false)
 		{
