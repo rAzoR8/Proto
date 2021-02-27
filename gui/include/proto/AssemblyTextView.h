@@ -19,7 +19,6 @@ namespace proto
 
 		void update(spvgentwo::Module& _module);
 	private:
-		spvgentwo::IAllocator* m_pAllocator = nullptr;
 		spvgentwo::Grammar m_grammar;
 		spvgentwo::String m_text;
 		//bool m_indent = true;
