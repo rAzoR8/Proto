@@ -11,7 +11,7 @@
 using namespace spvgentwo;
 
 proto::EditorGraph::EditorGraph(spvgentwo::ILogger* _pLogger, const char* _pName) :
-    m_module(HeapAllocator::instance(), spv::Version, _pLogger),
+    m_module(HeapAllocator::instance(), _pLogger),
     m_textView(HeapAllocator::instance()),
     m_pName(_pName),
     m_nodes(HeapAllocator::instance())
@@ -75,7 +75,7 @@ void proto::EditorGraph::clear()
 void proto::EditorGraph::save()
 {
     BinaryFileWriter writer("proto.spv");
-    m_module.write(&writer);
+    m_module.finalizeAndWrite(writer);
 }
 
 void proto::EditorGraph::createCanvas()
